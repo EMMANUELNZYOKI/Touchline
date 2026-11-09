@@ -139,8 +139,8 @@ function Landing() {
               </p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <Button asChild size="lg" className="h-13 gap-2 px-7 text-base">
-                  <Link to="/admin/login">
-                    Open your workspace <ArrowRight className="h-4 w-4" />
+                  <Link to="/onboard">
+                    Start a free trial <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
                 <Button
@@ -350,12 +350,12 @@ function Landing() {
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button asChild size="lg" className="gap-2">
-                  <Link to="/admin/login">
-                    Continue to Touchline <ArrowRight className="h-4 w-4" />
+                  <Link to="/onboard">
+                    Create an academy workspace <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <Link to="/coach/login">Coach sign in</Link>
+                  <Link to="/admin/login">Academy admin sign in</Link>
                 </Button>
               </div>
             </div>

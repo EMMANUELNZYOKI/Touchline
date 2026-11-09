@@ -400,6 +400,17 @@ export type Database = {
         Returns: undefined;
       };
       create_platform_academy: { Args: { p_name: string; p_slug: string }; Returns: string };
+      complete_academy_onboarding: {
+        Args: {
+          p_owner_user_id: string;
+          p_name: string;
+          p_slug: string;
+          p_full_name: string;
+          p_email: string;
+          p_phone: string | null;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       app_role: "super_admin" | "coach";

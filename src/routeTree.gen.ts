@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OnboardRouteImport } from './routes/onboard'
 import { Route as AdminShellRouteImport } from './routes/admin/_shell'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as CoachShellRouteImport } from './routes/coach/_shell'
@@ -40,6 +41,11 @@ import { Route as CoachShellPlayersPlayerIdEvaluateRouteImport } from './routes/
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardRoute = OnboardRouteImport.update({
+  id: '/onboard',
+  path: '/onboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminShellRoute = AdminShellRouteImport.update({
@@ -180,6 +186,7 @@ const CoachShellPlayersPlayerIdEvaluateRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/onboard': typeof OnboardRoute
   '/admin': typeof AdminShellRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/coach': typeof CoachShellRouteWithChildren
@@ -209,6 +216,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/onboard': typeof OnboardRoute
   '/admin': typeof AdminShellRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/coach': typeof CoachShellRouteWithChildren
@@ -239,6 +247,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/onboard': typeof OnboardRoute
   '/admin/_shell': typeof AdminShellRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/coach/_shell': typeof CoachShellRouteWithChildren
@@ -270,6 +279,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/onboard'
     | '/admin'
     | '/admin/login'
     | '/coach'
@@ -299,6 +309,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/onboard'
     | '/admin'
     | '/admin/login'
     | '/coach'
@@ -328,6 +339,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/onboard'
     | '/admin/_shell'
     | '/admin/login'
     | '/coach/_shell'
@@ -358,6 +370,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  OnboardRoute: typeof OnboardRoute
   AdminShellRoute: typeof AdminShellRouteWithChildren
   AdminLoginRoute: typeof AdminLoginRoute
   CoachShellRoute: typeof CoachShellRouteWithChildren
@@ -373,6 +386,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboard': {
+      id: '/onboard'
+      path: '/onboard'
+      fullPath: '/onboard'
+      preLoaderRoute: typeof OnboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/_shell': {
@@ -633,6 +653,7 @@ const PlatformShellRouteWithChildren = PlatformShellRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  OnboardRoute: OnboardRoute,
   AdminShellRoute: AdminShellRouteWithChildren,
   AdminLoginRoute: AdminLoginRoute,
   CoachShellRoute: CoachShellRouteWithChildren,
