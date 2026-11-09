@@ -1,0 +1,177 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * DIOS SOCCER ACADEMY design system.
+ * Dark athletic base, gold primary, pitch-green accent.
+ * All colors are oklch semantic tokens. Never hardcode colors in components.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-display: "Oswald", "Arial Narrow", sans-serif;
+  --font-sans: "Inter Tight", system-ui, sans-serif;
+  --shadow-elevated: var(--shadow-elevated);
+  --shadow-glow: var(--shadow-glow);
+}
+
+:root {
+  --radius: 0.75rem;
+
+  --background: oklch(0.17 0.021 250);
+  --foreground: oklch(0.97 0.005 250);
+
+  --card: oklch(0.222 0.024 252);
+  --card-foreground: oklch(0.97 0.005 250);
+  --popover: oklch(0.222 0.024 252);
+  --popover-foreground: oklch(0.97 0.005 250);
+
+  --primary: oklch(0.81 0.152 85.5);
+  --primary-foreground: oklch(0.19 0.03 90);
+
+  --secondary: oklch(0.28 0.028 252);
+  --secondary-foreground: oklch(0.96 0.005 250);
+
+  --muted: oklch(0.27 0.024 252);
+  --muted-foreground: oklch(0.7 0.019 252);
+
+  --accent: oklch(0.63 0.155 152);
+  --accent-foreground: oklch(0.16 0.03 155);
+
+  --destructive: oklch(0.61 0.212 20);
+  --destructive-foreground: oklch(0.98 0.005 250);
+
+  --success: oklch(0.66 0.155 152);
+  --success-foreground: oklch(0.16 0.03 155);
+  --warning: oklch(0.79 0.15 72);
+  --warning-foreground: oklch(0.19 0.03 90);
+
+  --border: oklch(0.31 0.026 252);
+  --input: oklch(0.31 0.026 252);
+  --ring: oklch(0.81 0.152 85.5);
+
+  --chart-1: oklch(0.81 0.152 85.5);
+  --chart-2: oklch(0.63 0.155 152);
+  --chart-3: oklch(0.62 0.13 235);
+  --chart-4: oklch(0.7 0.16 30);
+  --chart-5: oklch(0.66 0.14 300);
+
+  --sidebar: oklch(0.195 0.023 252);
+  --sidebar-foreground: oklch(0.93 0.008 250);
+  --sidebar-primary: oklch(0.81 0.152 85.5);
+  --sidebar-primary-foreground: oklch(0.19 0.03 90);
+  --sidebar-accent: oklch(0.27 0.026 252);
+  --sidebar-accent-foreground: oklch(0.97 0.005 250);
+  --sidebar-border: oklch(0.29 0.026 252);
+  --sidebar-ring: oklch(0.81 0.152 85.5);
+
+  --gradient-hero: linear-gradient(
+    160deg,
+    oklch(0.17 0.021 250 / 0.96) 0%,
+    oklch(0.17 0.021 250 / 0.7) 45%,
+    oklch(0.22 0.05 152 / 0.62) 100%
+  );
+  --gradient-gold: linear-gradient(135deg, oklch(0.86 0.13 92), oklch(0.74 0.16 68));
+  --gradient-pitch: linear-gradient(135deg, oklch(0.63 0.155 152), oklch(0.5 0.12 172));
+  --gradient-panel: linear-gradient(150deg, oklch(0.24 0.026 252), oklch(0.2 0.022 252));
+  --shadow-elevated: 0 18px 45px -18px oklch(0.09 0.02 250 / 0.85);
+  --shadow-glow: 0 0 0 1px oklch(0.81 0.152 85.5 / 0.35), 0 12px 40px -12px oklch(0.81 0.152 85.5 / 0.35);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+  }
+}
+
+@utility bg-gradient-hero {
+  background-image: var(--gradient-hero);
+}
+@utility bg-gradient-gold {
+  background-image: var(--gradient-gold);
+}
+@utility bg-gradient-pitch {
+  background-image: var(--gradient-pitch);
+}
+@utility bg-gradient-panel {
+  background-image: var(--gradient-panel);
+}
+@utility shadow-elevated {
+  box-shadow: var(--shadow-elevated);
+}
+@utility shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+@utility text-gradient-gold {
+  background-image: var(--gradient-gold);
+  background-clip: text;
+  color: transparent;
+}
