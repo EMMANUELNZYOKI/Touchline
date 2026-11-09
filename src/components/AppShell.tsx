@@ -17,9 +17,10 @@ interface AppShellProps {
   areaLabel: string;
   userName: string;
   children: ReactNode;
+  signOutTo?: "/platform/login" | "/admin/login" | "/coach/login";
 }
 
-export function AppShell({ items, areaLabel, userName, children }: AppShellProps) {
+export function AppShell({ items, areaLabel, userName, children, signOutTo }: AppShellProps) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -28,7 +29,7 @@ export function AppShell({ items, areaLabel, userName, children }: AppShellProps
   const handleSignOut = async () => {
     await signOutCompletely();
     toast.success("Signed out");
-    navigate({ to: isAdmin ? "/admin/login" : "/coach/login", replace: true });
+    navigate({ to: signOutTo ?? (isAdmin ? "/admin/login" : "/coach/login"), replace: true });
   };
 
   const nav = (

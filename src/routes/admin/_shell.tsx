@@ -30,7 +30,7 @@ export const Route = createFileRoute("/admin/_shell")({
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/admin/login" });
     const role = await fetchMyRole(data.user.id);
-    if (role !== "super_admin") throw redirect({ to: "/coach/dashboard" });
+    if (role !== "academy_admin") throw redirect({ to: "/coach/dashboard" });
     return { userId: data.user.id };
   },
   component: AdminShell,
@@ -39,7 +39,11 @@ export const Route = createFileRoute("/admin/_shell")({
 function AdminShell() {
   const { profile, loading } = useAuth();
   return (
-    <AppShell items={items} areaLabel="Super Admin" userName={profile?.full_name || "Super Admin"}>
+    <AppShell
+      items={items}
+      areaLabel="Academy Admin"
+      userName={profile?.full_name || "Academy Admin"}
+    >
       {loading && !profile ? <LoadingBlock /> : <Outlet />}
     </AppShell>
   );

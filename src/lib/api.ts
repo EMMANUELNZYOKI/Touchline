@@ -1,19 +1,23 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import type { Evaluation, Player, Profile } from "./types";
 import { SKILL_CATEGORIES, averageScore, type SkillState } from "./skills";
 
 // Storage bucket configuration
-const BUCKET_NAME = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || "players";
+const BUCKET_NAME = process.env["NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET"] || "players";
 
 export async function fetchMyRole(userId: string) {
   const { data, error } = await supabase
-    .from("profiles")
+    .from("academy_memberships")
     .select("role")
-    .eq("id", userId)
+    .eq("user_id", userId)
+    .eq("status", "active")
     .maybeSingle();
 
   if (error) throw error;
-  return (data?.role as "super_admin" | "coach" | null) ?? null;
+  if (data?.role === "academy_admin") return "academy_admin" as const;
+  if (data?.role === "coach") return "coach" as const;
+  return null;
 }
 
 export async function fetchMyProfile(userId: string) {
@@ -27,24 +31,51 @@ export async function fetchMyProfile(userId: string) {
   return (data as Profile | null) ?? null;
 }
 
+async function fetchMyActiveAcademyAdminId() {
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  if (authError || !authData.user) throw new Error("Sign in to an academy administrator account.");
+  const { data, error } = await supabase
+    .from("academy_memberships")
+    .select("academy_id")
+    .eq("user_id", authData.user.id)
+    .eq("role", "academy_admin")
+    .eq("status", "active")
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) throw new Error("No active academy administrator membership was found.");
+  return data.academy_id;
+}
+
 export async function fetchCoaches() {
+  const academyId = await fetchMyActiveAcademyAdminId();
+  const { data: memberships, error: membershipError } = await supabase
+    .from("academy_memberships")
+    .select("user_id, status")
+    .eq("academy_id", academyId)
+    .eq("role", "coach");
+  if (membershipError) throw membershipError;
+  if (!memberships?.length) return [];
+
+  const coachIds = memberships.map((membership) => membership.user_id);
   const [profilesRes, playersRes, evalsRes] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("*")
-      .eq("role", "coach")
-      .order("created_at", { ascending: false }),
+    supabase.from("profiles").select("*").in("id", coachIds).eq("role", "coach"),
     supabase.from("players").select("id, coach_id"),
     supabase.from("player_evaluations").select("id, coach_id, player_id"),
   ]);
 
   if (profilesRes.error) throw profilesRes.error;
+  if (playersRes.error) throw playersRes.error;
+  if (evalsRes.error) throw evalsRes.error;
 
   const players = playersRes.data ?? [];
   const evals = evalsRes.data ?? [];
+  const statusByCoach = new Map(
+    memberships.map((membership) => [membership.user_id, membership.status]),
+  );
 
   return (profilesRes.data ?? []).map((p) => ({
     ...(p as Profile),
+    is_active: statusByCoach.get(p.id) === "active",
     playerCount: players.filter((pl) => pl.coach_id === p.id).length,
     evaluationCount: evals.filter((e) => e.coach_id === p.id).length,
     evaluatedPlayerCount: new Set(evals.filter((e) => e.coach_id === p.id).map((e) => e.player_id))
@@ -53,6 +84,17 @@ export async function fetchCoaches() {
 }
 
 export async function fetchCoachProfile(coachId: string) {
+  const academyId = await fetchMyActiveAcademyAdminId();
+  const { data: membership, error: membershipError } = await supabase
+    .from("academy_memberships")
+    .select("status")
+    .eq("academy_id", academyId)
+    .eq("user_id", coachId)
+    .eq("role", "coach")
+    .maybeSingle();
+  if (membershipError) throw membershipError;
+  if (!membership) return null;
+
   const [profileRes, playersRes, evaluationsRes] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", coachId).eq("role", "coach").maybeSingle(),
     supabase
@@ -79,7 +121,7 @@ export async function fetchCoachProfile(coachId: string) {
   );
 
   return {
-    coach: profileRes.data as Profile,
+    coach: { ...(profileRes.data as Profile), is_active: membership.status === "active" },
     evaluatedPlayerIds,
     evaluatedPlayers: players.filter((player) => evaluatedPlayerIds.includes(player.id)),
     evaluations: evaluations.map((evaluation) => ({
@@ -324,10 +366,7 @@ export async function updatePlayer(playerId: string, player: Partial<PlayerInput
 }
 
 export type AdminActivityAction =
-  | "player_created"
-  | "player_updated"
-  | "player_deleted"
-  | "coach_status_changed";
+  "player_created" | "player_updated" | "player_deleted" | "coach_status_changed";
 
 export interface AdminActivityLog {
   id: string;
@@ -336,7 +375,7 @@ export interface AdminActivityLog {
   entity_type: "player" | "coach";
   entity_id: string;
   summary: string;
-  metadata: Record<string, unknown>;
+  metadata: Record<string, Json | undefined>;
   created_at: string;
 }
 
@@ -345,7 +384,7 @@ export async function logAdminActivity(input: {
   entityType: "player" | "coach";
   entityId: string;
   summary: string;
-  metadata?: Record<string, unknown>;
+  metadata?: Record<string, Json | undefined>;
 }) {
   const {
     data: { user },
@@ -426,8 +465,18 @@ export async function saveEvaluation(input: {
 }
 
 export async function uploadPlayerPhoto(userId: string, file: File) {
+  const { data: membership, error: membershipError } = await supabase
+    .from("academy_memberships")
+    .select("academy_id")
+    .eq("user_id", userId)
+    .eq("status", "active")
+    .maybeSingle();
+  if (membershipError) throw membershipError;
+  if (!membership)
+    throw new Error("An active academy membership is required to upload a player photo.");
+
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-  const path = `${userId}/${crypto.randomUUID()}.${ext}`;
+  const path = `${membership.academy_id}/${userId}/${crypto.randomUUID()}.${ext}`;
   const { error } = await supabase.storage.from(BUCKET_NAME).upload(path, file, {
     upsert: false,
     contentType: file.type,
@@ -444,8 +493,9 @@ export async function photoUrl(path: string | null): Promise<string | null> {
     return path;
   }
 
-  const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(path);
-  return data.publicUrl ?? null;
+  const { data, error } = await supabase.storage.from(BUCKET_NAME).createSignedUrl(path, 3600);
+  if (error) throw error;
+  return data.signedUrl ?? null;
 }
 
 export function skillStateFromEvaluation(evaluation: Evaluation | null, fallback: SkillState) {

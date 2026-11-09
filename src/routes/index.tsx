@@ -376,6 +376,9 @@ function Landing() {
             <a href="#workflow" className="hover:text-foreground">
               How it works
             </a>
+            <Link to="/platform/login" className="hover:text-foreground">
+              Platform admin
+            </Link>
             <span>© {new Date().getFullYear()} Touchline</span>
           </div>
         </div>

@@ -10,6 +10,7 @@ export type Database = {
     Tables: {
       player_evaluations: {
         Row: {
+          academy_id: string;
           coach_id: string;
           coach_notes: string | null;
           coach_verdict: string | null;
@@ -33,6 +34,7 @@ export type Database = {
           weaknesses: string | null;
         };
         Insert: {
+          academy_id?: string;
           coach_id: string;
           coach_notes?: string | null;
           coach_verdict?: string | null;
@@ -56,6 +58,7 @@ export type Database = {
           weaknesses?: string | null;
         };
         Update: {
+          academy_id?: string;
           coach_id?: string;
           coach_notes?: string | null;
           coach_verdict?: string | null;
@@ -90,6 +93,7 @@ export type Database = {
       };
       players: {
         Row: {
+          academy_id: string;
           coach_id: string | null;
           created_at: string;
           date_of_birth: string | null;
@@ -114,6 +118,7 @@ export type Database = {
           weight: number | null;
         };
         Insert: {
+          academy_id?: string;
           coach_id?: string | null;
           created_at?: string;
           date_of_birth?: string | null;
@@ -138,6 +143,7 @@ export type Database = {
           weight?: number | null;
         };
         Update: {
+          academy_id?: string;
           coach_id?: string | null;
           created_at?: string;
           date_of_birth?: string | null;
@@ -171,6 +177,7 @@ export type Database = {
           id: string;
           is_active: boolean;
           phone: string | null;
+          role: "super_admin" | "coach";
           updated_at: string;
         };
         Insert: {
@@ -180,6 +187,7 @@ export type Database = {
           id: string;
           is_active?: boolean;
           phone?: string | null;
+          role: "super_admin" | "coach";
           updated_at?: string;
         };
         Update: {
@@ -190,6 +198,141 @@ export type Database = {
           is_active?: boolean;
           phone?: string | null;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      academies: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          status: "active" | "suspended";
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          status?: "active" | "suspended";
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          slug?: string;
+          status?: "active" | "suspended";
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      academy_memberships: {
+        Row: {
+          academy_id: string;
+          user_id: string;
+          role: "academy_admin" | "coach";
+          status: "active" | "invited" | "suspended";
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          academy_id: string;
+          user_id: string;
+          role: "academy_admin" | "coach";
+          status?: "active" | "invited" | "suspended";
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          academy_id?: string;
+          user_id?: string;
+          role?: "academy_admin" | "coach";
+          status?: "active" | "invited" | "suspended";
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      platform_admins: {
+        Row: { user_id: string; created_at: string };
+        Insert: { user_id: string; created_at?: string };
+        Update: { user_id?: string; created_at?: string };
+        Relationships: [];
+      };
+      academy_subscriptions: {
+        Row: {
+          academy_id: string;
+          plan_key: string;
+          status: "trialing" | "active" | "past_due" | "canceled" | "paused";
+          trial_ends_at: string | null;
+          current_period_start: string | null;
+          current_period_end: string | null;
+          provider: string | null;
+          provider_customer_id: string | null;
+          provider_subscription_id: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          academy_id: string;
+          plan_key?: string;
+          status?: "trialing" | "active" | "past_due" | "canceled" | "paused";
+          trial_ends_at?: string | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          provider?: string | null;
+          provider_customer_id?: string | null;
+          provider_subscription_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          academy_id?: string;
+          plan_key?: string;
+          status?: "trialing" | "active" | "past_due" | "canceled" | "paused";
+          trial_ends_at?: string | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          provider?: string | null;
+          provider_customer_id?: string | null;
+          provider_subscription_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      admin_activity_logs: {
+        Row: {
+          id: string;
+          actor_id: string;
+          academy_id: string | null;
+          action: string;
+          entity_type: string;
+          entity_id: string;
+          summary: string;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          actor_id: string;
+          academy_id?: string | null;
+          action: string;
+          entity_type: string;
+          entity_id: string;
+          summary: string;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          actor_id?: string;
+          academy_id?: string | null;
+          action?: string;
+          entity_type?: string;
+          entity_id?: string;
+          summary?: string;
+          metadata?: Json;
+          created_at?: string;
         };
         Relationships: [];
       };
@@ -231,6 +374,32 @@ export type Database = {
         Returns: boolean;
       };
       is_super_admin: { Args: never; Returns: boolean };
+      is_platform_admin: { Args: never; Returns: boolean };
+      has_academy_role: { Args: { p_academy_id: string; p_roles?: string[] }; Returns: boolean };
+      shares_active_academy_with: { Args: { p_user_id: string }; Returns: boolean };
+      platform_academy_overview: {
+        Args: never;
+        Returns: {
+          academy_id: string;
+          academy_name: string;
+          slug: string;
+          academy_status: string;
+          created_at: string;
+          plan_key: string;
+          subscription_status: string;
+          trial_ends_at: string | null;
+          current_period_end: string | null;
+          player_count: number;
+          evaluation_count: number;
+          coach_count: number;
+          academy_admin_count: number;
+        }[];
+      };
+      set_platform_academy_state: {
+        Args: { p_academy_id: string; p_academy_status: string; p_subscription_status: string };
+        Returns: undefined;
+      };
+      create_platform_academy: { Args: { p_name: string; p_slug: string }; Returns: string };
     };
     Enums: {
       app_role: "super_admin" | "coach";

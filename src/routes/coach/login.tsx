@@ -33,7 +33,7 @@ function CoachLogin() {
       const { role } = await signInWithRoleCheck(email, password, "any");
       toast.success("Signed in successfully");
       navigate({
-        to: role === "super_admin" ? "/admin/dashboard" : "/coach/dashboard",
+        to: role === "academy_admin" ? "/admin/dashboard" : "/coach/dashboard",
         replace: true,
       });
     } catch (error) {
@@ -47,8 +47,8 @@ function CoachLogin() {
     <AuthShell
       badge="Coaching Staff"
       title="Coach Sign In"
-      description="Use the credentials issued to you by the academy Super Admin."
-      footer="Accounts are created only by the Super Admin. Contact the academy office if you cannot sign in."
+      description="Use the credentials issued to you by your academy administrator."
+      footer="Accounts are created by academy administrators. Contact your academy office if you cannot sign in."
     >
       <CredentialsForm submitLabel="Sign in as Coach" loading={loading} onSubmit={handleSignIn} />
     </AuthShell>

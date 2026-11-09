@@ -14,6 +14,8 @@ import { Route as AdminShellRouteImport } from './routes/admin/_shell'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as CoachShellRouteImport } from './routes/coach/_shell'
 import { Route as CoachLoginRouteImport } from './routes/coach/login'
+import { Route as PlatformShellRouteImport } from './routes/platform/_shell'
+import { Route as PlatformLoginRouteImport } from './routes/platform/login'
 import { Route as AdminShellActivityRouteImport } from './routes/admin/_shell/activity'
 import { Route as AdminShellDashboardRouteImport } from './routes/admin/_shell/dashboard'
 import { Route as AdminShellEvaluationsRouteImport } from './routes/admin/_shell/evaluations'
@@ -23,6 +25,7 @@ import { Route as CoachShellDashboardRouteImport } from './routes/coach/_shell/d
 import { Route as CoachShellEvaluationsRouteImport } from './routes/coach/_shell/evaluations'
 import { Route as CoachShellHistoryRouteImport } from './routes/coach/_shell/history'
 import { Route as CoachShellProfileRouteImport } from './routes/coach/_shell/profile'
+import { Route as PlatformShellDashboardRouteImport } from './routes/platform/_shell/dashboard'
 import { Route as AdminShellCoachesIndexRouteImport } from './routes/admin/_shell/coaches.index'
 import { Route as AdminShellCoachesCoachIdRouteImport } from './routes/admin/_shell/coaches.$coachId'
 import { Route as AdminShellCoachesCreateRouteImport } from './routes/admin/_shell/coaches.create'
@@ -57,6 +60,16 @@ const CoachShellRoute = CoachShellRouteImport.update({
 const CoachLoginRoute = CoachLoginRouteImport.update({
   id: '/coach/login',
   path: '/coach/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlatformShellRoute = PlatformShellRouteImport.update({
+  id: '/platform/_shell',
+  path: '/platform',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlatformLoginRoute = PlatformLoginRouteImport.update({
+  id: '/platform/login',
+  path: '/platform/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminShellActivityRoute = AdminShellActivityRouteImport.update({
@@ -103,6 +116,11 @@ const CoachShellProfileRoute = CoachShellProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => CoachShellRoute,
+} as any)
+const PlatformShellDashboardRoute = PlatformShellDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => PlatformShellRoute,
 } as any)
 const AdminShellCoachesIndexRoute = AdminShellCoachesIndexRouteImport.update({
   id: '/coaches/',
@@ -166,6 +184,8 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/coach': typeof CoachShellRouteWithChildren
   '/coach/login': typeof CoachLoginRoute
+  '/platform': typeof PlatformShellRouteWithChildren
+  '/platform/login': typeof PlatformLoginRoute
   '/admin/activity': typeof AdminShellActivityRoute
   '/admin/dashboard': typeof AdminShellDashboardRoute
   '/admin/evaluations': typeof AdminShellEvaluationsRoute
@@ -175,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/coach/evaluations': typeof CoachShellEvaluationsRoute
   '/coach/history': typeof CoachShellHistoryRoute
   '/coach/profile': typeof CoachShellProfileRoute
+  '/platform/dashboard': typeof PlatformShellDashboardRoute
   '/admin/coaches/$coachId': typeof AdminShellCoachesCoachIdRoute
   '/admin/coaches/create': typeof AdminShellCoachesCreateRoute
   '/admin/players/$playerId': typeof AdminShellPlayersPlayerIdRoute
@@ -192,6 +213,8 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/coach': typeof CoachShellRouteWithChildren
   '/coach/login': typeof CoachLoginRoute
+  '/platform': typeof PlatformShellRouteWithChildren
+  '/platform/login': typeof PlatformLoginRoute
   '/admin/activity': typeof AdminShellActivityRoute
   '/admin/dashboard': typeof AdminShellDashboardRoute
   '/admin/evaluations': typeof AdminShellEvaluationsRoute
@@ -201,6 +224,7 @@ export interface FileRoutesByTo {
   '/coach/evaluations': typeof CoachShellEvaluationsRoute
   '/coach/history': typeof CoachShellHistoryRoute
   '/coach/profile': typeof CoachShellProfileRoute
+  '/platform/dashboard': typeof PlatformShellDashboardRoute
   '/admin/coaches/$coachId': typeof AdminShellCoachesCoachIdRoute
   '/admin/coaches/create': typeof AdminShellCoachesCreateRoute
   '/admin/players/$playerId': typeof AdminShellPlayersPlayerIdRoute
@@ -219,6 +243,8 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/coach/_shell': typeof CoachShellRouteWithChildren
   '/coach/login': typeof CoachLoginRoute
+  '/platform/_shell': typeof PlatformShellRouteWithChildren
+  '/platform/login': typeof PlatformLoginRoute
   '/admin/_shell/activity': typeof AdminShellActivityRoute
   '/admin/_shell/dashboard': typeof AdminShellDashboardRoute
   '/admin/_shell/evaluations': typeof AdminShellEvaluationsRoute
@@ -228,6 +254,7 @@ export interface FileRoutesById {
   '/coach/_shell/evaluations': typeof CoachShellEvaluationsRoute
   '/coach/_shell/history': typeof CoachShellHistoryRoute
   '/coach/_shell/profile': typeof CoachShellProfileRoute
+  '/platform/_shell/dashboard': typeof PlatformShellDashboardRoute
   '/admin/_shell/coaches/$coachId': typeof AdminShellCoachesCoachIdRoute
   '/admin/_shell/coaches/create': typeof AdminShellCoachesCreateRoute
   '/admin/_shell/players/$playerId': typeof AdminShellPlayersPlayerIdRoute
@@ -247,6 +274,8 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/coach'
     | '/coach/login'
+    | '/platform'
+    | '/platform/login'
     | '/admin/activity'
     | '/admin/dashboard'
     | '/admin/evaluations'
@@ -256,6 +285,7 @@ export interface FileRouteTypes {
     | '/coach/evaluations'
     | '/coach/history'
     | '/coach/profile'
+    | '/platform/dashboard'
     | '/admin/coaches/$coachId'
     | '/admin/coaches/create'
     | '/admin/players/$playerId'
@@ -273,6 +303,8 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/coach'
     | '/coach/login'
+    | '/platform'
+    | '/platform/login'
     | '/admin/activity'
     | '/admin/dashboard'
     | '/admin/evaluations'
@@ -282,6 +314,7 @@ export interface FileRouteTypes {
     | '/coach/evaluations'
     | '/coach/history'
     | '/coach/profile'
+    | '/platform/dashboard'
     | '/admin/coaches/$coachId'
     | '/admin/coaches/create'
     | '/admin/players/$playerId'
@@ -299,6 +332,8 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/coach/_shell'
     | '/coach/login'
+    | '/platform/_shell'
+    | '/platform/login'
     | '/admin/_shell/activity'
     | '/admin/_shell/dashboard'
     | '/admin/_shell/evaluations'
@@ -308,6 +343,7 @@ export interface FileRouteTypes {
     | '/coach/_shell/evaluations'
     | '/coach/_shell/history'
     | '/coach/_shell/profile'
+    | '/platform/_shell/dashboard'
     | '/admin/_shell/coaches/$coachId'
     | '/admin/_shell/coaches/create'
     | '/admin/_shell/players/$playerId'
@@ -326,6 +362,8 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   CoachShellRoute: typeof CoachShellRouteWithChildren
   CoachLoginRoute: typeof CoachLoginRoute
+  PlatformShellRoute: typeof PlatformShellRouteWithChildren
+  PlatformLoginRoute: typeof PlatformLoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -363,6 +401,20 @@ declare module '@tanstack/react-router' {
       path: '/coach/login'
       fullPath: '/coach/login'
       preLoaderRoute: typeof CoachLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/platform/_shell': {
+      id: '/platform/_shell'
+      path: '/platform'
+      fullPath: '/platform'
+      preLoaderRoute: typeof PlatformShellRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/platform/login': {
+      id: '/platform/login'
+      path: '/platform/login'
+      fullPath: '/platform/login'
+      preLoaderRoute: typeof PlatformLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/_shell/activity': {
@@ -427,6 +479,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/coach/profile'
       preLoaderRoute: typeof CoachShellProfileRouteImport
       parentRoute: typeof CoachShellRoute
+    }
+    '/platform/_shell/dashboard': {
+      id: '/platform/_shell/dashboard'
+      path: '/dashboard'
+      fullPath: '/platform/dashboard'
+      preLoaderRoute: typeof PlatformShellDashboardRouteImport
+      parentRoute: typeof PlatformShellRoute
     }
     '/admin/_shell/coaches/': {
       id: '/admin/_shell/coaches/'
@@ -560,12 +619,26 @@ const CoachShellRouteWithChildren = CoachShellRoute._addFileChildren(
   CoachShellRouteChildren,
 )
 
+interface PlatformShellRouteChildren {
+  PlatformShellDashboardRoute: typeof PlatformShellDashboardRoute
+}
+
+const PlatformShellRouteChildren: PlatformShellRouteChildren = {
+  PlatformShellDashboardRoute: PlatformShellDashboardRoute,
+}
+
+const PlatformShellRouteWithChildren = PlatformShellRoute._addFileChildren(
+  PlatformShellRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminShellRoute: AdminShellRouteWithChildren,
   AdminLoginRoute: AdminLoginRoute,
   CoachShellRoute: CoachShellRouteWithChildren,
   CoachLoginRoute: CoachLoginRoute,
+  PlatformShellRoute: PlatformShellRouteWithChildren,
+  PlatformLoginRoute: PlatformLoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -29,8 +29,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EmptyState, LoadingBlock } from "@/components/DataCards";
-import { fetchCoaches, updateCoachProfile } from "@/lib/api";
-import { setCoachActive } from "@/lib/admin.functions";
+import { fetchCoaches } from "@/lib/api";
+import { setCoachActive, updateAcademyCoach } from "@/lib/admin.functions";
 import type { Coach } from "@/lib/types";
 
 export const Route = createFileRoute("/admin/_shell/coaches/")({
@@ -210,6 +210,7 @@ function CoachesPage() {
 
 function EditCoachDialog({ coach, onClose }: { coach: Coach | null; onClose: () => void }) {
   const queryClient = useQueryClient();
+  const updateCoach = useServerFn(updateAcademyCoach);
   const [fullName, setFullName] = useState(coach?.full_name ?? "");
   const [phone, setPhone] = useState(coach?.phone ?? "");
   const [key, setKey] = useState(coach?.id);
@@ -222,10 +223,12 @@ function EditCoachDialog({ coach, onClose }: { coach: Coach | null; onClose: () 
 
   const mutation = useMutation({
     mutationFn: () =>
-      updateCoachProfile({
-        id: coach!.id,
-        full_name: fullName.trim(),
-        phone: phone.trim() || null,
+      updateCoach({
+        data: {
+          coachId: coach!.id,
+          full_name: fullName.trim(),
+          phone: phone.trim() || null,
+        },
       }),
     onSuccess: () => {
       toast.success("Coach details updated");

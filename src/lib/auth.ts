@@ -68,15 +68,13 @@ export async function signInWithRoleCheck(
 
   if (!role) {
     await supabase.auth.signOut();
-    throw new Error("This account has no academy role assigned. Contact the Super Admin.");
+    throw new Error(
+      "This account has no active academy membership. Contact your academy administrator.",
+    );
   }
-  if (profile && !profile.is_active) {
+  if (expected === "academy_admin" && role !== "academy_admin") {
     await supabase.auth.signOut();
-    throw new Error("This account has been deactivated. Contact the Super Admin.");
-  }
-  if (expected === "super_admin" && role !== "super_admin") {
-    await supabase.auth.signOut();
-    throw new Error("This account is not a Super Admin. Use the Coach Sign In page.");
+    throw new Error("This account is not an academy administrator. Use the Coach Sign In page.");
   }
   return { role, profile };
 }
