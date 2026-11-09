@@ -1,5 +1,8 @@
+"use client";
+
+import { createFileRoute } from "@/lib/next-router-compat";
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+
 import { useQuery } from "@tanstack/react-query";
 import { Download, BarChart3, TrendingUp } from "lucide-react";
 import {
@@ -427,3 +430,5 @@ function AdminReportsPage() {
     </div>
   );
 }
+
+export default Route.component;

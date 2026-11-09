@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+"use client";
+
+import { createFileRoute, Link } from "@/lib/next-router-compat";
 import {
   ArrowRight,
   Activity,
@@ -112,7 +114,7 @@ function Landing() {
       <main>
         <section className="relative isolate min-h-[650px] overflow-hidden sm:min-h-[720px]">
           <img
-            src={heroPitch}
+            src={heroPitch.src}
             alt="A football pitch ready for training"
             width={1920}
             height={1088}
@@ -386,3 +388,5 @@ function Landing() {
     </div>
   );
 }
+
+export default Route.component;

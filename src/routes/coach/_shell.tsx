@@ -1,10 +1,11 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { LayoutDashboard, Users, ClipboardCheck, UserCog, History } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { fetchMyRole } from "@/lib/api";
+"use client";
+
+import { useEffect, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { ClipboardCheck, History, LayoutDashboard, UserCog, Users } from "lucide-react";
 import { AppShell, type NavItem } from "@/components/AppShell";
-import { useAuth } from "@/lib/auth";
 import { LoadingBlock } from "@/components/DataCards";
+import { useAuth } from "@/lib/auth";
 
 const items: NavItem[] = [
   { label: "Dashboard", to: "/coach/dashboard", icon: LayoutDashboard },
@@ -14,23 +15,22 @@ const items: NavItem[] = [
   { label: "Profile", to: "/coach/profile", icon: UserCog },
 ];
 
-export const Route = createFileRoute("/coach/_shell")({
-  ssr: false,
-  beforeLoad: async () => {
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) throw redirect({ to: "/coach/login" });
-    const role = await fetchMyRole(data.user.id);
-    if (!role) throw redirect({ to: "/coach/login" });
-    return { userId: data.user.id };
-  },
-  component: CoachShell,
-});
+export function CoachShell({ children }: { children: ReactNode }) {
+  const { profile, loading, role } = useAuth();
+  const router = useRouter();
+  useEffect(() => {
+    if (!loading && !role) router.replace("/coach/login");
+  }, [loading, role, router]);
 
-function CoachShell() {
-  const { profile, loading } = useAuth();
+  if (loading || !role) return <LoadingBlock />;
   return (
-    <AppShell items={items} areaLabel="Coach" userName={profile?.full_name || "Coach"}>
-      {loading && !profile ? <LoadingBlock /> : <Outlet />}
+    <AppShell
+      items={items}
+      areaLabel="Coach"
+      userName={profile?.full_name || "Coach"}
+      signOutTo="/coach/login"
+    >
+      {children}
     </AppShell>
   );
 }

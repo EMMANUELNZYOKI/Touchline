@@ -1,5 +1,8 @@
+"use client";
+
+import { createFileRoute } from "@/lib/next-router-compat";
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -105,3 +108,5 @@ function AdminSettingsPage() {
     </div>
   );
 }
+
+export default Route.component;

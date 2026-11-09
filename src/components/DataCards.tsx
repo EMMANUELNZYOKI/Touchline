@@ -50,7 +50,9 @@ export function ScoreCard({
   return (
     <div className="border-border/70 bg-card rounded-xl border p-4">
       <div className="flex items-baseline justify-between gap-2">
-        <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">{label}</p>
+        <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+          {label}
+        </p>
         <p className="font-display text-2xl">
           {score == null ? "—" : value.toFixed(1)}
           <span className="text-muted-foreground text-xs">/{max}</span>

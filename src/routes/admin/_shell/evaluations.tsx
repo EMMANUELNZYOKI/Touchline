@@ -1,5 +1,8 @@
+"use client";
+
+import { createFileRoute, Link } from "@/lib/next-router-compat";
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+
 import { useQuery } from "@tanstack/react-query";
 import { ClipboardCheck, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -132,3 +135,5 @@ function AdminEvaluationsPage() {
     </div>
   );
 }
+
+export default Route.component;

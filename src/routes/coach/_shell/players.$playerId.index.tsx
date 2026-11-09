@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+"use client";
+
+import { createFileRoute, Link } from "@/lib/next-router-compat";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -56,3 +58,5 @@ function CoachPlayerProfile() {
     </div>
   );
 }
+
+export default Route.component;

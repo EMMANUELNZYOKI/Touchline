@@ -1,21 +1,7 @@
-# Routes
+# Touchline route components
 
-TanStack Start uses **file-based routing**. Every `.tsx` file in this directory
-defines a route. Do **not** create `src/pages/`, `src/routes/_app/index.tsx`, or
-`app/layout.tsx` — those are Next.js / Remix conventions. The only root layout
-is `src/routes/__root.tsx`.
+The active routing system is the **Next.js App Router** under `src/app/`. Add new URLs there using `page.tsx`, `layout.tsx`, and dynamic folder segments such as `[playerId]`.
 
-## Conventions
+The existing React screens remain temporarily in this directory as client components so the framework migration can preserve UI behavior with minimal redesign. Each file under `src/app/` imports the corresponding screen module here. Protected layouts are implemented at `src/routes/admin/_shell.tsx`, `src/routes/coach/_shell.tsx`, and `src/routes/platform/_shell.tsx` and mounted by App Router layouts.
 
-| File | URL |
-| --- | --- |
-| `index.tsx` | `/` |
-| `about.tsx` | `/about` |
-| `users/index.tsx` | `/users` |
-| `users/$id.tsx` | `/users/:id` (dynamic — bare `$`, no curly braces) |
-| `posts/{-$category}.tsx` | `/posts/:category?` (optional segment) |
-| `files/$.tsx` | `/files/*` (splat — read via `_splat` param, never `*`) |
-| `_layout.tsx` | layout route (renders children via `<Outlet />`) |
-| `__root.tsx` | app shell — wraps every page; preserve `<Outlet />` |
-
-`routeTree.gen.ts` is auto-generated. Don't edit it by hand.
+`src/lib/next-router-compat.tsx` is a transitional adapter for existing links, navigation, route params, and page components. Do not add new TanStack Start/Router dependencies or route conventions. As screens are touched later, move their route logic into Next-native APIs and remove the adapter once no screens depend on it.

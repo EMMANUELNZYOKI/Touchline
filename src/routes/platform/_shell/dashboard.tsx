@@ -1,6 +1,9 @@
+"use client";
+
+import { createFileRoute } from "@/lib/next-router-compat";
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+
+import { useServerFn } from "@/lib/next-server-fn";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Building2,
@@ -439,3 +442,5 @@ function StatusSelect<T extends string>({
     </select>
   );
 }
+
+export default Route.component;

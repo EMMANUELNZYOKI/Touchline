@@ -1,5 +1,8 @@
+"use client";
+
+import { createFileRoute, useNavigate } from "@/lib/next-router-compat";
 import { useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+
 import { toast } from "sonner";
 import { AuthShell, CredentialsForm } from "@/components/AuthShell";
 import { signInWithRoleCheck } from "@/lib/auth";
@@ -54,3 +57,5 @@ function AdminLogin() {
     </AuthShell>
   );
 }
+
+export default Route.component;

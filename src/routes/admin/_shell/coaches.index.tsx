@@ -1,7 +1,10 @@
+"use client";
+
+import { createFileRoute, Link } from "@/lib/next-router-compat";
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/next-server-fn";
 import { toast } from "sonner";
 import { Users, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -282,3 +285,5 @@ function EditCoachDialog({ coach, onClose }: { coach: Coach | null; onClose: () 
     </Dialog>
   );
 }
+
+export default Route.component;

@@ -1,9 +1,11 @@
+"use client";
+
+import { Link } from "@/lib/next-router-compat";
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import { deletePlayer, logAdminActivity } from "@/lib/api";
-import { Link } from "@tanstack/react-router";
 import { Search, UserSquare2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -226,7 +228,10 @@ export function PlayersTable({ players, area, showCoach, emptyAction }: Props) {
                       {area === "admin" && (
                         <>
                           <Button size="sm" variant="outline" asChild>
-                            <Link to="/admin/players/edit/$playerId" params={{ playerId: player.id }}>
+                            <Link
+                              to="/admin/players/edit/$playerId"
+                              params={{ playerId: player.id }}
+                            >
                               Edit
                             </Link>
                           </Button>

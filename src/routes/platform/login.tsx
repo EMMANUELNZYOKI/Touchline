@@ -1,6 +1,9 @@
+"use client";
+
+import { createFileRoute, useNavigate } from "@/lib/next-router-compat";
 import { useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+
+import { useServerFn } from "@/lib/next-server-fn";
 import { toast } from "sonner";
 import { AuthShell, CredentialsForm } from "@/components/AuthShell";
 import { supabase } from "@/integrations/supabase/client";
@@ -48,3 +51,5 @@ function PlatformLogin() {
     </AuthShell>
   );
 }
+
+export default Route.component;

@@ -7,14 +7,16 @@ Touchline is a multi-academy web application for managing player records, coache
 ## Current stack
 
 - React + TypeScript
-- TanStack Start / Router and Vite
+- Next.js App Router
 - Supabase Auth, PostgreSQL, Row-Level Security, and Storage
 - Tailwind CSS
 - Vercel deployment configuration
 
+The framework migration now uses the Next.js App Router. Existing public, admin, coach, platform, and evaluation URLs are preserved under `src/app/`; the screens remain in `src/routes/` temporarily and use a small Next navigation adapter while the UI is migrated incrementally. Authenticated actions go through `/api/[...path]`, where Supabase bearer tokens are verified and academy/platform roles are checked server-side.
+
 ## Local development
 
-Requirements: Node.js 18+.
+Requirements: Node.js 20.9 or newer.
 
 ```bash
 npm ci
@@ -22,15 +24,15 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Set the browser variables `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to the Touchline Supabase project. The server functions also require `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`. The service-role key bypasses RLS: keep it server-only, never prefix it with `VITE_`, and never commit it. The example file contains placeholders, not usable credentials.
+Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to the Touchline Supabase project for browser access. Authenticated API handlers also require server-only `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `TOUCHLINE_PLATFORM_ADMIN_EMAIL`. The service-role key bypasses RLS: never prefix it with `NEXT_PUBLIC_`, never commit it, and never expose it to browser code. The example file contains placeholders, not usable credentials.
 
-For Vercel, add those same variables in **Project → Settings → Environment Variables** for the environments you deploy, then redeploy. Keep the service-role key as a server-side environment variable only. Do not paste keys into source control or a chat.
+For Vercel, add the variables in **Project → Settings → Environment Variables** for Production, Preview, and Development as appropriate, then redeploy. Keep `SUPABASE_SERVICE_ROLE_KEY` server-only. Do not paste keys into source control or a chat.
 
 ### First Touchline platform operator
 
 Set `TOUCHLINE_PLATFORM_ADMIN_EMAIL` on the server to the exact email address of the first Touchline operator. Create that account in the Touchline Supabase project's **Authentication → Users**, confirm its email, and choose its password. Visit `/platform/login` and sign in with that same email/password. The server grants the first platform-admin record only when the signed-in Auth email matches the allowlist and `platform_admins` is empty; afterward the allowlist cannot be used to add another operator.
 
-Use the project URL `https://icmocslfyhnizdgbldhj.supabase.co`. In **Authentication → URL Configuration**, set the local Site URL as needed and add the exact local callback `http://localhost:5173/onboard?complete=1` plus the production callback `https://YOUR-DOMAIN/onboard?complete=1` (or carefully scoped equivalent redirect patterns). Configure Supabase's email provider before testing a signup that requires email confirmation. Restart the local server after editing `.env.local`; after changing Vercel variables, redeploy.
+Use the project URL `https://icmocslfyhnizdgbldhj.supabase.co`. In **Authentication → URL Configuration**, set the local Site URL as needed and add the exact local callback `http://localhost:3000/onboard?complete=1` plus the production callback `https://YOUR-DOMAIN/onboard?complete=1` (or carefully scoped equivalent redirect patterns). Configure Supabase's email provider before testing a signup that requires email confirmation. Restart the local Next server after editing `.env.local`; after changing Vercel variables, redeploy.
 
 ### New academy signup
 
@@ -46,7 +48,7 @@ The Touchline Supabase project has the baseline schema and the migration files i
 - Seeds one initial Dios Soccer Academy tenant and trial subscription. Legacy records are backfilled only if they already exist in the project when that migration runs.
 - Adds and requires `academy_id` on players and evaluations, adds academy ownership to activity logs, and adds a composite key so an evaluation cannot reference a player from another academy.
 - Replaces old policies with membership-based tenant checks. Coaches can read their academy roster and create/update their own evaluations; academy administrators can manage their academy's players, memberships, and evaluations.
-- Keeps platform administration separate from academy roles. The platform dashboard receives aggregate academy counts and manages academy/subscription status through trusted server functions; it does not expose player-level records.
+- Keeps platform administration separate from academy roles. The platform dashboard receives aggregate academy counts and manages academy/subscription status through trusted server-only API handlers; it does not expose player-level records.
 - Moves internal authorization helpers to a non-exposed schema, scopes the evaluated-player status RPC to the caller's academy, and uses academy-scoped private photo storage with signed URLs.
 - Removes the unauthenticated legacy Super Admin bootstrap. The old `profiles.role` field is not the source of application authority; active academy membership is.
 - Adds a service-role-only onboarding RPC to atomically create the first academy administrator and 14-day trial after the signed-up email is confirmed.
@@ -67,4 +69,4 @@ npm run build
 npm run lint
 ```
 
-`npm run lint` scans generated output as well; use targeted ESLint on changed source files when validating during development.
+`npm run lint` checks the maintained project source while ignoring Next.js generated output and the Deno-only Supabase Edge Function source.

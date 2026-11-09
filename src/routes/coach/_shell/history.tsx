@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+"use client";
+
+import { createFileRoute } from "@/lib/next-router-compat";
 import { useQuery } from "@tanstack/react-query";
 import { CalendarCheck, ClipboardCheck, Star, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -149,3 +151,5 @@ function CoachEvaluationHistoryPage() {
     </div>
   );
 }
+
+export default Route.component;

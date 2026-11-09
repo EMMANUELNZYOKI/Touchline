@@ -1,18 +1,19 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+"use client";
+
+import { useEffect, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import {
-  LayoutDashboard,
-  Users,
-  UserSquare2,
-  ClipboardCheck,
-  BarChart3,
   Activity,
+  BarChart3,
+  ClipboardCheck,
+  LayoutDashboard,
   Settings,
+  UserSquare2,
+  Users,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { fetchMyRole } from "@/lib/api";
 import { AppShell, type NavItem } from "@/components/AppShell";
-import { useAuth } from "@/lib/auth";
 import { LoadingBlock } from "@/components/DataCards";
+import { useAuth } from "@/lib/auth";
 
 const items: NavItem[] = [
   { label: "Dashboard", to: "/admin/dashboard", icon: LayoutDashboard },
@@ -24,27 +25,25 @@ const items: NavItem[] = [
   { label: "Settings", to: "/admin/settings", icon: Settings },
 ];
 
-export const Route = createFileRoute("/admin/_shell")({
-  ssr: false,
-  beforeLoad: async () => {
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) throw redirect({ to: "/admin/login" });
-    const role = await fetchMyRole(data.user.id);
-    if (role !== "academy_admin") throw redirect({ to: "/coach/dashboard" });
-    return { userId: data.user.id };
-  },
-  component: AdminShell,
-});
+export function AdminShell({ children }: { children: ReactNode }) {
+  const { profile, loading, role } = useAuth();
+  const router = useRouter();
 
-function AdminShell() {
-  const { profile, loading } = useAuth();
+  useEffect(() => {
+    if (loading) return;
+    if (!role) router.replace("/admin/login");
+    else if (role !== "academy_admin") router.replace("/coach/dashboard");
+  }, [loading, role, router]);
+
+  if (loading || role !== "academy_admin") return <LoadingBlock />;
   return (
     <AppShell
       items={items}
       areaLabel="Academy Admin"
       userName={profile?.full_name || "Academy Admin"}
+      signOutTo="/admin/login"
     >
-      {loading && !profile ? <LoadingBlock /> : <Outlet />}
+      {children}
     </AppShell>
   );
 }

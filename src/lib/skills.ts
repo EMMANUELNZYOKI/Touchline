@@ -110,7 +110,9 @@ export function calculateAge(dateOfBirth: string | null): number | null {
   return Math.floor(diff / (365.25 * 24 * 60 * 60 * 1000));
 }
 
-export function ratingTone(rating: number | null | undefined): "success" | "primary" | "destructive" {
+export function ratingTone(
+  rating: number | null | undefined,
+): "success" | "primary" | "destructive" {
   if (rating == null) return "primary";
   if (rating >= 7.5) return "success";
   if (rating >= 5) return "primary";

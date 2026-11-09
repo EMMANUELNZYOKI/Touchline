@@ -1,5 +1,7 @@
+"use client";
+
+import { Link } from "@/lib/next-router-compat";
 import { useState, type ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

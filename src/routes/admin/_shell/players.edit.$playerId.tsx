@@ -1,5 +1,8 @@
+"use client";
+
+import { createFileRoute, Link, useNavigate } from "@/lib/next-router-compat";
 import { useEffect, useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
@@ -35,7 +38,9 @@ export const Route = createFileRoute("/admin/_shell/players/edit/$playerId")({
 const SEASONS = ["JAN-APR", "MAY-AUG", "SEP-DEC"] as const;
 const TEAM_CATEGORIES = ["U-7", "U-9", "U-11", "U-13", "U-15"] as const;
 
-function playerInputFromPlayer(player: NonNullable<Awaited<ReturnType<typeof fetchPlayer>>>["player"]): PlayerInput {
+function playerInputFromPlayer(
+  player: NonNullable<Awaited<ReturnType<typeof fetchPlayer>>>["player"],
+): PlayerInput {
   return {
     first_name: player.first_name,
     last_name: player.last_name,
@@ -191,9 +196,15 @@ function EditPlayerPage() {
           <div className="grid gap-2">
             <Label>Gender</Label>
             <Select value={player.gender ?? ""} onValueChange={(value) => set("gender", value)}>
-              <SelectTrigger><SelectValue placeholder="Select gender" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Select gender" />
+              </SelectTrigger>
               <SelectContent>
-                {GENDERS.map((value) => <SelectItem key={value} value={value}>{value}</SelectItem>)}
+                {GENDERS.map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {value}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -209,18 +220,47 @@ function EditPlayerPage() {
           <CardTitle>Football and medical information</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
-          <SelectField label="Primary position" value={player.position} options={POSITIONS} onChange={(value) => set("position", value)} />
-          <SelectField label="Secondary position" value={player.secondary_position} options={POSITIONS} onChange={(value) => set("secondary_position", value)} />
-          <SelectField label="Preferred foot" value={player.preferred_foot} options={PREFERRED_FOOT} onChange={(value) => set("preferred_foot", value)} />
-          <SelectField label="Season" value={player.season} options={SEASONS} onChange={(value) => set("season", value)} />
-          <SelectField label="Category / team" value={player.team_category} options={TEAM_CATEGORIES} onChange={(value) => set("team_category", value)} />
+          <SelectField
+            label="Primary position"
+            value={player.position}
+            options={POSITIONS}
+            onChange={(value) => set("position", value)}
+          />
+          <SelectField
+            label="Secondary position"
+            value={player.secondary_position}
+            options={POSITIONS}
+            onChange={(value) => set("secondary_position", value)}
+          />
+          <SelectField
+            label="Preferred foot"
+            value={player.preferred_foot}
+            options={PREFERRED_FOOT}
+            onChange={(value) => set("preferred_foot", value)}
+          />
+          <SelectField
+            label="Season"
+            value={player.season}
+            options={SEASONS}
+            onChange={(value) => set("season", value)}
+          />
+          <SelectField
+            label="Category / team"
+            value={player.team_category}
+            options={TEAM_CATEGORIES}
+            onChange={(value) => set("team_category", value)}
+          />
           {field("Jersey number", "jersey_number", "number")}
           {field("Height (cm)", "height", "number")}
           {field("Weight (kg)", "weight", "number")}
           <div className="grid gap-2 sm:col-span-2">
             <Label>Player photo</Label>
             {currentPhotoUrl && !photo && (
-              <img src={currentPhotoUrl} alt={`${player.first_name} ${player.last_name}`} className="h-20 w-20 rounded-lg object-cover" />
+              <img
+                src={currentPhotoUrl}
+                alt={`${player.first_name} ${player.last_name}`}
+                className="h-20 w-20 rounded-lg object-cover"
+              />
             )}
             <label className="border-border/70 hover:bg-muted/40 flex cursor-pointer items-center gap-3 rounded-lg border border-dashed px-4 py-4 text-sm transition-colors">
               <Upload className="text-muted-foreground h-4 w-4" />
@@ -278,9 +318,15 @@ function SelectField<T extends string>({
     <div className="grid gap-2">
       <Label>{label}</Label>
       <Select value={value ?? ""} onValueChange={onChange}>
-        <SelectTrigger><SelectValue placeholder={`Select ${label.toLowerCase()}`} /></SelectTrigger>
+        <SelectTrigger>
+          <SelectValue placeholder={`Select ${label.toLowerCase()}`} />
+        </SelectTrigger>
         <SelectContent>
-          {options.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}
+          {options.map((option) => (
+            <SelectItem key={option} value={option}>
+              {option}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>
@@ -290,3 +336,5 @@ function SelectField<T extends string>({
 function LoadingBlock({ label }: { label: string }) {
   return <div className="text-muted-foreground py-10 text-center">{label}</div>;
 }
+
+export default Route.component;

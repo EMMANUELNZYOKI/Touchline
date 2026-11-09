@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+"use client";
+
+import { createFileRoute, Link } from "@/lib/next-router-compat";
 import { useQuery } from "@tanstack/react-query";
 import { Activity, ClipboardCheck, Pencil, Power, Trash2, UserPlus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +24,10 @@ interface Entry {
 function AdminActivityPage() {
   const playersQuery = useQuery({ queryKey: ["players", "all"], queryFn: () => fetchPlayers() });
   const evalsQuery = useQuery({ queryKey: ["evaluations"], queryFn: fetchEvaluations });
-  const adminActivityQuery = useQuery({ queryKey: ["admin-activity"], queryFn: fetchAdminActivity });
+  const adminActivityQuery = useQuery({
+    queryKey: ["admin-activity"],
+    queryFn: fetchAdminActivity,
+  });
 
   if (playersQuery.isLoading || evalsQuery.isLoading || adminActivityQuery.isLoading) {
     return <LoadingBlock label="Loading activity…" />;
@@ -160,3 +165,5 @@ function AdminActivityPage() {
     </div>
   );
 }
+
+export default Route.component;

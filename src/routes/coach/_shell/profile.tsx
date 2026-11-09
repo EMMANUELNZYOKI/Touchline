@@ -1,5 +1,8 @@
+"use client";
+
+import { createFileRoute } from "@/lib/next-router-compat";
 import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -156,3 +159,5 @@ function CoachProfilePage() {
     </div>
   );
 }
+
+export default Route.component;

@@ -1,7 +1,10 @@
+"use client";
+
+import { createFileRoute, Link, useNavigate } from "@/lib/next-router-compat";
 import { useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+
 import { useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@/lib/next-server-fn";
 import { toast } from "sonner";
 import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -125,7 +128,11 @@ function CreateCoachPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                <Button type="button" variant="outline" onClick={() => setPassword(randomPassword())}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setPassword(randomPassword())}
+                >
                   Generate
                 </Button>
               </div>
@@ -133,7 +140,11 @@ function CreateCoachPage() {
                 Minimum 8 characters. The coach should change it after first sign-in.
               </p>
             </div>
-            <Button type="submit" className="mt-2 h-12 tracking-widest uppercase" disabled={loading}>
+            <Button
+              type="submit"
+              className="mt-2 h-12 tracking-widest uppercase"
+              disabled={loading}
+            >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Create Coach Account
             </Button>
           </form>
@@ -142,3 +153,5 @@ function CreateCoachPage() {
     </div>
   );
 }
+
+export default Route.component;

@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+"use client";
+
+import { createFileRoute } from "@/lib/next-router-compat";
 import { useQuery } from "@tanstack/react-query";
 import { LoadingBlock } from "@/components/DataCards";
 import { PlayersTable } from "@/components/PlayersTable";
@@ -32,3 +34,5 @@ function CoachPlayersPage() {
     </div>
   );
 }
+
+export default Route.component;

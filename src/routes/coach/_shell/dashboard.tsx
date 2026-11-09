@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+"use client";
+
+import { createFileRoute, Link } from "@/lib/next-router-compat";
 import { useQuery } from "@tanstack/react-query";
 import { UserSquare2, ClipboardCheck, Star, CalendarPlus, ArrowRight } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -182,3 +184,5 @@ function CoachDashboard() {
     </div>
   );
 }
+
+export default Route.component;

@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+"use client";
+
+import { createFileRoute, Link } from "@/lib/next-router-compat";
 import { useQuery } from "@tanstack/react-query";
 import {
   Users,
@@ -29,7 +31,7 @@ import { StatCard, LoadingBlock, EmptyState } from "@/components/DataCards";
 import { fetchCoaches, fetchEvaluations, fetchPlayers } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/_shell/dashboard")({
-  head: () => ({ meta: [{ title: "Super Admin Dashboard | Touchline" }] }),
+  head: () => ({ meta: [{ title: "Academy Admin Dashboard | Touchline" }] }),
   component: AdminDashboard,
 });
 
@@ -288,3 +290,5 @@ function avg(values: number[]) {
   if (!filtered.length) return 0;
   return Math.round((filtered.reduce((a, b) => a + b, 0) / filtered.length) * 10) / 10;
 }
+
+export default Route.component;

@@ -1,5 +1,8 @@
+"use client";
+
+import { createFileRoute, Link, useNavigate } from "@/lib/next-router-compat";
 import { useEffect, useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ArrowLeft, Loader2 } from "lucide-react";
@@ -228,3 +231,5 @@ function EvaluatePlayerPage() {
     </div>
   );
 }
+
+export default Route.component;

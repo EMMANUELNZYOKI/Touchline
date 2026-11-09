@@ -1,5 +1,8 @@
+"use client";
+
+import { createFileRoute, Link } from "@/lib/next-router-compat";
 import type { ReactNode } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ClipboardCheck, Mail, Phone, Users } from "lucide-react";
 
@@ -79,11 +82,7 @@ function CoachProfilePage() {
           </CardHeader>
           <CardContent className="grid gap-4 text-sm">
             <DetailRow label="Coach name" value={coach.full_name || "—"} />
-            <DetailRow
-              label="Email"
-              value={coach.email}
-              icon={<Mail className="h-4 w-4" />}
-            />
+            <DetailRow label="Email" value={coach.email} icon={<Mail className="h-4 w-4" />} />
             <DetailRow
               label="Phone"
               value={coach.phone || "Not provided"}
@@ -103,7 +102,9 @@ function CoachProfilePage() {
           </CardHeader>
           <CardContent>
             {evaluatedPlayers.length === 0 ? (
-              <p className="text-muted-foreground text-sm">This coach has not evaluated any players yet.</p>
+              <p className="text-muted-foreground text-sm">
+                This coach has not evaluated any players yet.
+              </p>
             ) : (
               <div className="grid gap-2">
                 {evaluatedPlayers.map((player) => (
@@ -117,7 +118,9 @@ function CoachProfilePage() {
                       <span className="block font-medium">
                         {player.first_name} {player.last_name}
                       </span>
-                      <span className="text-muted-foreground text-xs">{player.position || "Position not set"}</span>
+                      <span className="text-muted-foreground text-xs">
+                        {player.position || "Position not set"}
+                      </span>
                     </span>
                     <span className="text-muted-foreground text-xs">View player</span>
                   </Link>
@@ -145,7 +148,8 @@ function CoachProfilePage() {
                   <div>
                     <p className="font-medium">{evaluation.playerName}</p>
                     <p className="text-muted-foreground text-xs">
-                      {evaluation.season} {evaluation.season_year} · {new Date(evaluation.created_at).toLocaleString()}
+                      {evaluation.season} {evaluation.season_year} ·{" "}
+                      {new Date(evaluation.created_at).toLocaleString()}
                     </p>
                   </div>
                   <Badge variant="outline">
@@ -187,15 +191,7 @@ function StatCard({
   );
 }
 
-function DetailRow({
-  label,
-  value,
-  icon,
-}: {
-  label: string;
-  value: string;
-  icon?: ReactNode;
-}) {
+function DetailRow({ label, value, icon }: { label: string; value: string; icon?: ReactNode }) {
   return (
     <div className="border-border/60 flex items-start justify-between gap-4 border-b pb-3 last:border-0 last:pb-0">
       <span className="text-muted-foreground">{label}</span>
@@ -206,3 +202,5 @@ function DetailRow({
     </div>
   );
 }
+
+export default Route.component;

@@ -1,5 +1,7 @@
+"use client";
+
+import { Link, useNavigate, useRouterState } from "@/lib/next-router-compat";
 import { useState, type ReactNode } from "react";
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Menu, X, LogOut, ShieldCheck, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -24,7 +26,7 @@ export function AppShell({ items, areaLabel, userName, children, signOutTo }: Ap
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isAdmin = areaLabel === "Super Admin";
+  const isAdmin = areaLabel === "Academy Admin" || areaLabel === "Touchline Platform";
 
   const handleSignOut = async () => {
     await signOutCompletely();

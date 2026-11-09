@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+"use client";
+
+import { createFileRoute, Link } from "@/lib/next-router-compat";
 import { useQuery } from "@tanstack/react-query";
 import { ClipboardCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -126,3 +128,5 @@ function CoachEvaluationsPage() {
     </div>
   );
 }
+
+export default Route.component;

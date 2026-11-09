@@ -1,6 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+"use client";
+
+import { createFileRoute, Link } from "@/lib/next-router-compat";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+
 import { Button } from "@/components/ui/button";
 import { LoadingBlock } from "@/components/DataCards";
 import { PlayersTable } from "@/components/PlayersTable";
@@ -38,3 +40,5 @@ function AdminPlayersPage() {
     </div>
   );
 }
+
+export default Route.component;
