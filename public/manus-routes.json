@@ -1,0 +1,32 @@
+{
+  "routes": [
+    { "path": "/", "title": "Home" },
+    { "path": "/admin", "title": "Academy Admin" },
+    { "path": "/admin/activity", "title": "Academy Activity" },
+    { "path": "/admin/coaches", "title": "Coaches" },
+    { "path": "/admin/coaches/:coachId", "title": "Coach Profile" },
+    { "path": "/admin/coaches/create", "title": "Create Coach" },
+    { "path": "/admin/dashboard", "title": "Academy Dashboard" },
+    { "path": "/admin/evaluations", "title": "Evaluations" },
+    { "path": "/admin/login", "title": "Academy Admin Login" },
+    { "path": "/admin/players", "title": "Players" },
+    { "path": "/admin/players/:playerId", "title": "Player Profile" },
+    { "path": "/admin/players/create", "title": "Create Player" },
+    { "path": "/admin/players/edit/:playerId", "title": "Edit Player" },
+    { "path": "/admin/reports", "title": "Reports" },
+    { "path": "/admin/settings", "title": "Academy Settings" },
+    { "path": "/coach", "title": "Coach Portal" },
+    { "path": "/coach/dashboard", "title": "Coach Dashboard" },
+    { "path": "/coach/evaluations", "title": "Coach Evaluations" },
+    { "path": "/coach/history", "title": "Evaluation History" },
+    { "path": "/coach/login", "title": "Coach Login" },
+    { "path": "/coach/players", "title": "Players to Evaluate" },
+    { "path": "/coach/players/:playerId", "title": "Player Profile" },
+    { "path": "/coach/players/:playerId/evaluate", "title": "Evaluate Player" },
+    { "path": "/coach/profile", "title": "Coach Profile" },
+    { "path": "/onboard", "title": "Academy Signup" },
+    { "path": "/platform", "title": "Touchline Platform" },
+    { "path": "/platform/dashboard", "title": "Platform Dashboard" },
+    { "path": "/platform/login", "title": "Platform Admin Login" }
+  ]
+}
