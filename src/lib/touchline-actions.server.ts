@@ -65,6 +65,32 @@ async function requireAcademyAdmin(userId: string) {
   if (error) throw new ApiError("Could not verify academy administrator access.", 500);
   if (!data)
     throw new ApiError("Only an active academy administrator can perform this action.", 403);
+
+  const [{ data: academy, error: academyError }, { data: subscription, error: subscriptionError }] =
+    await Promise.all([
+      supabaseAdmin.from("academies").select("status").eq("id", data.academy_id).maybeSingle(),
+      supabaseAdmin
+        .from("academy_subscriptions")
+        .select("status, trial_ends_at")
+        .eq("academy_id", data.academy_id)
+        .maybeSingle(),
+    ]);
+  if (academyError || subscriptionError)
+    throw new ApiError("Could not verify academy subscription status.", 500);
+  if (academy?.status !== "active")
+    throw new ApiError("This academy workspace is suspended. Contact Touchline support.", 403);
+
+  const canWrite =
+    subscription?.status === "active" ||
+    (subscription?.status === "trialing" &&
+      Boolean(subscription.trial_ends_at) &&
+      Date.parse(subscription.trial_ends_at!) > Date.now());
+  if (!canWrite) {
+    throw new ApiError(
+      "This academy is in read-only mode because its trial ended or subscription is inactive. Contact Touchline to reactivate it.",
+      403,
+    );
+  }
   return data.academy_id;
 }
 

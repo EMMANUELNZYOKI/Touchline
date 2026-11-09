@@ -46,6 +46,25 @@ async function fetchMyActiveAcademyAdminId() {
   return data.academy_id;
 }
 
+export async function fetchMyAcademySubscription(userId: string) {
+  const { data: membership, error: membershipError } = await supabase
+    .from("academy_memberships")
+    .select("academy_id")
+    .eq("user_id", userId)
+    .eq("status", "active")
+    .maybeSingle();
+  if (membershipError) throw membershipError;
+  if (!membership) return null;
+
+  const { data: subscription, error: subscriptionError } = await supabase
+    .from("academy_subscriptions")
+    .select("status, trial_ends_at")
+    .eq("academy_id", membership.academy_id)
+    .maybeSingle();
+  if (subscriptionError) throw subscriptionError;
+  return subscription;
+}
+
 export async function fetchCoaches() {
   const academyId = await fetchMyActiveAcademyAdminId();
   const { data: memberships, error: membershipError } = await supabase

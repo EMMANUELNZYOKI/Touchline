@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { AppShell, type NavItem } from "@/components/AppShell";
 import { LoadingBlock } from "@/components/DataCards";
+import { AcademyReadOnlyNotice } from "@/components/AcademyReadOnlyNotice";
 import { useAuth } from "@/lib/auth";
 
 const items: NavItem[] = [
@@ -43,6 +44,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
       userName={profile?.full_name || "Academy Admin"}
       signOutTo="/admin/login"
     >
+      <AcademyReadOnlyNotice userId={profile?.id} />
       {children}
     </AppShell>
   );

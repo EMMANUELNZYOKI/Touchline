@@ -87,7 +87,18 @@ function PlatformDashboard() {
   const activeSubscriptions = academies.filter(
     (academy) => academy.subscription_status === "active",
   ).length;
-  const trialing = academies.filter((academy) => academy.subscription_status === "trialing").length;
+  const now = Date.now();
+  const trialing = academies.filter(
+    (academy) =>
+      academy.subscription_status === "trialing" &&
+      Boolean(academy.trial_ends_at) &&
+      Date.parse(academy.trial_ends_at!) > now,
+  ).length;
+  const expiredTrials = academies.filter(
+    (academy) =>
+      academy.subscription_status === "trialing" &&
+      (!academy.trial_ends_at || Date.parse(academy.trial_ends_at) <= now),
+  ).length;
   const totalPlayers = academies.reduce(
     (sum, academy) => sum + Number(academy.player_count || 0),
     0,
@@ -256,7 +267,7 @@ function PlatformDashboard() {
           icon={CreditCard}
           label="Active subscriptions"
           value={activeSubscriptions}
-          note={`${trialing} currently trialing`}
+          note={`${trialing} in trial · ${expiredTrials} expired`}
         />
         <MetricCard
           icon={UsersRound}
@@ -349,6 +360,14 @@ function PlatformDashboard() {
                               changeDraft(academy, { subscription_status: value })
                             }
                           />
+                          {academy.subscription_status === "trialing" && (
+                            <p className="text-muted-foreground mt-2 text-[11px]">
+                              {!academy.trial_ends_at ||
+                              Date.parse(academy.trial_ends_at) <= Date.now()
+                                ? "Trial ended"
+                                : `Trial ends ${new Date(academy.trial_ends_at).toLocaleDateString()}`}
+                            </p>
+                          )}
                         </td>
                         <td className="px-4 py-4">
                           <StatusSelect

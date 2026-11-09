@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ClipboardCheck, History, LayoutDashboard, UserCog, Users } from "lucide-react";
 import { AppShell, type NavItem } from "@/components/AppShell";
 import { LoadingBlock } from "@/components/DataCards";
+import { AcademyReadOnlyNotice } from "@/components/AcademyReadOnlyNotice";
 import { useAuth } from "@/lib/auth";
 
 const items: NavItem[] = [
@@ -30,6 +31,7 @@ export function CoachShell({ children }: { children: ReactNode }) {
       userName={profile?.full_name || "Coach"}
       signOutTo="/coach/login"
     >
+      <AcademyReadOnlyNotice userId={profile?.id} />
       {children}
     </AppShell>
   );
