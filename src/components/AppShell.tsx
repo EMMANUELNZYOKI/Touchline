@@ -60,7 +60,11 @@ export function AppShell({ items, areaLabel, userName, children }: AppShellProps
       <aside className="hidden w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar p-4 lg:flex">
         <BrandBlock areaLabel={areaLabel} isAdmin={isAdmin} />
         {nav}
-        <Button variant="outline" className="mt-4 w-full justify-start gap-2" onClick={handleSignOut}>
+        <Button
+          variant="outline"
+          className="mt-4 w-full justify-start gap-2"
+          onClick={handleSignOut}
+        >
           <LogOut className="h-4 w-4" /> Logout
         </Button>
       </aside>
@@ -79,7 +83,11 @@ export function AppShell({ items, areaLabel, userName, children }: AppShellProps
               </Button>
             </div>
             {nav}
-            <Button variant="outline" className="mt-4 w-full justify-start gap-2" onClick={handleSignOut}>
+            <Button
+              variant="outline"
+              className="mt-4 w-full justify-start gap-2"
+              onClick={handleSignOut}
+            >
               <LogOut className="h-4 w-4" /> Logout
             </Button>
           </aside>
@@ -95,9 +103,7 @@ export function AppShell({ items, areaLabel, userName, children }: AppShellProps
             <p className="font-display truncate text-base tracking-wide uppercase sm:text-lg">
               Welcome, {userName}
             </p>
-            <p className="text-muted-foreground truncate text-xs">
-              Touchline · {areaLabel} area
-            </p>
+            <p className="text-muted-foreground truncate text-xs">Touchline · {areaLabel} area</p>
           </div>
         </header>
         <main className="flex-1 p-4 sm:p-6">{children}</main>

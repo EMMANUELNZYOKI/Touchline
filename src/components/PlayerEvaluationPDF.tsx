@@ -1,13 +1,4 @@
-import {
-  Document,
-  Image,
-  Page,
-  Path,
-  Svg,
-  StyleSheet,
-  Text,
-  View,
-} from "@react-pdf/renderer";
+import { Document, Image, Page, Path, Svg, StyleSheet, Text, View } from "@react-pdf/renderer";
 
 import type { Evaluation, Player } from "@/lib/types";
 import { SKILL_CATEGORIES, calculateAge } from "@/lib/skills";
@@ -374,19 +365,11 @@ function getOverallRating(score: number | null | undefined) {
   return "Needs Improvement";
 }
 
-function Checkbox({
-  checked,
-}: {
-  checked: boolean;
-}) {
+function Checkbox({ checked }: { checked: boolean }) {
   return (
     <View style={styles.checkbox}>
       {checked && (
-        <Svg
-          width={6}
-          height={6}
-          viewBox="0 0 10 10"
-        >
+        <Svg width={6} height={6} viewBox="0 0 10 10">
           <Path
             d="M1 5.2 L3.8 8 L9 1.5"
             stroke="#18a9d8"
@@ -401,35 +384,21 @@ function Checkbox({
   );
 }
 
-function SkillTable({
-  skills,
-}: {
-  skills: Record<string, number>;
-}) {
+function SkillTable({ skills }: { skills: Record<string, number> }) {
   const entries = Object.entries(skills);
 
   return (
     <View style={styles.table}>
       <View style={styles.tableHeader}>
-        <Text style={styles.skillHeader}>
-          Skill
-        </Text>
+        <Text style={styles.skillHeader}>Skill</Text>
 
-        <Text style={styles.ratingHeader}>
-          Needs{"\n"}Improvement
-        </Text>
+        <Text style={styles.ratingHeader}>Needs{"\n"}Improvement</Text>
 
-        <Text style={styles.ratingHeader}>
-          On Target
-        </Text>
+        <Text style={styles.ratingHeader}>On Target</Text>
 
-        <Text style={styles.ratingHeader}>
-          Above Target
-        </Text>
+        <Text style={styles.ratingHeader}>Above Target</Text>
 
-        <Text style={styles.ratingHeaderLast}>
-          Exceptional
-        </Text>
+        <Text style={styles.ratingHeaderLast}>Exceptional</Text>
       </View>
 
       {entries.map(([skill, rawScore], index) => {
@@ -438,39 +407,23 @@ function SkillTable({
         const isLast = index === entries.length - 1;
 
         return (
-          <View
-            key={skill}
-            style={[
-              styles.tableRow,
-              isLast ? styles.lastRow : {},
-            ]}
-          >
-            <Text style={styles.skillCell}>
-              {skill}
-            </Text>
+          <View key={skill} style={[styles.tableRow, isLast ? styles.lastRow : {}]}>
+            <Text style={styles.skillCell}>{skill}</Text>
 
             <View style={styles.ratingCell}>
-              <Checkbox
-                checked={rating === "Needs Improvement"}
-              />
+              <Checkbox checked={rating === "Needs Improvement"} />
             </View>
 
             <View style={styles.ratingCell}>
-              <Checkbox
-                checked={rating === "On Target"}
-              />
+              <Checkbox checked={rating === "On Target"} />
             </View>
 
             <View style={styles.ratingCell}>
-              <Checkbox
-                checked={rating === "Above Target"}
-              />
+              <Checkbox checked={rating === "Above Target"} />
             </View>
 
             <View style={styles.ratingCellLast}>
-              <Checkbox
-                checked={rating === "Exceptional"}
-              />
+              <Checkbox checked={rating === "Exceptional"} />
             </View>
           </View>
         );
@@ -490,9 +443,7 @@ function SkillSection({
 
   return (
     <View style={styles.section} wrap={false}>
-      <Text style={styles.sectionTitle}>
-        {title}
-      </Text>
+      <Text style={styles.sectionTitle}>{title}</Text>
 
       <SkillTable skills={skills} />
     </View>
@@ -528,42 +479,21 @@ export function PlayerEvaluationPDF({
       author="Touchline"
       subject="Player Evaluation & Development Profile"
     >
-      <Page
-        size="A4"
-        orientation="portrait"
-        style={styles.page}
-      >
+      <Page size="A4" orientation="portrait" style={styles.page}>
         {/* HEADER */}
         <View style={styles.header}>
-          {logoUrl && (
-            <Image
-              src={logoUrl}
-              style={styles.logo}
-            />
-          )}
+          {logoUrl && <Image src={logoUrl} style={styles.logo} />}
 
-          {playerPhotoUrl && (
-            <Image
-              src={playerPhotoUrl}
-              style={styles.playerPhoto}
-            />
-          )}
+          {playerPhotoUrl && <Image src={playerPhotoUrl} style={styles.playerPhoto} />}
 
           <View style={styles.academyHeader}>
-            <Text style={styles.academyName}>
-              TOUCHLINE
-            </Text>
+            <Text style={styles.academyName}>TOUCHLINE</Text>
 
-            <Text style={styles.tagline}>
-              Transforming Lives Through Football
-            </Text>
+            <Text style={styles.tagline}>Transforming Lives Through Football</Text>
 
-            <Text style={styles.contact}>
-                          </Text>
+            <Text style={styles.contact}></Text>
 
-            <Text style={styles.contact}>
-              Player development report
-            </Text>
+            <Text style={styles.contact}>Player development report</Text>
 
             <Text style={styles.reportTitle}>
               PLAYER EVALUATION & DEVELOPMENT
@@ -571,9 +501,7 @@ export function PlayerEvaluationPDF({
               PROFILE
             </Text>
 
-            <Text style={styles.season}>
-              {activeSeason}
-            </Text>
+            <Text style={styles.season}>{activeSeason}</Text>
           </View>
         </View>
 
@@ -581,120 +509,74 @@ export function PlayerEvaluationPDF({
         <View style={styles.playerInfo}>
           {/* ROW 1 */}
           <View style={styles.infoRow}>
-            <Text style={styles.infoCellLabel}>
-              Player Name
-            </Text>
+            <Text style={styles.infoCellLabel}>Player Name</Text>
 
             <Text style={styles.infoCellValue}>
               {player.first_name} {player.last_name}
             </Text>
 
-            <Text style={styles.infoCellLabel}>
-              Age
-            </Text>
+            <Text style={styles.infoCellLabel}>Age</Text>
 
-            <Text style={styles.infoCellValueLast}>
-              {age ?? "-"}
-            </Text>
+            <Text style={styles.infoCellValueLast}>{age ?? "-"}</Text>
           </View>
 
           {/* ROW 2 */}
           <View style={styles.infoRow}>
-            <Text style={styles.infoCellLabel}>
-              Jersey No.
-            </Text>
+            <Text style={styles.infoCellLabel}>Jersey No.</Text>
 
-            <Text style={styles.infoCellValue}>
-              {player.jersey_number ?? "-"}
-            </Text>
+            <Text style={styles.infoCellValue}>{player.jersey_number ?? "-"}</Text>
 
-            <Text style={styles.infoCellLabel}>
-              Position
-            </Text>
+            <Text style={styles.infoCellLabel}>Position</Text>
 
-            <Text style={styles.infoCellValueLast}>
-              {player.position ?? "-"}
-            </Text>
+            <Text style={styles.infoCellValueLast}>{player.position ?? "-"}</Text>
           </View>
 
           {/* ROW 3 */}
           <View style={styles.infoRow}>
-            <Text style={styles.infoCellLabel}>
-              Category/Team
-            </Text>
+            <Text style={styles.infoCellLabel}>Category/Team</Text>
 
-            <Text style={styles.infoCellValue}>
-              {player.team_category ?? "—"}
-            </Text>
+            <Text style={styles.infoCellValue}>{player.team_category ?? "—"}</Text>
 
-            <Text style={styles.infoCellLabel}>
-              Strong foot
-            </Text>
+            <Text style={styles.infoCellLabel}>Strong foot</Text>
 
-            <Text style={styles.infoCellValueLast}>
-              {player.preferred_foot ?? "-"}
-            </Text>
+            <Text style={styles.infoCellValueLast}>{player.preferred_foot ?? "-"}</Text>
           </View>
 
           {/* ROW 4 */}
           <View style={styles.infoRowLast}>
-            <Text style={styles.infoCellLabel}>
-              DOB
-            </Text>
+            <Text style={styles.infoCellLabel}>DOB</Text>
 
             <Text style={styles.infoCellValue}>
               {player.date_of_birth
-                ? new Date(
-                    player.date_of_birth,
-                  ).toLocaleDateString("en-GB")
+                ? new Date(player.date_of_birth).toLocaleDateString("en-GB")
                 : "-"}
             </Text>
 
-            <Text style={styles.infoCellLabel}>
-              Coach
-            </Text>
+            <Text style={styles.infoCellLabel}>Coach</Text>
 
-            <Text style={styles.infoCellValueLast}>
-              {coachName}
-            </Text>
+            <Text style={styles.infoCellValueLast}>{coachName}</Text>
           </View>
         </View>
 
         {/* TECHNICAL */}
-        <SkillSection
-          title="Technical Ability"
-          skills={evaluation?.technical_skills}
-        />
+        <SkillSection title="Technical Ability" skills={evaluation?.technical_skills} />
 
         {/* TACTICAL */}
-        <SkillSection
-          title="Tactical Awareness"
-          skills={evaluation?.tactical_skills}
-        />
+        <SkillSection title="Tactical Awareness" skills={evaluation?.tactical_skills} />
 
         {/* PHYSICAL */}
-        <SkillSection
-          title="Physical Attributes"
-          skills={evaluation?.physical_skills}
-        />
+        <SkillSection title="Physical Attributes" skills={evaluation?.physical_skills} />
 
         {/* PERSONALITY */}
-        <SkillSection
-          title="Personality Traits"
-          skills={evaluation?.personality_skills}
-        />
+        <SkillSection title="Personality Traits" skills={evaluation?.personality_skills} />
 
         {/* COACH COMMENT */}
         <View style={styles.section} wrap={false}>
-          <Text style={styles.commentTitle}>
-            Coach's Overall Comment
-          </Text>
+          <Text style={styles.commentTitle}>Coach's Overall Comment</Text>
 
           <View style={styles.commentBox}>
             <Text>
-              {evaluation?.coach_notes ||
-                evaluation?.coach_verdict ||
-                "No comment recorded."}
+              {evaluation?.coach_notes || evaluation?.coach_verdict || "No comment recorded."}
             </Text>
           </View>
         </View>
@@ -702,27 +584,13 @@ export function PlayerEvaluationPDF({
         {/* OVERALL RATING + COACH */}
         <View style={styles.bottomTable} wrap={false}>
           <View style={styles.overallColumn}>
-            <Text style={styles.bottomHeader}>
-              Overall Rating
-            </Text>
+            <Text style={styles.bottomHeader}>Overall Rating</Text>
 
-            {[
-              "Needs Improvement",
-              "Developing",
-              "Good",
-              "Excellent",
-            ].map((rating) => (
-              <View
-                key={rating}
-                style={styles.overallItem}
-              >
+            {["Needs Improvement", "Developing", "Good", "Excellent"].map((rating) => (
+              <View key={rating} style={styles.overallItem}>
                 <View style={styles.overallBox}>
                   {overallRating === rating && (
-                    <Svg
-                      width={7}
-                      height={7}
-                      viewBox="0 0 10 10"
-                    >
+                    <Svg width={7} height={7} viewBox="0 0 10 10">
                       <Path
                         d="M1 5.2 L3.8 8 L9 1.5"
                         stroke="#18a9d8"
@@ -741,21 +609,14 @@ export function PlayerEvaluationPDF({
           </View>
 
           <View style={styles.coachColumn}>
-            <Text style={styles.bottomHeader}>
-              Coach's Name
-            </Text>
+            <Text style={styles.bottomHeader}>Coach's Name</Text>
 
-            <Text style={styles.coachName}>
-              {coachName}
-            </Text>
+            <Text style={styles.coachName}>{coachName}</Text>
           </View>
         </View>
 
         {/* FOOTER */}
-        <Text style={styles.footer}>
-          Touchline • Player Evaluation &
-          Development Profile
-        </Text>
+        <Text style={styles.footer}>Touchline • Player Evaluation & Development Profile</Text>
       </Page>
     </Document>
   );
