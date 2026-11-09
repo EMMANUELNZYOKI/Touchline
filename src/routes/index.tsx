@@ -97,14 +97,20 @@ function Landing() {
             >
               For academies
             </a>
+            <a
+              href="#sign-in"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Sign in
+            </a>
           </nav>
           <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" className="hidden sm:inline-flex">
-              <Link to="/coach/login">Coach sign in</Link>
+            <Button asChild variant="ghost" className="sm:hidden">
+              <a href="#sign-in">Sign in</a>
             </Button>
             <Button asChild className="gap-2">
-              <Link to="/admin/login">
-                Sign in <ArrowRight className="h-4 w-4" />
+              <Link to="/onboard">
+                Start an academy <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </div>
@@ -139,21 +145,42 @@ function Landing() {
                 Touchline gives soccer academies a focused place to organize player information,
                 guide coach evaluations, and keep every development conversation moving forward.
               </p>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <Button asChild size="lg" className="h-13 gap-2 px-7 text-base">
-                  <Link to="/onboard">
-                    Start a free trial <ArrowRight className="h-4 w-4" />
+              <div
+                id="sign-in"
+                className="mt-9 flex scroll-mt-24 flex-col gap-3 sm:flex-row sm:flex-wrap"
+              >
+                <Button asChild size="lg" className="h-13 gap-2 px-5 text-sm sm:text-base">
+                  <Link to="/platform/login">
+                    <ShieldCheck className="h-4 w-4" /> Super Admin Login
                   </Link>
                 </Button>
                 <Button
                   asChild
                   size="lg"
                   variant="outline"
-                  className="border-white/25 bg-white/5 h-13 px-7 text-base text-white hover:bg-white/10 hover:text-white"
+                  className="border-white/25 bg-white/5 h-13 gap-2 px-5 text-sm text-white hover:bg-white/10 hover:text-white sm:text-base"
                 >
-                  <a href="#platform">Explore the platform</a>
+                  <Link to="/admin/login">
+                    <UsersRound className="h-4 w-4" /> Academy Admin Login
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="border-primary/50 bg-primary/10 text-primary h-13 gap-2 px-5 text-sm hover:bg-primary/20 sm:text-base"
+                >
+                  <Link to="/coach/login">
+                    <ClipboardCheck className="h-4 w-4" /> Coach Sign In
+                  </Link>
                 </Button>
               </div>
+              <p className="text-muted-foreground mt-4 text-sm">
+                New academy to Touchline?{" "}
+                <Link className="text-primary hover:underline" to="/onboard">
+                  Start a free trial
+                </Link>
+              </p>
               <div className="text-muted-foreground mt-8 flex flex-wrap gap-x-6 gap-y-2 text-xs sm:text-sm">
                 <span className="flex items-center gap-2">
                   <Check className="text-primary h-4 w-4" /> Player profiles

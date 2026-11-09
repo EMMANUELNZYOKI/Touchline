@@ -47,7 +47,15 @@ function PlatformLogin() {
       description="Manage academy accounts and subscription status across Touchline. This portal is restricted to platform operators."
       footer="Academy administrator or coach? Use your academy sign-in instead."
     >
-      <CredentialsForm submitLabel="Sign in to platform" loading={loading} onSubmit={submit} />
+      <div className="grid gap-3">
+        <CredentialsForm submitLabel="Sign in to platform" loading={loading} onSubmit={submit} />
+        <a
+          className="text-primary hover:underline text-center text-sm"
+          href="/platform/forgot-password"
+        >
+          Forgot your password?
+        </a>
+      </div>
     </AuthShell>
   );
 }

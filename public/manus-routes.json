@@ -27,6 +27,8 @@
     { "path": "/onboard", "title": "Academy Signup" },
     { "path": "/platform", "title": "Touchline Platform" },
     { "path": "/platform/dashboard", "title": "Platform Dashboard" },
-    { "path": "/platform/login", "title": "Platform Admin Login" }
+    { "path": "/platform/forgot-password", "title": "Recover Platform Admin Password" },
+    { "path": "/platform/login", "title": "Platform Admin Login" },
+    { "path": "/platform/reset-password", "title": "Reset Platform Admin Password" }
   ]
 }
