@@ -12,7 +12,7 @@ import { updateCoachProfile } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/coach/_shell/profile")({
-  head: () => ({ meta: [{ title: "My Profile | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "My Profile | Touchline" }] }),
   component: CoachProfilePage,
 });
 

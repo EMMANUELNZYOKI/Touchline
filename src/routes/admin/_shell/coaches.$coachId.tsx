@@ -9,7 +9,7 @@ import { LoadingBlock } from "@/components/DataCards";
 import { fetchCoachProfile } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/_shell/coaches/$coachId")({
-  head: () => ({ meta: [{ title: "Coach Profile | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Coach Profile | Touchline" }] }),
   component: CoachProfilePage,
 });
 

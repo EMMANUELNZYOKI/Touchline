@@ -68,7 +68,7 @@ export function CredentialsForm({ submitLabel, loading, onSubmit }: CredentialsF
           maxLength={255}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@diossocceracademy.com"
+          placeholder="you@academy.example"
         />
       </div>
       <div className="grid gap-2">

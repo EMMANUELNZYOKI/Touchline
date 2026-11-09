@@ -12,7 +12,7 @@ export const Route = createFileRoute("/admin/_shell/players/$playerId")({
   head: () => ({
     meta: [
       {
-        title: "Player Profile | Dios Soccer Academy",
+        title: "Player Profile | Touchline",
       },
     ],
   }),
@@ -73,7 +73,7 @@ function AdminPlayerProfile() {
               evaluation={data.latestEvaluation}
               coachName={data.coachName}
               playerPhotoUrl={playerPhotoUrl ?? null}
-              logoUrl="/dios-logo.png"
+              logoUrl="/touchline-mark.svg"
               season={
                 data.latestEvaluation
                   ? `${data.latestEvaluation.season} ${data.latestEvaluation.season_year}`

@@ -5,7 +5,7 @@ import { PlayersTable } from "@/components/PlayersTable";
 import { fetchPlayers } from "@/lib/api";
 
 export const Route = createFileRoute("/coach/_shell/players/")({
-  head: () => ({ meta: [{ title: "Players to Evaluate | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Players to Evaluate | Touchline" }] }),
   component: CoachPlayersPage,
 });
 

@@ -7,7 +7,7 @@ import { PlayerProfileView } from "@/components/PlayerProfileView";
 import { fetchPlayer } from "@/lib/api";
 
 export const Route = createFileRoute("/coach/_shell/players/$playerId/")({
-  head: () => ({ meta: [{ title: "Player Profile | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Player Profile | Touchline" }] }),
   component: CoachPlayerProfile,
 });
 

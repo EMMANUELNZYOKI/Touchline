@@ -4,9 +4,9 @@ import { toast } from "sonner";
 import { AuthShell, CredentialsForm } from "@/components/AuthShell";
 import { signInWithRoleCheck } from "@/lib/auth";
 
-const title = "Coach Sign In | Dios Soccer Academy";
+const title = "Coach Sign In | Touchline";
 const description =
-  "Coaches sign in to register players, complete evaluations and track development at Dios Soccer Academy.";
+  "Coaches sign in to register players, complete evaluations and track development at Touchline.";
 
 export const Route = createFileRoute("/coach/login")({
   head: () => ({

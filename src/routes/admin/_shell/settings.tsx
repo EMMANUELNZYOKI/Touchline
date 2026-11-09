@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/_shell/settings")({
-  head: () => ({ meta: [{ title: "Settings | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Settings | Touchline" }] }),
   component: AdminSettingsPage,
 });
 

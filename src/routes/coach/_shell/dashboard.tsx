@@ -12,7 +12,7 @@ import { fetchPlayers } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/coach/_shell/dashboard")({
-  head: () => ({ meta: [{ title: "Coach Dashboard | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Coach Dashboard | Touchline" }] }),
   component: CoachDashboard,
 });
 

@@ -29,7 +29,7 @@ import { StatCard, LoadingBlock, EmptyState } from "@/components/DataCards";
 import { fetchCoaches, fetchEvaluations, fetchPlayers } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/_shell/dashboard")({
-  head: () => ({ meta: [{ title: "Super Admin Dashboard | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Super Admin Dashboard | Touchline" }] }),
   component: AdminDashboard,
 });
 

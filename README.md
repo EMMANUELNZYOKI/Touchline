@@ -1,6 +1,6 @@
 # Touchline — Soccer Academy Management
 
-Touchline is a web application for soccer academies to manage players, coaches, and player evaluations. This repository starts from the Dios Soccer Academy application and retains its current single-academy workflows and interface as a foundation for future SaaS development.
+Touchline is a web application for soccer academies to manage players, coaches, and player evaluations. The current release includes player registration, coach workflows, and structured evaluation reports. It is the starting point for Touchline’s multi-academy SaaS development.
 
 > **SaaS readiness:** This code is not yet multi-tenant. Do not connect multiple academies to one shared database until academy-level data ownership and Row-Level Security policies have been implemented and tested.
 

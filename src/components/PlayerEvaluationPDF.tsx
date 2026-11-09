@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
 
   /*
-   * DIOS LOGO
+   * TOUCHLINE MARK
    * Completely independent from the
    * academy text and centered at the top.
    */
@@ -513,7 +513,7 @@ export function PlayerEvaluationPDF({
   evaluation,
   coachName,
   playerPhotoUrl,
-  logoUrl = "/dios-logo.png",
+  logoUrl = "/touchline-mark.svg",
   season = "Season 8: May-August 2026",
 }: PlayerEvaluationPDFProps) {
   const age = calculateAge(player.date_of_birth);
@@ -525,7 +525,7 @@ export function PlayerEvaluationPDF({
   return (
     <Document
       title={`Player Evaluation - ${player.first_name} ${player.last_name}`}
-      author="Dios Soccer Academy"
+      author="Touchline"
       subject="Player Evaluation & Development Profile"
     >
       <Page
@@ -551,7 +551,7 @@ export function PlayerEvaluationPDF({
 
           <View style={styles.academyHeader}>
             <Text style={styles.academyName}>
-              DIOS SOCCER ACADEMY
+              TOUCHLINE
             </Text>
 
             <Text style={styles.tagline}>
@@ -559,11 +559,10 @@ export function PlayerEvaluationPDF({
             </Text>
 
             <Text style={styles.contact}>
-              Email: diossocceracademy@gmail.com
-            </Text>
+                          </Text>
 
             <Text style={styles.contact}>
-              Phone: 0748 229 179
+              Player development report
             </Text>
 
             <Text style={styles.reportTitle}>
@@ -754,7 +753,7 @@ export function PlayerEvaluationPDF({
 
         {/* FOOTER */}
         <Text style={styles.footer}>
-          Dios Soccer Academy • Player Evaluation &
+          Touchline • Player Evaluation &
           Development Profile
         </Text>
       </Page>

@@ -18,7 +18,7 @@ import { RatingBadge } from "@/components/PlayersTable";
 import { fetchEvaluations } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/_shell/evaluations")({
-  head: () => ({ meta: [{ title: "Evaluations | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Evaluations | Touchline" }] }),
   component: AdminEvaluationsPage,
 });
 

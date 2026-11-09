@@ -21,7 +21,7 @@ import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/_shell/players/create")({
   component: CreatePlayerPage,
-  head: () => ({ meta: [{ title: "Create Player | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Create Player | Touchline" }] }),
 });
 const blank: PlayerInput = {
   first_name: "",

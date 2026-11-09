@@ -34,7 +34,7 @@ import { setCoachActive } from "@/lib/admin.functions";
 import type { Coach } from "@/lib/types";
 
 export const Route = createFileRoute("/admin/_shell/coaches/")({
-  head: () => ({ meta: [{ title: "Coach Management | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Coach Management | Touchline" }] }),
   component: CoachesPage,
 });
 

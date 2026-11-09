@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { createCoachAccount } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/_shell/coaches/create")({
-  head: () => ({ meta: [{ title: "Create Coach Account | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Create Coach Account | Touchline" }] }),
   component: CreateCoachPage,
 });
 
@@ -101,7 +101,7 @@ function CreateCoachPage() {
                 maxLength={255}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="coach@diossocceracademy.com"
+                placeholder="coach@academy.example"
               />
             </div>
             <div className="grid gap-2">

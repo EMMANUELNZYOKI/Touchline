@@ -11,9 +11,9 @@ import { Label } from "@/components/ui/label";
 import { signInWithRoleCheck } from "@/lib/auth";
 import { bootstrapSuperAdmin, superAdminExists } from "@/lib/admin.functions";
 
-const title = "Super Admin Login | Dios Soccer Academy";
+const title = "Super Admin Login | Touchline";
 const description =
-  "Secure Super Admin access to the Dios Soccer Academy player evaluation and coach management portal.";
+  "Secure Super Admin access to the Touchline player evaluation and coach management portal.";
 
 export const Route = createFileRoute("/admin/login")({
   head: () => ({

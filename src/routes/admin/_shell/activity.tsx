@@ -6,7 +6,7 @@ import { EmptyState, LoadingBlock } from "@/components/DataCards";
 import { fetchAdminActivity, fetchEvaluations, fetchPlayers } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/_shell/activity")({
-  head: () => ({ meta: [{ title: "Academy Activity | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Academy Activity | Touchline" }] }),
   component: AdminActivityPage,
 });
 

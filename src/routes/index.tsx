@@ -1,23 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  ShieldCheck,
-  ClipboardList,
-  Target,
-  Brain,
+  ArrowRight,
   Activity,
-  HeartHandshake,
-  Trophy,
-  Mail,
-  Phone,
-  MapPin,
+  BarChart3,
+  Brain,
+  Check,
+  ClipboardCheck,
+  ShieldCheck,
+  Target,
+  UsersRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import heroPitch from "@/assets/hero-pitch.jpg";
 
-const title = "Dios Soccer Academy | Player Evaluation & Development Portal";
+const title = "Touchline | Player development, built around your academy";
 const description =
-  "The official Dios Soccer Academy portal for coaches to register players, complete evaluations, monitor development and maintain accurate player records.";
+  "A smarter workspace for soccer academies to organize player records, support coaches, and make development progress visible.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,249 +32,138 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const pillars = [
+const features = [
   {
-    icon: Target,
-    title: "Technical Evaluation",
-    body: "Ball control, dribbling, passing, first touch, shooting, crossing, finishing and ball protection scored on a 1–10 scale.",
+    icon: UsersRound,
+    title: "One clear player record",
+    body: "Keep player details, teams, seasons, and development history together instead of scattered across spreadsheets.",
   },
   {
-    icon: Brain,
-    title: "Tactical Evaluation",
-    body: "Positioning, decision making, game awareness, movement, defensive duties, teamwork and understanding of space.",
+    icon: ClipboardCheck,
+    title: "Consistent coach assessments",
+    body: "Give coaches a shared framework for recording technical, tactical, physical, and personal development.",
   },
   {
-    icon: Activity,
-    title: "Physical Evaluation",
-    body: "Speed, agility, strength, stamina, balance and coordination tracked through every development cycle.",
-  },
-  {
-    icon: HeartHandshake,
-    title: "Personality & Discipline",
-    body: "Discipline, attitude, confidence, leadership, team spirit, coachability and commitment to the badge.",
+    icon: BarChart3,
+    title: "Progress you can follow",
+    body: "Turn evaluations into useful conversations about strengths, next steps, and growth over time.",
   },
 ];
 
+function Brand({ light = false }: { light?: boolean }) {
+  return (
+    <span className="inline-flex items-center gap-3">
+      <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-gradient-pitch shadow-glow">
+        <span className="absolute inset-2 rounded-full border border-white/70" />
+        <span className="absolute h-4 w-px bg-white/70" />
+        <span className="absolute left-2 right-2 top-1/2 h-px bg-white/70" />
+        <span className="relative h-2 w-2 rounded-full bg-white shadow" />
+      </span>
+      <span className={`font-display text-lg font-semibold tracking-[0.12em] uppercase ${light ? "text-white" : "text-foreground"}`}>
+        Touchline
+      </span>
+    </span>
+  );
+}
+
 function Landing() {
   return (
-    <div className="min-h-screen">
-      <header className="border-border/60 bg-background/80 sticky top-0 z-40 border-b backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <span className="bg-gradient-gold flex h-9 w-9 items-center justify-center rounded-xl">
-              <Trophy className="text-primary-foreground h-4 w-4" />
-            </span>
-            <span className="font-display text-sm tracking-[0.2em] uppercase sm:text-base">
-              Dios Soccer Academy
-            </span>
-          </div>
-          <nav className="hidden items-center gap-6 text-sm md:flex">
-            <a href="#about" className="text-muted-foreground hover:text-foreground transition-colors">
-              About
-            </a>
-            <a
-              href="#development"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Development
-            </a>
-            <a
-              href="#evaluation"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Evaluation
-            </a>
-            <a
-              href="#contact"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Contact
-            </a>
+    <div className="min-h-screen overflow-hidden">
+      <header className="border-border/60 bg-background/80 sticky top-0 z-40 border-b backdrop-blur-xl">
+        <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between px-5 sm:px-8">
+          <Link to="/" aria-label="Touchline home"><Brand /></Link>
+          <nav className="hidden items-center gap-8 text-sm md:flex">
+            <a href="#platform" className="text-muted-foreground transition-colors hover:text-foreground">Platform</a>
+            <a href="#workflow" className="text-muted-foreground transition-colors hover:text-foreground">How it works</a>
+            <a href="#built-for" className="text-muted-foreground transition-colors hover:text-foreground">For academies</a>
           </nav>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="ghost" className="hidden sm:inline-flex"><Link to="/coach/login">Coach sign in</Link></Button>
+            <Button asChild className="gap-2"><Link to="/admin/login">Sign in <ArrowRight className="h-4 w-4" /></Link></Button>
+          </div>
         </div>
       </header>
 
-      <section className="relative isolate overflow-hidden">
-        <img
-          src={heroPitch}
-          alt="Floodlit football pitch at Dios Soccer Academy"
-          width={1920}
-          height={1088}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="bg-gradient-hero absolute inset-0" />
-        <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
-          <p className="border-primary/40 bg-primary/10 text-primary inline-flex rounded-full border px-4 py-1.5 text-xs font-semibold tracking-[0.2em] uppercase">
-            Official Coaching Portal
-          </p>
-          <h1 className="font-display mt-6 text-4xl leading-[1.05] tracking-wide uppercase sm:text-6xl lg:text-7xl">
-            Dios Soccer <span className="text-gradient-gold">Academy</span>
-          </h1>
-          <h2 className="font-display text-accent mt-3 text-lg tracking-[0.18em] uppercase sm:text-2xl">
-            Player Evaluation &amp; Development Portal
-          </h2>
-          <p className="text-muted-foreground mt-6 max-w-2xl text-base sm:text-lg">
-            “Empowering coaches to identify talent, evaluate performance, and develop the next
-            generation of football players.”
-          </p>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" className="h-14 px-8 text-base tracking-widest uppercase">
-              <Link to="/admin/login">
-                <ShieldCheck className="mr-1 h-5 w-5" /> Super Admin Login
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="border-accent/60 text-accent hover:bg-accent/10 hover:text-accent h-14 px-8 text-base tracking-widest uppercase"
-            >
-              <Link to="/coach/login">
-                <ClipboardList className="mr-1 h-5 w-5" /> Coach Sign In
-              </Link>
-            </Button>
-          </div>
-          <p className="text-muted-foreground mt-5 text-xs">
-            Coach accounts are created only by the Super Admin. There is no public registration.
-          </p>
-        </div>
-      </section>
-
-      <section id="about" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-        <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-          <div>
-            <p className="text-primary text-xs font-semibold tracking-[0.2em] uppercase">
-              About the academy
-            </p>
-            <h2 className="font-display mt-3 text-3xl tracking-wide uppercase sm:text-4xl">
-              A professional platform built for serious player development
-            </h2>
-            <p className="text-muted-foreground mt-5 text-sm leading-relaxed sm:text-base">
-              Dios Soccer Academy develops disciplined, technically complete footballers. This portal
-              gives our coaches one secure place to register players, complete structured
-              evaluations, monitor development over time and maintain accurate player records — while
-              the academy leadership keeps full oversight of every coach, player and assessment.
-            </p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              {[
-                { label: "Evaluation areas", value: "4" },
-                { label: "Skills tracked", value: "28" },
-                { label: "Rating scale", value: "1–10" },
-              ].map((item) => (
-                <div key={item.label} className="border-border/70 bg-card rounded-xl border p-4">
-                  <p className="font-display text-gradient-gold text-3xl">{item.value}</p>
-                  <p className="text-muted-foreground mt-1 text-xs tracking-wider uppercase">
-                    {item.label}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <Card id="development" className="bg-gradient-panel border-border/70 shadow-elevated">
-            <CardContent className="p-7">
-              <h3 className="font-display text-xl tracking-wide uppercase">Player Development</h3>
-              <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-                Every player carries a living development record. Coaches log strengths, weaknesses,
-                development goals and a professional verdict after each assessment cycle, so progress
-                is visible season after season.
+      <main>
+        <section className="relative isolate min-h-[650px] overflow-hidden sm:min-h-[720px]">
+          <img src={heroPitch} alt="A football pitch ready for training" width={1920} height={1088} className="absolute inset-0 -z-20 h-full w-full object-cover object-center" />
+          <div className="bg-gradient-hero absolute inset-0 -z-10" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-background/90 via-background/65 to-background/15" />
+          <div className="mx-auto grid min-h-[650px] max-w-7xl items-center gap-12 px-5 py-20 sm:min-h-[720px] sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
+            <div className="max-w-2xl">
+              <div className="border-primary/35 bg-primary/10 text-primary inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold tracking-[0.15em] uppercase">
+                <span className="bg-primary h-1.5 w-1.5 rounded-full" /> Player development, connected
+              </div>
+              <h1 className="font-display mt-7 max-w-2xl text-5xl leading-[0.98] tracking-tight uppercase sm:text-6xl lg:text-7xl">
+                Better records.<br /><span className="text-gradient-gold">Better player</span><br />development.
+              </h1>
+              <p className="text-muted-foreground mt-7 max-w-xl text-base leading-7 sm:text-lg">
+                Touchline gives soccer academies a focused place to organize player information, guide coach evaluations, and keep every development conversation moving forward.
               </p>
-              <ul className="mt-6 grid gap-3 text-sm">
-                {[
-                  "Structured multi-step player registration",
-                  "Detailed 1–10 skill ratings across 28 attributes",
-                  "Automatic overall rating and category scores",
-                  "Full evaluation history per player",
-                  "Academy-wide oversight for the Super Admin",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <span className="bg-accent mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" />
-                    <span className="text-muted-foreground">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      <section id="evaluation" className="border-border/60 border-y bg-card/40 py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <p className="text-primary text-xs font-semibold tracking-[0.2em] uppercase">
-            The evaluation framework
-          </p>
-          <h2 className="font-display mt-3 text-3xl tracking-wide uppercase sm:text-4xl">
-            Four pillars of assessment
-          </h2>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {pillars.map((pillar) => (
-              <Card
-                key={pillar.title}
-                className="bg-gradient-panel border-border/70 transition-transform hover:-translate-y-1"
-              >
-                <CardContent className="p-6">
-                  <span className="bg-primary/15 text-primary flex h-11 w-11 items-center justify-center rounded-xl">
-                    <pillar.icon className="h-5 w-5" />
-                  </span>
-                  <h3 className="font-display mt-4 text-base tracking-wide uppercase">
-                    {pillar.title}
-                  </h3>
-                  <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{pillar.body}</p>
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <Button asChild size="lg" className="h-13 gap-2 px-7 text-base"><Link to="/admin/login">Open your workspace <ArrowRight className="h-4 w-4" /></Link></Button>
+                <Button asChild size="lg" variant="outline" className="border-white/25 bg-white/5 h-13 px-7 text-base text-white hover:bg-white/10 hover:text-white"><a href="#platform">Explore the platform</a></Button>
+              </div>
+              <div className="text-muted-foreground mt-8 flex flex-wrap gap-x-6 gap-y-2 text-xs sm:text-sm">
+                <span className="flex items-center gap-2"><Check className="text-primary h-4 w-4" /> Player profiles</span>
+                <span className="flex items-center gap-2"><Check className="text-primary h-4 w-4" /> Structured evaluations</span>
+                <span className="flex items-center gap-2"><Check className="text-primary h-4 w-4" /> Development history</span>
+              </div>
+            </div>
+            <div className="relative hidden lg:block">
+              <div className="absolute -inset-8 rounded-[2rem] bg-primary/10 blur-3xl" />
+              <Card className="bg-background/90 border-white/15 shadow-elevated relative rotate-1 backdrop-blur-xl">
+                <CardContent className="p-7">
+                  <div className="flex items-start justify-between">
+                    <div><p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">Development snapshot</p><h2 className="font-display mt-2 text-2xl tracking-wide uppercase">Player progress</h2></div>
+                    <span className="bg-primary/15 text-primary rounded-lg p-2"><Activity className="h-5 w-5" /></span>
+                  </div>
+                  <div className="border-border/70 mt-7 rounded-xl border bg-white/[0.03] p-5">
+                    <div className="flex items-center justify-between"><div><p className="text-muted-foreground text-xs">Overall development</p><p className="font-display mt-1 text-4xl">8.4<span className="text-muted-foreground text-base"> / 10</span></p></div><span className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300">Season review</span></div>
+                    <div className="mt-5 space-y-3">
+                      {[ ["Technical", 88], ["Tactical", 76], ["Physical", 82], ["Mindset", 91] ].map(([label, value]) => (
+                        <div key={label}><div className="mb-1.5 flex justify-between text-xs"><span className="text-muted-foreground">{label}</span><span>{Math.round(Number(value) / 10) / 10}</span></div><div className="bg-muted h-1.5 overflow-hidden rounded-full"><div className="bg-gradient-pitch h-full rounded-full" style={{ width: `${value}%` }} /></div></div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="mt-5 grid grid-cols-2 gap-3">
+                    <div className="bg-muted/60 rounded-xl p-4"><p className="text-muted-foreground text-xs">Coach feedback</p><p className="mt-2 text-sm font-medium">Strong first touch</p></div>
+                    <div className="bg-muted/60 rounded-xl p-4"><p className="text-muted-foreground text-xs">Next focus</p><p className="mt-2 text-sm font-medium">Scan before receiving</p></div>
+                  </div>
+                  <p className="text-muted-foreground mt-5 text-[10px]">Illustrative product preview</p>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="contact" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-        <div className="grid gap-8 lg:grid-cols-2">
-          <div>
-            <p className="text-primary text-xs font-semibold tracking-[0.2em] uppercase">Contact</p>
-            <h2 className="font-display mt-3 text-3xl tracking-wide uppercase sm:text-4xl">
-              Get in touch with the academy
-            </h2>
-            <div className="mt-7 grid gap-4 text-sm">
-              <p className="flex items-center gap-3">
-                <Mail className="text-primary h-4 w-4" /> info@diossocceracademy.com
-              </p>
-              <p className="flex items-center gap-3">
-                <Phone className="text-primary h-4 w-4" /> +254 748 229 179
-              </p>
-              <p className="flex items-center gap-3">
-                <MapPin className="text-primary h-4 w-4" /> Dios Academy Training Ground, Ruiru, Kiambu County, Kenya
-              </p>
+              <div className="bg-background/90 border-border/70 absolute -bottom-8 -left-10 flex items-center gap-3 rounded-xl border px-4 py-3 shadow-elevated backdrop-blur">
+                <span className="bg-primary/15 text-primary rounded-lg p-2"><ShieldCheck className="h-4 w-4" /></span><span><span className="block text-xs font-semibold">Built for academy teams</span><span className="text-muted-foreground text-[10px]">Coaches and administrators, together</span></span>
+              </div>
             </div>
           </div>
-          <Card className="bg-gradient-panel border-border/70 shadow-elevated">
-            <CardContent className="p-7">
-              <h3 className="font-display text-lg tracking-wide uppercase">Portal access</h3>
-              <p className="text-muted-foreground mt-2 text-sm">
-                Choose your access level to continue.
-              </p>
-              <div className="mt-6 flex flex-col gap-3">
-                <Button asChild className="h-12 tracking-widest uppercase">
-                  <Link to="/admin/login">Super Admin Login</Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="border-accent/60 text-accent hover:bg-accent/10 hover:text-accent h-12 tracking-widest uppercase"
-                >
-                  <Link to="/coach/login">Coach Sign In</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+        </section>
 
-      <footer className="border-border/60 bg-card/60 border-t py-10">
-        <div className="text-muted-foreground mx-auto flex max-w-6xl flex-col gap-3 px-4 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p className="font-display tracking-[0.2em] uppercase">
-            Dios Soccer Academy · Player Evaluation &amp; Development Portal
-          </p>
-          <p>© {new Date().getFullYear()} Dios Soccer Academy. All rights reserved.</p>
-        </div>
+        <section id="platform" className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-28">
+          <div className="max-w-2xl"><p className="text-primary text-xs font-semibold tracking-[0.2em] uppercase">The platform</p><h2 className="font-display mt-4 text-3xl leading-tight tracking-wide uppercase sm:text-5xl">A stronger system for the work behind every great player.</h2><p className="text-muted-foreground mt-5 max-w-xl leading-7">Spend less time chasing information and more time helping players take their next step.</p></div>
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {features.map((feature, index) => <Card key={feature.title} className="bg-gradient-panel border-border/70 transition-transform duration-300 hover:-translate-y-1"><CardContent className="p-7"><span className="bg-primary/15 text-primary flex h-12 w-12 items-center justify-center rounded-xl"><feature.icon className="h-5 w-5" /></span><p className="text-muted-foreground mt-7 text-xs tracking-widest">0{index + 1}</p><h3 className="font-display mt-2 text-xl tracking-wide uppercase">{feature.title}</h3><p className="text-muted-foreground mt-3 text-sm leading-6">{feature.body}</p></CardContent></Card>)}
+          </div>
+        </section>
+
+        <section id="workflow" className="border-border/60 border-y bg-card/40">
+          <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 sm:py-24 lg:grid-cols-2 lg:items-center">
+            <div><p className="text-primary text-xs font-semibold tracking-[0.2em] uppercase">A simple rhythm</p><h2 className="font-display mt-4 text-3xl tracking-wide uppercase sm:text-5xl">From first profile to next-season progress.</h2><p className="text-muted-foreground mt-5 max-w-xl leading-7">A practical workflow helps your staff build a clearer picture of each player, one assessment at a time.</p><Button asChild className="mt-8 gap-2"><Link to="/coach/login">Coach sign in <ArrowRight className="h-4 w-4" /></Link></Button></div>
+            <div className="space-y-4">{[["01", "Build the player record", "Capture the essential details in one organized profile."], ["02", "Evaluate with a shared framework", "Record observations across the areas your academy values."], ["03", "Keep the development story", "Use history and coach feedback to inform the next conversation."]].map(([number, heading, text]) => <div key={number} className="border-border/70 bg-background/70 flex gap-5 rounded-2xl border p-5 sm:p-6"><span className="font-display text-primary text-2xl">{number}</span><div><h3 className="font-display tracking-wide uppercase">{heading}</h3><p className="text-muted-foreground mt-2 text-sm leading-6">{text}</p></div></div>)}</div>
+          </div>
+        </section>
+
+        <section id="built-for" className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-28">
+          <div className="bg-gradient-panel border-border/70 shadow-elevated relative overflow-hidden rounded-3xl border p-8 sm:p-12 lg:p-16">
+            <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+            <div className="relative max-w-3xl"><span className="bg-primary/15 text-primary inline-flex rounded-lg p-3"><Target className="h-5 w-5" /></span><p className="text-primary mt-6 text-xs font-semibold tracking-[0.2em] uppercase">For soccer academies</p><h2 className="font-display mt-3 text-3xl leading-tight tracking-wide uppercase sm:text-5xl">Make player development part of your everyday playbook.</h2><p className="text-muted-foreground mt-5 max-w-2xl leading-7">Bring administrators and coaches into one consistent process—so every player gets thoughtful attention and a clearer path forward.</p><div className="mt-8 flex flex-col gap-3 sm:flex-row"><Button asChild size="lg" className="gap-2"><Link to="/admin/login">Continue to Touchline <ArrowRight className="h-4 w-4" /></Link></Button><Button asChild size="lg" variant="outline"><Link to="/coach/login">Coach sign in</Link></Button></div></div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-border/60 border-t bg-card/40">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-8"><div><Brand /><p className="text-muted-foreground mt-2 text-xs">Player development, connected.</p></div><div className="text-muted-foreground flex items-center gap-5 text-xs"><a href="#platform" className="hover:text-foreground">Platform</a><a href="#workflow" className="hover:text-foreground">How it works</a><span>© {new Date().getFullYear()} Touchline</span></div></div>
       </footer>
     </div>
   );

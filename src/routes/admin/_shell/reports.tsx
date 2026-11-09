@@ -32,7 +32,7 @@ import { SKILL_CATEGORIES } from "@/lib/skills";
 import type { Evaluation } from "@/lib/types";
 
 export const Route = createFileRoute("/admin/_shell/reports")({
-  head: () => ({ meta: [{ title: "Reports & Analytics | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Reports & Analytics | Touchline" }] }),
   component: AdminReportsPage,
 });
 
@@ -190,7 +190,7 @@ function AdminReportsPage() {
     const url = URL.createObjectURL(new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" }));
     const link = document.createElement("a");
     link.href = url;
-    link.download = `dios-academy-${primaryPeriod.season.toLowerCase()}-${primaryPeriod.year}-report.csv`;
+    link.download = `touchline-${primaryPeriod.season.toLowerCase()}-${primaryPeriod.year}-report.csv`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };

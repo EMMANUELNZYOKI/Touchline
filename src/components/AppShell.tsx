@@ -96,7 +96,7 @@ export function AppShell({ items, areaLabel, userName, children }: AppShellProps
               Welcome, {userName}
             </p>
             <p className="text-muted-foreground truncate text-xs">
-              Dios Soccer Academy · {areaLabel} area
+              Touchline · {areaLabel} area
             </p>
           </div>
         </header>
@@ -115,7 +115,7 @@ function BrandBlock({ areaLabel, isAdmin }: { areaLabel: string; isAdmin: boolea
       </span>
       <span className="min-w-0">
         <span className="font-display block truncate text-sm tracking-widest uppercase">
-          Dios Academy
+          Touchline
         </span>
         <span className="text-muted-foreground block truncate text-xs">{areaLabel}</span>
       </span>

@@ -16,7 +16,7 @@ import { fetchEvaluations } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/coach/_shell/history")({
-  head: () => ({ meta: [{ title: "My Evaluation History | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "My Evaluation History | Touchline" }] }),
   component: CoachEvaluationHistoryPage,
 });
 

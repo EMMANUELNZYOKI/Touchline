@@ -29,7 +29,7 @@ import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/_shell/players/edit/$playerId")({
   component: EditPlayerPage,
-  head: () => ({ meta: [{ title: "Edit Player | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Edit Player | Touchline" }] }),
 });
 
 const SEASONS = ["JAN-APR", "MAY-AUG", "SEP-DEC"] as const;

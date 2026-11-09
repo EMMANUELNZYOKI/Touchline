@@ -21,7 +21,7 @@ import { VERDICTS, emptySkillState } from "@/lib/skills";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/coach/_shell/players/$playerId/evaluate")({
-  head: () => ({ meta: [{ title: "Evaluate Player | Dios Soccer Academy" }] }),
+  head: () => ({ meta: [{ title: "Evaluate Player | Touchline" }] }),
   component: EvaluatePlayerPage,
 });
 
