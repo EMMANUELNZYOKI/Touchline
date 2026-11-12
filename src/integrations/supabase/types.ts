@@ -518,6 +518,7 @@ export type Database = {
         Returns: undefined;
       };
       create_platform_academy: { Args: { p_name: string; p_slug: string }; Returns: string };
+      delete_platform_academy: { Args: { p_academy_id: string }; Returns: undefined };
       complete_academy_onboarding: {
         Args: {
           p_owner_user_id: string;

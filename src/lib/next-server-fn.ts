@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export async function callTouchlineApi<T>(
   path: string,
-  method: "GET" | "POST" | "PATCH",
+  method: "GET" | "POST" | "PATCH" | "DELETE",
   data?: unknown,
 ): Promise<T> {
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession();

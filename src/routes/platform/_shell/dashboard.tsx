@@ -16,6 +16,8 @@ import {
   Plus,
   RefreshCw,
   Search,
+  Power,
+  Trash2,
   UserCheck,
   UsersRound,
 } from "lucide-react";
@@ -24,6 +26,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   createPlatformAcademy,
+  deletePlatformAcademy,
   getPlatformAcademies,
   updatePlatformAcademy,
   type PlatformAcademy,
@@ -73,6 +76,17 @@ function PlatformDashboard() {
       subscriptionStatus: AcademyDraft["subscription_status"];
     }) => saveAcademy({ data: input }),
     onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["platform-academies"] });
+    },
+  });
+  const deleteAcademy = useMutation({
+    mutationFn: (academyId: string) => deletePlatformAcademy(academyId),
+    onSuccess: async (_, academyId) => {
+      setDrafts((current) => {
+        const next = { ...current };
+        delete next[academyId];
+        return next;
+      });
       await queryClient.invalidateQueries({ queryKey: ["platform-academies"] });
     },
   });
@@ -154,6 +168,24 @@ function PlatformDashboard() {
       academyStatus: draft.academy_status,
       subscriptionStatus: draft.subscription_status,
     });
+  };
+
+  const toggleAcademy = (academy: PlatformAcademy) => {
+    const nextStatus = academy.academy_status === "active" ? "suspended" : "active";
+    const action = nextStatus === "suspended" ? "Deactivate" : "Reactivate";
+    if (!window.confirm(`${action} ${academy.academy_name}?`)) return;
+    update.mutate({
+      academyId: academy.academy_id,
+      academyStatus: nextStatus,
+      subscriptionStatus: academy.subscription_status,
+    });
+  };
+
+  const removeAcademy = (academy: PlatformAcademy) => {
+    const confirmed = window.confirm(
+      `Permanently delete ${academy.academy_name}? This removes its workspace data, subscription, players, evaluations, and academy-only user accounts. This cannot be undone.`,
+    );
+    if (confirmed) deleteAcademy.mutate(academy.academy_id);
   };
 
   return (
@@ -486,13 +518,34 @@ function PlatformDashboard() {
                           {new Date(academy.created_at).toLocaleDateString()}
                         </td>
                         <td className="px-5 py-4 text-right">
-                          <Button
-                            size="sm"
-                            disabled={!dirty || update.isPending}
-                            onClick={() => save(academy)}
-                          >
-                            {update.isPending ? "Saving…" : "Save"}
-                          </Button>
+                          <div className="flex flex-wrap justify-end gap-2">
+                            <Button
+                              size="sm"
+                              disabled={!dirty || update.isPending}
+                              onClick={() => save(academy)}
+                            >
+                              {update.isPending ? "Saving…" : "Save"}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1.5"
+                              disabled={update.isPending}
+                              onClick={() => toggleAcademy(academy)}
+                            >
+                              <Power className="h-3.5 w-3.5" />
+                              {academy.academy_status === "active" ? "Deactivate" : "Activate"}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="gap-1.5"
+                              disabled={deleteAcademy.isPending}
+                              onClick={() => removeAcademy(academy)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" /> Delete
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     );

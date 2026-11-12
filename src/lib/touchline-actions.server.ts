@@ -512,6 +512,21 @@ async function dispatch(request: Request, userId: string, body: unknown) {
     segments[1] === "platform" &&
     segments[2] === "academies" &&
     segments[3] &&
+    method === "DELETE"
+  ) {
+    await assertPlatformAdmin(userId);
+    const academyId = z.string().uuid().parse(segments[3]);
+    const { error } = await supabaseAdmin.rpc("delete_platform_academy", {
+      p_academy_id: academyId,
+    });
+    if (error) throw new ApiError("Could not delete the academy workspace.", 500);
+    return { ok: true };
+  }
+
+  if (
+    segments[1] === "platform" &&
+    segments[2] === "academies" &&
+    segments[3] &&
     method === "PATCH"
   ) {
     await assertPlatformAdmin(userId);

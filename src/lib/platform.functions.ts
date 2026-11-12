@@ -44,6 +44,14 @@ export function updatePlatformAcademy({
   );
 }
 
+export function deletePlatformAcademy(academyId: string) {
+  return callTouchlineApi<{ ok: true }>(
+    `/api/platform/academies/${encodeURIComponent(academyId)}`,
+    "DELETE",
+    {},
+  );
+}
+
 export function createPlatformAcademy({
   data,
 }: {
