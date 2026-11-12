@@ -18,11 +18,19 @@ interface AppShellProps {
   items: NavItem[];
   areaLabel: string;
   userName: string;
+  academyName?: string;
   children: ReactNode;
   signOutTo?: "/platform/login" | "/admin/login" | "/coach/login";
 }
 
-export function AppShell({ items, areaLabel, userName, children, signOutTo }: AppShellProps) {
+export function AppShell({
+  items,
+  areaLabel,
+  userName,
+  academyName,
+  children,
+  signOutTo,
+}: AppShellProps) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -106,7 +114,9 @@ export function AppShell({ items, areaLabel, userName, children, signOutTo }: Ap
             <p className="font-display truncate text-base tracking-wide uppercase sm:text-lg">
               Welcome, {userName}
             </p>
-            <p className="text-muted-foreground truncate text-xs">Touchline · {areaLabel} area</p>
+            <p className="text-muted-foreground truncate text-xs">
+              {academyName ?? "Touchline"} · {areaLabel} area
+            </p>
           </div>
         </header>
         <main className="flex-1 p-4 sm:p-6">{children}</main>

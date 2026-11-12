@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import {
   Activity,
   BarChart3,
@@ -15,6 +16,7 @@ import { AppShell, type NavItem } from "@/components/AppShell";
 import { LoadingBlock } from "@/components/DataCards";
 import { AcademyReadOnlyNotice } from "@/components/AcademyReadOnlyNotice";
 import { useAuth } from "@/lib/auth";
+import { fetchMyAcademyProfile } from "@/lib/api";
 
 const items: NavItem[] = [
   { label: "Dashboard", to: "/admin/dashboard", icon: LayoutDashboard },
@@ -29,6 +31,12 @@ const items: NavItem[] = [
 export function AdminShell({ children }: { children: ReactNode }) {
   const { profile, loading, role } = useAuth();
   const router = useRouter();
+  const academyQuery = useQuery({
+    queryKey: ["my-academy-profile"],
+    queryFn: fetchMyAcademyProfile,
+    enabled: role === "academy_admin",
+    staleTime: 60_000,
+  });
 
   useEffect(() => {
     if (loading) return;
@@ -42,6 +50,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
       items={items}
       areaLabel="Academy Admin"
       userName={profile?.full_name || "Academy Admin"}
+      academyName={academyQuery.data?.name}
       signOutTo="/admin/login"
     >
       <AcademyReadOnlyNotice userId={profile?.id} />
