@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@/lib/next-server-fn";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Check, Copy, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -37,6 +37,7 @@ function CreateCoachPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState(randomPassword());
+  const [passwordCopied, setPasswordCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
 
@@ -70,6 +71,17 @@ function CreateCoachPage() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const copyPassword = async () => {
+    try {
+      await navigator.clipboard.writeText(password);
+      setPasswordCopied(true);
+      toast.success("Temporary password copied. You can now send it to the coach.");
+      window.setTimeout(() => setPasswordCopied(false), 2000);
+    } catch {
+      toast.error("Could not copy the password. Select it and copy it manually.");
     }
   };
 
@@ -148,6 +160,14 @@ function CreateCoachPage() {
                   onClick={() => setPassword(randomPassword())}
                 >
                   Generate
+                </Button>
+                <Button type="button" variant="outline" onClick={() => void copyPassword()}>
+                  {passwordCopied ? (
+                    <Check className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Copy className="mr-2 h-4 w-4" />
+                  )}
+                  {passwordCopied ? "Copied" : "Copy"}
                 </Button>
               </div>
               <p className="text-muted-foreground text-xs">
