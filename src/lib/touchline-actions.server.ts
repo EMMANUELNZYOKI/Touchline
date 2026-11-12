@@ -516,10 +516,24 @@ async function dispatch(request: Request, userId: string, body: unknown) {
   ) {
     await assertPlatformAdmin(userId);
     const academyId = z.string().uuid().parse(segments[3]);
-    const { error } = await supabaseAdmin.rpc("delete_platform_academy", {
+    const { data: memberIds, error } = await supabaseAdmin.rpc("delete_platform_academy", {
       p_academy_id: academyId,
     });
-    if (error) throw new ApiError("Could not delete the academy workspace.", 500);
+    if (error) {
+      console.error("Academy workspace deletion RPC failed", error);
+      throw new ApiError("Could not delete the academy workspace.", 500);
+    }
+
+    for (const memberId of memberIds ?? []) {
+      const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(memberId);
+      if (authError) {
+        console.error("Academy member account cleanup failed", { memberId, authError });
+        throw new ApiError(
+          "The workspace was removed, but one login account could not be cleaned up.",
+          500,
+        );
+      }
+    }
     return { ok: true };
   }
 

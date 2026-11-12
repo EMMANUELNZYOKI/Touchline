@@ -386,6 +386,13 @@ function PlatformDashboard() {
           {update.error instanceof Error ? update.error.message : "Could not update academy."}
         </div>
       )}
+      {deleteAcademy.error && (
+        <div className="border-destructive/40 bg-destructive/10 text-destructive rounded-xl border p-4 text-sm">
+          {deleteAcademy.error instanceof Error
+            ? deleteAcademy.error.message
+            : "Could not delete academy."}
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <MetricCard

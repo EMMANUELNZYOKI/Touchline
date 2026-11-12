@@ -1,5 +1,7 @@
+DROP FUNCTION IF EXISTS public.delete_platform_academy(UUID);
+
 CREATE OR REPLACE FUNCTION public.delete_platform_academy(p_academy_id UUID)
-RETURNS VOID
+RETURNS UUID[]
 LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = ''
@@ -7,11 +9,6 @@ AS $$
 DECLARE
   member_ids UUID[];
 BEGIN
-  IF NOT public.is_platform_admin()
-     AND COALESCE(current_setting('request.jwt.claim.role', TRUE), '') <> 'service_role' THEN
-    RAISE EXCEPTION 'Only platform administrators can delete academies';
-  END IF;
-
   SELECT COALESCE(array_agg(am.user_id), ARRAY[]::UUID[])
   INTO member_ids
   FROM public.academy_memberships AS am
@@ -36,8 +33,10 @@ BEGIN
   -- Remove login accounts that belonged only to this deleted workspace.
   -- Profiles and academy memberships cascade from auth.users/public.academies.
   IF cardinality(member_ids) > 0 THEN
-    DELETE FROM auth.users WHERE id = ANY(member_ids);
+    RETURN member_ids;
   END IF;
+
+  RETURN ARRAY[]::UUID[];
 END;
 $$;
 
