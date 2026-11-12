@@ -6,3 +6,4 @@ export const dynamic = "force-dynamic";
 export const GET = handleTouchlineApi;
 export const POST = handleTouchlineApi;
 export const PATCH = handleTouchlineApi;
+export const DELETE = handleTouchlineApi;
