@@ -2,6 +2,7 @@
 
 import { createFileRoute, Link } from "@/lib/next-router-compat";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   Users,
   UserCheck,
@@ -29,6 +30,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatCard, LoadingBlock, EmptyState } from "@/components/DataCards";
 import { fetchCoaches, fetchEvaluations, fetchPlayers } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
+import { UpgradeDialog } from "@/components/UpgradeDialog";
 
 export const Route = createFileRoute("/admin/_shell/dashboard")({
   head: () => ({ meta: [{ title: "Academy Admin Dashboard | Touchline" }] }),
@@ -48,6 +51,8 @@ function monthKey(date: string) {
 }
 
 function AdminDashboard() {
+  const { profile } = useAuth();
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const coachesQuery = useQuery({ queryKey: ["coaches"], queryFn: fetchCoaches });
   const playersQuery = useQuery({ queryKey: ["players", "all"], queryFn: () => fetchPlayers() });
   const evaluationsQuery = useQuery({
@@ -102,6 +107,20 @@ function AdminDashboard() {
 
   return (
     <div className="grid gap-6">
+      <div className="flex flex-col justify-between gap-4 rounded-2xl border border-primary/20 bg-primary/5 p-5 sm:flex-row sm:items-center sm:p-6">
+        <div>
+          <p className="font-display text-lg uppercase tracking-wide">
+            Grow your academy with Touchline
+          </p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Choose the package that matches your player capacity and unlock more features.
+          </p>
+        </div>
+        <Button onClick={() => setUpgradeOpen(true)} className="shrink-0">
+          Upgrade package <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+      <UpgradeDialog open={upgradeOpen} onOpenChange={setUpgradeOpen} profile={profile} />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard label="Total Coaches" value={coaches.length} icon={Users} />
         <StatCard
