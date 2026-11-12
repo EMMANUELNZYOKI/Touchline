@@ -21,6 +21,8 @@ import {
 import { logAdminActivity, registerPlayer, uploadPlayerPhoto, type PlayerInput } from "@/lib/api";
 import { GENDERS, POSITIONS, PREFERRED_FOOT } from "@/lib/skills";
 import { useAuth } from "@/lib/auth";
+import { UpgradeDialog } from "@/components/UpgradeDialog";
+import { isPackageLimitError } from "@/lib/package-limits";
 
 export const Route = createFileRoute("/admin/_shell/players/create")({
   component: CreatePlayerPage,
@@ -52,10 +54,11 @@ const TEAM_CATEGORIES = ["U-7", "U-9", "U-11", "U-13", "U-15"] as const;
 function CreatePlayerPage() {
   const nav = useNavigate();
   const qc = useQueryClient();
-  const { session } = useAuth();
+  const { profile, session } = useAuth();
   const [player, setPlayer] = useState<PlayerInput>(blank);
   const [photo, setPhoto] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const set = <K extends keyof PlayerInput>(key: K, value: PlayerInput[K]) =>
     setPlayer((p) => ({ ...p, [key]: value }));
   const field = (label: string, key: keyof PlayerInput, type = "text") => (
@@ -110,13 +113,21 @@ function CreatePlayerPage() {
       toast.success(`${createdPlayer.first_name} ${createdPlayer.last_name} registered.`);
       nav({ to: "/admin/players" });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not create player.");
+      if (isPackageLimitError(e, "players")) {
+        toast.error(
+          "Your package player limit has been reached. Choose a larger package to continue.",
+        );
+        setUpgradeOpen(true);
+      } else {
+        toast.error(e instanceof Error ? e.message : "Could not create player.");
+      }
     } finally {
       setSaving(false);
     }
   };
   return (
     <div className="mx-auto grid max-w-4xl gap-6">
+      <UpgradeDialog open={upgradeOpen} onOpenChange={setUpgradeOpen} profile={profile} />
       <Link
         to="/admin/players"
         className="text-muted-foreground inline-flex items-center gap-2 text-sm"

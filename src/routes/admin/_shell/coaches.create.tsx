@@ -12,6 +12,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createCoachAccount } from "@/lib/admin.functions";
+import { UpgradeDialog } from "@/components/UpgradeDialog";
+import { useAuth } from "@/lib/auth";
+import { isPackageLimitError } from "@/lib/package-limits";
 
 export const Route = createFileRoute("/admin/_shell/coaches/create")({
   head: () => ({ meta: [{ title: "Create Coach Account | Touchline" }] }),
@@ -27,12 +30,14 @@ function CreateCoachPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const createCoach = useServerFn(createCoachAccount);
+  const { profile } = useAuth();
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState(randomPassword());
   const [loading, setLoading] = useState(false);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +59,14 @@ function CreateCoachPage() {
       queryClient.invalidateQueries({ queryKey: ["coaches"] });
       navigate({ to: "/admin/coaches" });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not create the coach account.");
+      if (isPackageLimitError(error, "coaches")) {
+        toast.error(
+          "Your package coach limit has been reached. Choose a larger package to continue.",
+        );
+        setUpgradeOpen(true);
+      } else {
+        toast.error(error instanceof Error ? error.message : "Could not create the coach account.");
+      }
     } finally {
       setLoading(false);
     }
@@ -62,6 +74,7 @@ function CreateCoachPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
+      <UpgradeDialog open={upgradeOpen} onOpenChange={setUpgradeOpen} profile={profile} />
       <Link
         to="/admin/coaches"
         className="text-muted-foreground hover:text-foreground mb-5 inline-flex items-center gap-2 text-sm"

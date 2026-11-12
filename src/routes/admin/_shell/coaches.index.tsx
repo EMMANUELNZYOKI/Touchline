@@ -34,6 +34,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { EmptyState, LoadingBlock } from "@/components/DataCards";
 import { fetchCoaches, fetchMyAcademyEntitlements } from "@/lib/api";
 import { setCoachActive, updateAcademyCoach } from "@/lib/admin.functions";
+import { UpgradeDialog } from "@/components/UpgradeDialog";
+import { useAuth } from "@/lib/auth";
+import { isPackageLimitError } from "@/lib/package-limits";
 import type { Coach } from "@/lib/types";
 
 export const Route = createFileRoute("/admin/_shell/coaches/")({
@@ -44,9 +47,11 @@ export const Route = createFileRoute("/admin/_shell/coaches/")({
 function CoachesPage() {
   const queryClient = useQueryClient();
   const toggleActive = useServerFn(setCoachActive);
+  const { profile } = useAuth();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Coach | null>(null);
   const [confirming, setConfirming] = useState<Coach | null>(null);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   const { data, isLoading } = useQuery({ queryKey: ["coaches"], queryFn: fetchCoaches });
   const entitlementsQuery = useQuery({
@@ -62,7 +67,16 @@ function CoachesPage() {
       queryClient.invalidateQueries({ queryKey: ["coaches"] });
       setConfirming(null);
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "Action failed"),
+    onError: (error) => {
+      if (isPackageLimitError(error, "coaches")) {
+        toast.error(
+          "Your package coach limit has been reached. Choose a larger package to continue.",
+        );
+        setUpgradeOpen(true);
+      } else {
+        toast.error(error instanceof Error ? error.message : "Action failed");
+      }
+    },
   });
 
   if (isLoading) return <LoadingBlock label="Loading coaches…" />;
@@ -74,6 +88,7 @@ function CoachesPage() {
 
   return (
     <div className="grid gap-6">
+      <UpgradeDialog open={upgradeOpen} onOpenChange={setUpgradeOpen} profile={profile} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl tracking-wide uppercase">Coaches</h1>
