@@ -121,23 +121,26 @@ function AcademyOnboarding() {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       if (sessionData.session) {
-        if (sessionData.session.user.user_metadata["touchline_onboard_pending"] !== true) {
-          throw new Error("Sign out of the current account before starting a new academy signup.");
+        if (sessionData.session.user.user_metadata["touchline_onboard_pending"] === true) {
+          const { error: updateError } = await supabase.auth.updateUser({
+            data: {
+              full_name: fullName.trim(),
+              phone: phone.trim(),
+              academy_name: academyName.trim(),
+              academy_slug: academySlug,
+              touchline_onboard_pending: true,
+            },
+          });
+          if (updateError) throw updateError;
+          await complete();
+          toast.success("Your academy workspace is ready");
+          await navigate({ to: "/admin/dashboard", replace: true });
+          return;
         }
-        const { error: updateError } = await supabase.auth.updateUser({
-          data: {
-            full_name: fullName.trim(),
-            phone: phone.trim(),
-            academy_name: academyName.trim(),
-            academy_slug: academySlug,
-            touchline_onboard_pending: true,
-          },
-        });
-        if (updateError) throw updateError;
-        await complete();
-        toast.success("Your academy workspace is ready");
-        await navigate({ to: "/admin/dashboard", replace: true });
-        return;
+
+        // Supabase sessions are local to this browser/device. Signing out here
+        // does not sign out anyone else using Touchline on another device.
+        await supabase.auth.signOut();
       }
 
       const { data, error } = await supabase.auth.signUp({
