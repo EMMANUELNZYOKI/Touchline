@@ -16,6 +16,7 @@ import {
   Plus,
   RefreshCw,
   Search,
+  UserCheck,
   UsersRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -120,6 +121,10 @@ function PlatformDashboard() {
   ).length;
   const totalPlayers = academies.reduce(
     (sum, academy) => sum + Number(academy.player_count || 0),
+    0,
+  );
+  const totalCoaches = academies.reduce(
+    (sum, academy) => sum + Number(academy.coach_count || 0),
     0,
   );
   const totalEvaluations = academies.reduce(
@@ -350,7 +355,7 @@ function PlatformDashboard() {
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <MetricCard
           icon={Building2}
           label="Total academies"
@@ -367,6 +372,12 @@ function PlatformDashboard() {
           icon={UsersRound}
           label="Players managed"
           value={totalPlayers}
+          note="Across all academies"
+        />
+        <MetricCard
+          icon={UserCheck}
+          label="Coaches managed"
+          value={totalCoaches}
           note="Across all academies"
         />
         <MetricCard
