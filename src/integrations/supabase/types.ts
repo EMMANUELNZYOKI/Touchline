@@ -300,6 +300,67 @@ export type Database = {
         };
         Relationships: [];
       };
+      academy_payments: {
+        Row: {
+          id: string;
+          academy_id: string;
+          provider: string;
+          tx_ref: string;
+          provider_transaction_id: string | null;
+          amount: number;
+          currency: string;
+          status: "pending" | "successful" | "failed" | "cancelled";
+          payment_type: string;
+          paid_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          academy_id: string;
+          provider?: string;
+          tx_ref: string;
+          provider_transaction_id?: string | null;
+          amount: number;
+          currency: string;
+          status?: "pending" | "successful" | "failed" | "cancelled";
+          payment_type?: string;
+          paid_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          academy_id?: string;
+          provider?: string;
+          tx_ref?: string;
+          provider_transaction_id?: string | null;
+          amount?: number;
+          currency?: string;
+          status?: "pending" | "successful" | "failed" | "cancelled";
+          payment_type?: string;
+          paid_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      payment_webhook_events: {
+        Row: { provider: string; event_id: string; event_type: string | null; received_at: string };
+        Insert: {
+          provider: string;
+          event_id: string;
+          event_type?: string | null;
+          received_at?: string;
+        };
+        Update: {
+          provider?: string;
+          event_id?: string;
+          event_type?: string | null;
+          received_at?: string;
+        };
+        Relationships: [];
+      };
       admin_activity_logs: {
         Row: {
           id: string;

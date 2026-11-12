@@ -38,7 +38,7 @@ Use the project URL `https://icmocslfyhnizdgbldhj.supabase.co`. In **Authenticat
 
 Open `/onboard`, enter academy and first-admin details, and confirm the email. The verified user becomes that academy's `academy_admin`; the database atomically creates an active academy, membership, and 14-day `starter` trial. The admin can then sign in at `/admin/login`, create players and coach accounts, and manage their academy. Coaches sign in at `/coach/login` and can create/update their own player evaluations within that academy. Tenant RLS enforces the boundaries; platform operators are separate from academy roles.
 
-The trial is not yet connected to a payment processor. There is no checkout, invoice collection, automatic renewal, payment-failure webhook, or automatic trial expiry enforcement yet. Select the legal business country, billing currency, payment methods, and provider before enabling paid subscriptions.
+The trial now has a Flutterwave billing path. Academy administrators can start a hosted checkout from `/admin/settings`; the server creates the transaction, records a pending payment, verifies the completed transaction, and activates the academy only after the webhook verification matches the transaction reference, amount, and currency. Configure a Flutterwave payment plan and the server-only variables in `.env.example`, then register `https://YOUR-DOMAIN/api/flutterwave/webhook` with the same webhook secret hash in Flutterwave. The recurring payment plan and business currency should be created and approved in the Flutterwave dashboard before enabling paid subscriptions.
 
 ## Database migrations
 

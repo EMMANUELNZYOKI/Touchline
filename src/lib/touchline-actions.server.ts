@@ -4,6 +4,7 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { ApiError, jsonResponse } from "@/lib/server/http";
+import { createFlutterwaveCheckout } from "@/lib/flutterwave.server";
 
 const createCoachSchema = z.object({
   full_name: z.string().trim().min(2).max(120),
@@ -346,6 +347,44 @@ async function dispatch(request: Request, userId: string, body: unknown) {
     return { ok: true };
   }
 
+  if (segments.join("/") === "api/billing" && method === "GET") {
+    const academyId = await requireAcademyAdmin(userId);
+    const [
+      { data: subscription, error: subscriptionError },
+      { data: payments, error: paymentsError },
+    ] = await Promise.all([
+      supabaseAdmin
+        .from("academy_subscriptions")
+        .select("status, trial_ends_at, current_period_end, provider")
+        .eq("academy_id", academyId)
+        .maybeSingle(),
+      supabaseAdmin
+        .from("academy_payments")
+        .select("tx_ref, amount, currency, status, created_at, paid_at")
+        .eq("academy_id", academyId)
+        .order("created_at", { ascending: false })
+        .limit(10),
+    ]);
+    if (subscriptionError || paymentsError)
+      throw new ApiError("Could not load billing information.", 500);
+    return { subscription, payments: payments ?? [] };
+  }
+  if (segments.join("/") === "api/billing/checkout" && method === "POST") {
+    const academyId = await requireAcademyAdmin(userId);
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .select("full_name, email, phone")
+      .eq("id", userId)
+      .maybeSingle();
+    if (profileError || !profile?.email)
+      throw new ApiError("Could not load your billing profile.", 500);
+    return createFlutterwaveCheckout({
+      academyId,
+      email: profile.email,
+      name: profile.full_name,
+      phone: profile.phone,
+    });
+  }
   if (segments.join("/") === "api/onboarding/complete" && method === "POST") {
     const academyId = await completeAcademySignup(userId);
     return { ok: true, academyId };
