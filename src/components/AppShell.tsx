@@ -2,6 +2,7 @@
 
 import { Link, useNavigate, useRouterState } from "@/lib/next-router-compat";
 import { useState, type ReactNode } from "react";
+import Image from "next/image";
 import { Menu, X, LogOut, ShieldCheck, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -126,11 +127,16 @@ export function AppShell({
 }
 
 function BrandBlock({ areaLabel, isAdmin }: { areaLabel: string; isAdmin: boolean }) {
-  const Icon = isAdmin ? ShieldCheck : ClipboardList;
   return (
     <Link to="/" className="mb-6 flex items-center gap-3">
-      <span className="bg-gradient-gold flex h-10 w-10 items-center justify-center rounded-xl">
-        <Icon className="text-primary-foreground h-5 w-5" />
+      <span className="bg-white flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl p-0.5">
+        <Image
+          src="/touchline-logo.jpeg"
+          alt="Touchline logo"
+          width={40}
+          height={40}
+          className="h-full w-full object-cover"
+        />
       </span>
       <span className="min-w-0">
         <span className="font-display block truncate text-sm tracking-widest uppercase">

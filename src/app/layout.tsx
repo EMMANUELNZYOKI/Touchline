@@ -10,9 +10,10 @@ export const metadata: Metadata = {
     title: "Touchline",
     description: "Player development, connected.",
     type: "website",
+    images: ["/touchline-logo.jpeg"],
   },
   twitter: { card: "summary_large_image" },
-  icons: { icon: "/favicon.svg" },
+  icons: { icon: "/touchline-logo.jpeg" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

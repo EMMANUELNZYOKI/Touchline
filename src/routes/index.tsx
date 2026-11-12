@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import heroPitch from "@/assets/hero-pitch.jpg";
+import Image from "next/image";
 
 const title = "Touchline | Player development, built around your academy";
 const description =
@@ -55,11 +56,14 @@ const features = [
 function Brand({ light = false }: { light?: boolean }) {
   return (
     <span className="inline-flex items-center gap-3">
-      <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-gradient-pitch shadow-glow">
-        <span className="absolute inset-2 rounded-full border border-white/70" />
-        <span className="absolute h-4 w-px bg-white/70" />
-        <span className="absolute left-2 right-2 top-1/2 h-px bg-white/70" />
-        <span className="relative h-2 w-2 rounded-full bg-white shadow" />
+      <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-white p-0.5 shadow-glow">
+        <Image
+          src="/touchline-logo.jpeg"
+          alt="Touchline logo"
+          width={40}
+          height={40}
+          className="h-full w-full object-cover"
+        />
       </span>
       <span
         className={`font-display text-lg font-semibold tracking-[0.12em] uppercase ${light ? "text-white" : "text-foreground"}`}
