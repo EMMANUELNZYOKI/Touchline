@@ -34,6 +34,7 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
   const [mpesaLoading, setMpesaLoading] = useState(false);
   const [cardLoading, setCardLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [mpesaPromptOpen, setMpesaPromptOpen] = useState(false);
 
   useEffect(() => {
     setMpesaPhone(profile?.phone ?? "");
@@ -42,6 +43,7 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
   useEffect(() => {
     if (!open) return;
     setMessage("");
+    setMpesaPromptOpen(false);
     setLoading(true);
     void getBilling()
       .then((result) => {
@@ -123,7 +125,11 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
                   <button
                     key={plan.plan_key}
                     type="button"
-                    onClick={() => setSelectedPlan(plan.plan_key)}
+                    onClick={() => {
+                      setSelectedPlan(plan.plan_key);
+                      setMessage("");
+                      setMpesaPromptOpen(true);
+                    }}
                     className={`relative flex h-full flex-col rounded-2xl border p-5 text-left transition sm:p-6 ${selected ? "border-primary bg-primary/10 shadow-[0_0_0_1px_hsl(var(--primary))]" : "border-white/10 bg-white/[0.03] hover:border-white/30"}`}
                   >
                     {featured && (
@@ -219,6 +225,46 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
           </>
         )}
       </DialogContent>
+      <Dialog open={mpesaPromptOpen} onOpenChange={setMpesaPromptOpen}>
+        <DialogContent className="max-w-md border-white/10 bg-[#171717] p-5 text-white sm:p-7">
+          <DialogTitle className="font-display text-2xl tracking-wide">
+            Subscribe with M-Pesa
+          </DialogTitle>
+          <DialogDescription className="text-white/60">
+            {selectedPlanDetails
+              ? `${selectedPlanDetails.name} · ${formatAmount(selectedPlanDetails)} / month`
+              : "Choose a package to continue."}
+          </DialogDescription>
+          <div className="mt-2 grid gap-4">
+            <div className="rounded-xl border border-primary/25 bg-primary/5 p-4 text-sm text-white/75">
+              Enter the Safaricom number that should receive the M-Pesa prompt. Paystack will open
+              next so you can choose M-Pesa and approve with your OTP and M-Pesa PIN.
+            </div>
+            <Input
+              autoFocus
+              value={mpesaPhone}
+              onChange={(event) => setMpesaPhone(event.target.value)}
+              placeholder="0712 345 678"
+              inputMode="tel"
+              aria-label="Safaricom M-Pesa phone number"
+              disabled={mpesaLoading}
+              className="border-white/15 bg-white/5 text-white placeholder:text-white/35"
+            />
+            <Button
+              onClick={payWithMpesa}
+              disabled={!selectedPlan || mpesaLoading || cardLoading}
+              className="w-full"
+            >
+              {mpesaLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Continue to Paystack with M-Pesa
+            </Button>
+            <p className="flex items-center gap-2 text-xs text-white/50">
+              <ShieldCheck className="h-4 w-4 shrink-0" /> Payment is verified before access
+              changes.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }
