@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, Loader2, ShieldCheck, Sparkles, X } from "lucide-react";
+import { Check, Loader2, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -111,7 +111,7 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] max-w-6xl overflow-y-auto border-white/10 bg-[#171717] p-5 text-white sm:p-8">
-        <div className="mb-2 flex items-start justify-between gap-5 pr-8">
+        <div className="mb-2 pr-8">
           <div>
             <div className="mb-2 flex items-center gap-2 text-primary">
               <Sparkles className="h-4 w-4" />
@@ -128,14 +128,6 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
                 : "Choose the capacity and features your academy needs. You can change package later."}
             </DialogDescription>
           </div>
-          <button
-            type="button"
-            aria-label="Close upgrade dialog"
-            onClick={() => onOpenChange(false)}
-            className="rounded-full p-2 text-white/50 transition hover:bg-white/10 hover:text-white"
-          >
-            <X className="h-5 w-5" />
-          </button>
         </div>
 
         {loading ? (
