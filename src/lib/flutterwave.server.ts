@@ -55,7 +55,7 @@ async function flutterwaveRequest<T>(path: string, init: RequestInit) {
   return payload.data as T;
 }
 
-async function getSubscriptionPlan(planKey: string) {
+async function getSubscriptionPlan(planKey: string, requirePaymentPlan = true) {
   const { data, error } = await supabaseAdmin
     .from("subscription_plans")
     .select("plan_key, name, amount, currency, flutterwave_plan_id")
@@ -64,10 +64,78 @@ async function getSubscriptionPlan(planKey: string) {
     .maybeSingle();
   if (error) throw new ApiError("Could not load the selected package.", 500);
   if (!data) throw new ApiError("That package is no longer available.", 400);
-  if (!data.flutterwave_plan_id) {
-    throw new ApiError(`The ${data.name} package is not ready for checkout yet.`, 503);
+  if (requirePaymentPlan && !data.flutterwave_plan_id) {
+    throw new ApiError(`The ${data.name} package is not ready for card checkout yet.`, 503);
   }
   return data as SubscriptionPlan;
+}
+
+function normalizeKenyanPhone(phone: string) {
+  const compact = phone.replace(/[\s()-]/g, "");
+  const normalized = compact.startsWith("+")
+    ? compact.slice(1)
+    : compact.startsWith("0")
+      ? `254${compact.slice(1)}`
+      : compact;
+  if (!/^254[17]\d{8}$/.test(normalized)) {
+    throw new ApiError("Enter a valid Kenyan Safaricom number, for example 0712 345 678.", 400);
+  }
+  return normalized;
+}
+
+export async function createFlutterwaveMpesaCharge(input: {
+  academyId: string;
+  planKey: string;
+  phone: string;
+  email: string;
+  name: string;
+}) {
+  const plan = await getSubscriptionPlan(input.planKey, false);
+  if (plan.currency.toUpperCase() !== "KES") {
+    throw new ApiError("M-Pesa checkout is available only for KES packages.", 400);
+  }
+  const txRef = `touchline-mpesa-${input.academyId}-${crypto.randomUUID()}`;
+  const { error: paymentError } = await supabaseAdmin.from("academy_payments").insert({
+    academy_id: input.academyId,
+    provider: "flutterwave",
+    tx_ref: txRef,
+    amount: plan.amount,
+    currency: plan.currency,
+    plan_key: plan.plan_key,
+    status: "pending",
+    payment_type: "subscription",
+  });
+  if (paymentError) {
+    console.error("Could not persist M-Pesa payment", paymentError);
+    throw new ApiError("Could not prepare the M-Pesa payment. Please try again.", 500);
+  }
+  const charge = await flutterwaveRequest<{ id: number; status: string; tx_ref: string }>(
+    "/charges?type=mpesa",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        phone_number: normalizeKenyanPhone(input.phone),
+        amount: plan.amount,
+        currency: plan.currency,
+        email: input.email,
+        tx_ref: txRef,
+        fullname: input.name,
+        meta: {
+          academy_id: input.academyId,
+          plan_key: plan.plan_key,
+          payment_type: "subscription",
+        },
+      }),
+    },
+  );
+  return {
+    txRef: charge.tx_ref,
+    transactionId: charge.id,
+    status: charge.status,
+    amount: plan.amount,
+    currency: plan.currency,
+    planKey: plan.plan_key,
+  };
 }
 
 export async function createFlutterwaveCheckout(input: {
@@ -221,7 +289,7 @@ export async function handleFlutterwaveWebhook(request: Request) {
     }
   }
   if (!payment) return Response.json({ ok: true });
-  const plan = await getSubscriptionPlan(payment.plan_key);
+  const plan = await getSubscriptionPlan(payment.plan_key, false);
   const successful =
     verified.status === "successful" &&
     verified.tx_ref === payment.tx_ref &&

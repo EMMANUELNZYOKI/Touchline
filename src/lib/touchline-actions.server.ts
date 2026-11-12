@@ -4,7 +4,7 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { ApiError, jsonResponse } from "@/lib/server/http";
-import { createFlutterwaveCheckout } from "@/lib/flutterwave.server";
+import { createFlutterwaveCheckout, createFlutterwaveMpesaCharge } from "@/lib/flutterwave.server";
 
 const createCoachSchema = z.object({
   full_name: z.string().trim().min(2).max(120),
@@ -360,7 +360,7 @@ async function dispatch(request: Request, userId: string, body: unknown) {
         .maybeSingle(),
       supabaseAdmin
         .from("academy_payments")
-        .select("tx_ref, amount, currency, status, created_at, paid_at")
+        .select("tx_ref, amount, currency, plan_key, status, created_at, paid_at")
         .eq("academy_id", academyId)
         .order("created_at", { ascending: false })
         .limit(10),
@@ -393,6 +393,29 @@ async function dispatch(request: Request, userId: string, body: unknown) {
       email: profile.email,
       name: profile.full_name,
       phone: profile.phone,
+    });
+  }
+  if (segments.join("/") === "api/billing/mpesa" && method === "POST") {
+    const academyId = await requireAcademyAdmin(userId, { allowReadOnly: true });
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .select("full_name, email")
+      .eq("id", userId)
+      .maybeSingle();
+    if (profileError || !profile?.email)
+      throw new ApiError("Could not load your billing profile.", 500);
+    const data = z
+      .object({
+        planKey: z.string().trim().min(1).max(40),
+        phone: z.string().trim().min(9).max(20),
+      })
+      .parse(body);
+    return createFlutterwaveMpesaCharge({
+      academyId,
+      planKey: data.planKey,
+      phone: data.phone,
+      email: profile.email,
+      name: profile.full_name,
     });
   }
   if (segments.join("/") === "api/onboarding/complete" && method === "POST") {

@@ -9,7 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { getBilling, startBillingCheckout, type BillingResponse } from "@/lib/billing.functions";
+import {
+  getBilling,
+  startBillingCheckout,
+  startMpesaCheckout,
+  type BillingResponse,
+} from "@/lib/billing.functions";
 
 export const Route = createFileRoute("/admin/_shell/settings")({
   head: () => ({ meta: [{ title: "Settings | Touchline" }] }),
@@ -24,7 +29,14 @@ function AdminSettingsPage() {
   const [billing, setBilling] = useState<BillingResponse | null>(null);
   const [billingLoading, setBillingLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [mpesaLoading, setMpesaLoading] = useState(false);
+  const [mpesaPhone, setMpesaPhone] = useState("");
+  const [paymentMessage, setPaymentMessage] = useState("");
   const [selectedPlan, setSelectedPlan] = useState("");
+
+  useEffect(() => {
+    setMpesaPhone(profile?.phone ?? "");
+  }, [profile?.phone]);
 
   useEffect(() => {
     void getBilling()
@@ -56,6 +68,41 @@ function AdminSettingsPage() {
     setPassword("");
     setConfirm("");
     toast.success("Password updated.");
+  };
+
+  const startMpesa = async () => {
+    if (!selectedPlan || !mpesaPhone.trim()) {
+      toast.error("Enter the Safaricom number that should receive the M-Pesa prompt.");
+      return;
+    }
+    setMpesaLoading(true);
+    setPaymentMessage("");
+    try {
+      const result = await startMpesaCheckout(selectedPlan, mpesaPhone);
+      setPaymentMessage(
+        `M-Pesa prompt sent to ${mpesaPhone}. Enter your PIN on your phone. Touchline will activate ${result.planKey} after Flutterwave confirms payment.`,
+      );
+      toast.success("M-Pesa prompt sent");
+      setMpesaLoading(false);
+      for (let attempt = 0; attempt < 10; attempt += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        const refreshed = await getBilling();
+        setBilling(refreshed);
+        const payment = refreshed.payments.find((item) => item.tx_ref === result.txRef);
+        if (payment?.status === "successful") {
+          setPaymentMessage("Payment confirmed. Your academy workspace is active again.");
+          toast.success("Package activated");
+          break;
+        }
+        if (payment?.status === "failed" || payment?.status === "cancelled") {
+          setPaymentMessage("The M-Pesa payment was not completed. You can try again.");
+          break;
+        }
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not send the M-Pesa prompt.");
+      setMpesaLoading(false);
+    }
   };
 
   const startCheckout = async () => {
@@ -144,14 +191,46 @@ function AdminSettingsPage() {
                   );
                 })}
               </div>
+              <div className="grid gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
+                <div>
+                  <p className="font-semibold">Fast checkout with M-Pesa</p>
+                  <p className="text-muted-foreground text-xs">
+                    Enter a Safaricom number and approve the prompt with your M-Pesa PIN.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Input
+                    value={mpesaPhone}
+                    onChange={(event) => setMpesaPhone(event.target.value)}
+                    placeholder="0712 345 678"
+                    inputMode="tel"
+                    aria-label="Safaricom M-Pesa phone number"
+                    disabled={Boolean(trialActive) || mpesaLoading}
+                  />
+                  <Button
+                    onClick={startMpesa}
+                    disabled={checkoutDisabled || mpesaLoading}
+                    className="sm:w-auto"
+                  >
+                    {mpesaLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isActive ? "Change with M-Pesa" : "Pay with M-Pesa"}
+                  </Button>
+                </div>
+                {paymentMessage && (
+                  <p role="status" className="text-sm">
+                    {paymentMessage}
+                  </p>
+                )}
+              </div>
               <div className="flex flex-wrap items-center gap-3">
                 <Button
                   onClick={startCheckout}
-                  disabled={checkoutDisabled}
+                  disabled={checkoutDisabled || checkoutLoading}
+                  variant="outline"
                   className="w-full sm:w-fit"
                 >
                   {checkoutLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {isActive ? "Change package" : "Activate selected package"}
+                  Pay by card or other method
                 </Button>
                 {selectedPlanDetails && (
                   <span className="text-muted-foreground text-sm">

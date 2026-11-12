@@ -36,6 +36,17 @@ export function getBilling() {
   return callTouchlineApi<BillingResponse>("/api/billing", "GET");
 }
 
+export function startMpesaCheckout(planKey: string, phone: string) {
+  return callTouchlineApi<{
+    txRef: string;
+    transactionId: number;
+    status: string;
+    amount: number;
+    currency: string;
+    planKey: string;
+  }>("/api/billing/mpesa", "POST", { planKey, phone });
+}
+
 export function startBillingCheckout(planKey: string) {
   return callTouchlineApi<{
     link: string;
