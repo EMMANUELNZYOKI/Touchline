@@ -56,27 +56,6 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
   const currentPlan = billing?.subscription?.plan_key;
   const isTrial = billing?.subscription?.status === "trialing";
 
-  const refreshPayment = async (txRef: string) => {
-    for (let attempt = 0; attempt < 10; attempt += 1) {
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-      const refreshed = await getBilling();
-      setBilling(refreshed);
-      const payment = refreshed.payments.find((item) => item.tx_ref === txRef);
-      if (payment?.status === "successful") {
-        setMessage("Payment confirmed. Your academy package is now active.");
-        toast.success("Package activated");
-        return;
-      }
-      if (payment?.status === "failed" || payment?.status === "cancelled") {
-        setMessage("The payment was not completed. You can try again.");
-        return;
-      }
-    }
-    setMessage(
-      "The prompt is still being processed. Your package will activate automatically after confirmation.",
-    );
-  };
-
   const payWithMpesa = async () => {
     if (!selectedPlan || !mpesaPhone.trim()) {
       toast.error("Enter the Safaricom number that should receive the M-Pesa prompt.");
@@ -86,9 +65,8 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
     setMessage("");
     try {
       const result = await startMpesaCheckout(selectedPlan, mpesaPhone);
-      setMessage(`M-Pesa prompt sent to ${mpesaPhone}. Enter your PIN on your phone.`);
-      toast.success("M-Pesa prompt sent");
-      await refreshPayment(result.txRef);
+      toast.success("Opening Paystack M-Pesa checkout");
+      window.location.assign(result.link);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not send the M-Pesa prompt.");
     } finally {
@@ -194,7 +172,8 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
                     {selectedPlanDetails
                       ? `${selectedPlanDetails.name} · ${formatAmount(selectedPlanDetails)} / month`
                       : "Choose a package above"}
-                    . Enter a Safaricom number and approve the prompt with your M-Pesa PIN.
+                    . Continue to Paystack, choose M-Pesa, then approve the prompt with your OTP and
+                    M-Pesa PIN.
                   </p>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row">

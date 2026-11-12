@@ -17,3 +17,5 @@
 - [ ] Push and deploy only after the service-role key is configured and the user authorizes rollout.
 
 No Dios data transfer is included in this migration.
+
+- [x] Replace primary package checkout with Paystack hosted checkout, signed webhook verification, and server-side subscription activation.

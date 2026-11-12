@@ -4,7 +4,7 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { ApiError, jsonResponse } from "@/lib/server/http";
-import { createFlutterwaveCheckout, createFlutterwaveMpesaCharge } from "@/lib/flutterwave.server";
+import { createPaystackCheckout } from "@/lib/paystack.server";
 
 const createCoachSchema = z.object({
   full_name: z.string().trim().min(2).max(120),
@@ -387,12 +387,13 @@ async function dispatch(request: Request, userId: string, body: unknown) {
     if (profileError || !profile?.email)
       throw new ApiError("Could not load your billing profile.", 500);
     const data = z.object({ planKey: z.string().trim().min(1).max(40) }).parse(body);
-    return createFlutterwaveCheckout({
+    return createPaystackCheckout({
       academyId,
       planKey: data.planKey,
       email: profile.email,
       name: profile.full_name,
       phone: profile.phone,
+      channels: ["card", "mobile_money", "bank", "bank_transfer", "ussd", "qr"],
     });
   }
   if (segments.join("/") === "api/billing/mpesa" && method === "POST") {
@@ -410,12 +411,13 @@ async function dispatch(request: Request, userId: string, body: unknown) {
         phone: z.string().trim().min(9).max(20),
       })
       .parse(body);
-    return createFlutterwaveMpesaCharge({
+    return createPaystackCheckout({
       academyId,
       planKey: data.planKey,
       phone: data.phone,
       email: profile.email,
       name: profile.full_name,
+      channels: ["mobile_money"],
     });
   }
   if (segments.join("/") === "api/onboarding/complete" && method === "POST") {

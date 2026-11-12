@@ -79,26 +79,8 @@ function AdminSettingsPage() {
     setPaymentMessage("");
     try {
       const result = await startMpesaCheckout(selectedPlan, mpesaPhone);
-      setPaymentMessage(
-        `M-Pesa prompt sent to ${mpesaPhone}. Enter your PIN on your phone. Touchline will activate ${result.planKey} after Flutterwave confirms payment.`,
-      );
-      toast.success("M-Pesa prompt sent");
-      setMpesaLoading(false);
-      for (let attempt = 0; attempt < 10; attempt += 1) {
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-        const refreshed = await getBilling();
-        setBilling(refreshed);
-        const payment = refreshed.payments.find((item) => item.tx_ref === result.txRef);
-        if (payment?.status === "successful") {
-          setPaymentMessage("Payment confirmed. Your academy workspace is active again.");
-          toast.success("Package activated");
-          break;
-        }
-        if (payment?.status === "failed" || payment?.status === "cancelled") {
-          setPaymentMessage("The M-Pesa payment was not completed. You can try again.");
-          break;
-        }
-      }
+      toast.success("Opening Paystack M-Pesa checkout");
+      window.location.assign(result.link);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not send the M-Pesa prompt.");
       setMpesaLoading(false);
@@ -124,10 +106,7 @@ function AdminSettingsPage() {
   const selectedPlanDetails = billing?.plans.find((plan) => plan.plan_key === selectedPlan);
   const currentPlan = billing?.plans.find((plan) => plan.plan_key === subscription?.plan_key);
   const checkoutDisabled =
-    checkoutLoading ||
-    !selectedPlan ||
-    Boolean(trialActive) ||
-    (isActive && selectedPlan === subscription?.plan_key);
+    checkoutLoading || !selectedPlan || (isActive && selectedPlan === subscription?.plan_key);
 
   return (
     <div className="mx-auto grid max-w-5xl gap-6">
@@ -147,7 +126,7 @@ function AdminSettingsPage() {
               ? `${currentPlan?.name ?? "Current package"} renews around ${new Date(subscription.current_period_end).toLocaleDateString()}. You can change package before your next checkout.`
               : trialActive && trialEnds
                 ? `Your trial is active until ${trialEnds.toLocaleDateString()}. Choose a package now; checkout becomes available when the trial ends.`
-                : "Select the package that fits your academy. Flutterwave handles recurring monthly billing."}
+                : "Select the package that fits your academy. Paystack supports M-Pesa and card checkout."}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-5">
@@ -205,7 +184,7 @@ function AdminSettingsPage() {
                     placeholder="0712 345 678"
                     inputMode="tel"
                     aria-label="Safaricom M-Pesa phone number"
-                    disabled={Boolean(trialActive) || mpesaLoading}
+                    disabled={mpesaLoading}
                   />
                   <Button
                     onClick={startMpesa}
@@ -241,13 +220,13 @@ function AdminSettingsPage() {
               </div>
               {trialActive && (
                 <p className="text-muted-foreground text-xs">
-                  You can review the packages during your trial. Package checkout unlocks after the
-                  14-day trial ends.
+                  You can choose and subscribe to a package during your trial. Your paid package
+                  will activate after Paystack confirms payment.
                 </p>
               )}
               <div className="text-muted-foreground flex items-center gap-2 text-xs">
-                <ShieldCheck className="h-4 w-4" /> Payment details are entered on Flutterwave and
-                are never stored by Touchline.
+                <ShieldCheck className="h-4 w-4" /> Payment details are entered on Paystack and are
+                never stored by Touchline.
               </div>
               {billing?.payments.length ? (
                 <div className="grid gap-2">
