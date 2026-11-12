@@ -55,7 +55,7 @@ const signupMetadataSchema = z.object({
   touchline_onboard_pending: z.literal(true),
 });
 
-async function requireAcademyAdmin(userId: string) {
+async function requireAcademyAdmin(userId: string, options: { allowReadOnly?: boolean } = {}) {
   const { data, error } = await supabaseAdmin
     .from("academy_memberships")
     .select("academy_id")
@@ -86,9 +86,9 @@ async function requireAcademyAdmin(userId: string) {
     (subscription?.status === "trialing" &&
       Boolean(subscription.trial_ends_at) &&
       Date.parse(subscription.trial_ends_at!) > Date.now());
-  if (!canWrite) {
+  if (!canWrite && !options.allowReadOnly) {
     throw new ApiError(
-      "This academy is in read-only mode because its trial ended or subscription is inactive. Contact Touchline to reactivate it.",
+      "This academy is in read-only mode because its trial ended or subscription is inactive. Choose a package to reactivate it.",
       403,
     );
   }
@@ -348,14 +348,14 @@ async function dispatch(request: Request, userId: string, body: unknown) {
   }
 
   if (segments.join("/") === "api/billing" && method === "GET") {
-    const academyId = await requireAcademyAdmin(userId);
+    const academyId = await requireAcademyAdmin(userId, { allowReadOnly: true });
     const [
       { data: subscription, error: subscriptionError },
       { data: payments, error: paymentsError },
     ] = await Promise.all([
       supabaseAdmin
         .from("academy_subscriptions")
-        .select("status, trial_ends_at, current_period_end, provider")
+        .select("status, plan_key, trial_ends_at, current_period_end, provider")
         .eq("academy_id", academyId)
         .maybeSingle(),
       supabaseAdmin
@@ -367,10 +367,18 @@ async function dispatch(request: Request, userId: string, body: unknown) {
     ]);
     if (subscriptionError || paymentsError)
       throw new ApiError("Could not load billing information.", 500);
-    return { subscription, payments: payments ?? [] };
+    const { data: plans, error: plansError } = await supabaseAdmin
+      .from("subscription_plans")
+      .select(
+        "plan_key, name, description, amount, currency, player_limit, feature_summary, active, display_order",
+      )
+      .eq("active", true)
+      .order("display_order", { ascending: true });
+    if (plansError) throw new ApiError("Could not load subscription packages.", 500);
+    return { subscription, plans: plans ?? [], payments: payments ?? [] };
   }
   if (segments.join("/") === "api/billing/checkout" && method === "POST") {
-    const academyId = await requireAcademyAdmin(userId);
+    const academyId = await requireAcademyAdmin(userId, { allowReadOnly: true });
     const { data: profile, error: profileError } = await supabaseAdmin
       .from("profiles")
       .select("full_name, email, phone")
@@ -378,8 +386,10 @@ async function dispatch(request: Request, userId: string, body: unknown) {
       .maybeSingle();
     if (profileError || !profile?.email)
       throw new ApiError("Could not load your billing profile.", 500);
+    const data = z.object({ planKey: z.string().trim().min(1).max(40) }).parse(body);
     return createFlutterwaveCheckout({
       academyId,
+      planKey: data.planKey,
       email: profile.email,
       name: profile.full_name,
       phone: profile.phone,

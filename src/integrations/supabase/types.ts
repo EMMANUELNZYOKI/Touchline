@@ -300,6 +300,51 @@ export type Database = {
         };
         Relationships: [];
       };
+      subscription_plans: {
+        Row: {
+          plan_key: string;
+          name: string;
+          description: string;
+          amount: number;
+          currency: string;
+          player_limit: number | null;
+          feature_summary: string[];
+          flutterwave_plan_id: string | null;
+          active: boolean;
+          display_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          plan_key: string;
+          name: string;
+          description: string;
+          amount: number;
+          currency?: string;
+          player_limit?: number | null;
+          feature_summary?: string[];
+          flutterwave_plan_id?: string | null;
+          active?: boolean;
+          display_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          plan_key?: string;
+          name?: string;
+          description?: string;
+          amount?: number;
+          currency?: string;
+          player_limit?: number | null;
+          feature_summary?: string[];
+          flutterwave_plan_id?: string | null;
+          active?: boolean;
+          display_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       academy_payments: {
         Row: {
           id: string;
@@ -309,6 +354,7 @@ export type Database = {
           provider_transaction_id: string | null;
           amount: number;
           currency: string;
+          plan_key: string;
           status: "pending" | "successful" | "failed" | "cancelled";
           payment_type: string;
           paid_at: string | null;
@@ -323,6 +369,7 @@ export type Database = {
           provider_transaction_id?: string | null;
           amount: number;
           currency: string;
+          plan_key: string;
           status?: "pending" | "successful" | "failed" | "cancelled";
           payment_type?: string;
           paid_at?: string | null;
@@ -337,6 +384,7 @@ export type Database = {
           provider_transaction_id?: string | null;
           amount?: number;
           currency?: string;
+          plan_key?: string;
           status?: "pending" | "successful" | "failed" | "cancelled";
           payment_type?: string;
           paid_at?: string | null;

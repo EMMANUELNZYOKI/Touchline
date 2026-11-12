@@ -38,9 +38,19 @@ Use the project URL `https://icmocslfyhnizdgbldhj.supabase.co`. In **Authenticat
 
 Open `/onboard`, enter academy and first-admin details, and confirm the email. The verified user becomes that academy's `academy_admin`; the database atomically creates an active academy, membership, and 14-day `starter` trial. The admin can then sign in at `/admin/login`, create players and coach accounts, and manage their academy. Coaches sign in at `/coach/login` and can create/update their own player evaluations within that academy. Tenant RLS enforces the boundaries; platform operators are separate from academy roles.
 
-The trial now has a Flutterwave billing path. Academy administrators can start a hosted checkout from `/admin/settings`; the server creates the transaction, records a pending payment, verifies the completed transaction, and activates the academy only after the webhook verification matches the transaction reference, amount, and currency. Configure a Flutterwave payment plan and the server-only variables in `.env.example`, then register `https://YOUR-DOMAIN/api/flutterwave/webhook` with the same webhook secret hash in Flutterwave. The recurring payment plan and business currency should be created and approved in the Flutterwave dashboard before enabling paid subscriptions.
+The trial now has a database-backed Flutterwave package catalog. The default packages are Starter (KES 3,000/month, up to 30 players), Growth (KES 6,000/month, up to 100 players), and Pro (KES 9,000/month, highest limits and priority support). Academy administrators can review package cards in `/admin/settings`; after the 14-day trial, they select a package and start hosted checkout. The server looks up the selected package, creates the transaction, records a pending payment, verifies the completed transaction, and activates or changes the academy package only after the webhook verification matches the transaction reference, amount, and currency.
+
+Create one recurring Flutterwave payment plan for each package, then update the `flutterwave_plan_id` values in `subscription_plans` in Supabase. Do not accept package amounts or Flutterwave plan IDs from the browser. Register `https://YOUR-DOMAIN/api/flutterwave/webhook` with the same webhook secret hash in Flutterwave. Payment-plan webhooks are used to renew active subscriptions, move failed renewals to `past_due`, and keep the academy read-only until a successful payment restores access.
 
 ## Database migrations
+
+After creating the three recurring plans in Flutterwave, copy their plan IDs into the package catalog. Run this only after the new package migration has been applied:
+
+```sql
+UPDATE public.subscription_plans SET flutterwave_plan_id = 'FLUTTERWAVE_STARTER_PLAN_ID' WHERE plan_key = 'starter';
+UPDATE public.subscription_plans SET flutterwave_plan_id = 'FLUTTERWAVE_GROWTH_PLAN_ID' WHERE plan_key = 'growth';
+UPDATE public.subscription_plans SET flutterwave_plan_id = 'FLUTTERWAVE_PRO_PLAN_ID' WHERE plan_key = 'pro';
+```
 
 The Touchline Supabase project has the baseline schema and the migration files in `supabase/migrations/` applied in chronological order. The academy-tenancy migration:
 

@@ -2,7 +2,7 @@
 import { createFileRoute } from "@/lib/next-router-compat";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Check, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,10 +24,14 @@ function AdminSettingsPage() {
   const [billing, setBilling] = useState<BillingResponse | null>(null);
   const [billingLoading, setBillingLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState("");
 
   useEffect(() => {
     void getBilling()
-      .then(setBilling)
+      .then((result) => {
+        setBilling(result);
+        setSelectedPlan(result.subscription?.plan_key ?? result.plans[0]?.plan_key ?? "");
+      })
       .catch((error: Error) => toast.error(error.message))
       .finally(() => setBillingLoading(false));
   }, []);
@@ -55,9 +59,10 @@ function AdminSettingsPage() {
   };
 
   const startCheckout = async () => {
+    if (!selectedPlan) return;
     setCheckoutLoading(true);
     try {
-      const result = await startBillingCheckout();
+      const result = await startBillingCheckout(selectedPlan);
       window.location.assign(result.link);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not start checkout.");
@@ -69,60 +74,97 @@ function AdminSettingsPage() {
   const trialEnds = subscription?.trial_ends_at ? new Date(subscription.trial_ends_at) : null;
   const isActive = subscription?.status === "active";
   const trialActive = subscription?.status === "trialing" && trialEnds && trialEnds > new Date();
+  const selectedPlanDetails = billing?.plans.find((plan) => plan.plan_key === selectedPlan);
+  const currentPlan = billing?.plans.find((plan) => plan.plan_key === subscription?.plan_key);
+  const checkoutDisabled =
+    checkoutLoading ||
+    !selectedPlan ||
+    Boolean(trialActive) ||
+    (isActive && selectedPlan === subscription?.plan_key);
 
   return (
-    <div className="mx-auto grid max-w-3xl gap-6">
+    <div className="mx-auto grid max-w-5xl gap-6">
       <div>
         <h1 className="font-display text-2xl tracking-wide uppercase">Settings</h1>
         <p className="text-muted-foreground text-sm">
-          Manage your academy account and subscription.
+          Manage your academy account, package, and subscription.
         </p>
       </div>
       <Card className="border-border/70">
         <CardHeader>
           <CardTitle className="font-display text-base tracking-wide uppercase">
-            Subscription
+            {isActive ? "Your package" : "Choose a package"}
           </CardTitle>
           <CardDescription>
-            Secure checkout is hosted by Flutterwave. Touchline activates access only after server
-            verification.
+            {isActive && subscription?.current_period_end
+              ? `${currentPlan?.name ?? "Current package"} renews around ${new Date(subscription.current_period_end).toLocaleDateString()}. You can change package before your next checkout.`
+              : trialActive && trialEnds
+                ? `Your trial is active until ${trialEnds.toLocaleDateString()}. Choose a package now; checkout becomes available when the trial ends.`
+                : "Select the package that fits your academy. Flutterwave handles recurring monthly billing."}
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4">
+        <CardContent className="grid gap-5">
           {billingLoading ? (
-            <div className="text-muted-foreground text-sm">Loading billing status…</div>
+            <div className="text-muted-foreground text-sm">Loading packages…</div>
           ) : (
             <>
-              <div className="flex items-start justify-between gap-4 rounded-lg border border-border/70 p-4">
-                <div>
-                  <p className="font-medium">
-                    {isActive
-                      ? "Active subscription"
-                      : trialActive
-                        ? "14-day starter trial"
-                        : "Subscription inactive"}
-                  </p>
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    {isActive && subscription?.current_period_end
-                      ? `Current period ends ${new Date(subscription.current_period_end).toLocaleDateString()}.`
-                      : trialActive && trialEnds
-                        ? `Trial ends ${trialEnds.toLocaleDateString()}.`
-                        : "Start checkout to activate your academy workspace."}
-                  </p>
-                </div>
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
-                  {subscription?.status ?? "unknown"}
-                </span>
+              <div className="grid gap-4 md:grid-cols-3">
+                {(billing?.plans ?? []).map((plan) => {
+                  const selected = selectedPlan === plan.plan_key;
+                  const current = subscription?.plan_key === plan.plan_key;
+                  return (
+                    <button
+                      key={plan.plan_key}
+                      type="button"
+                      onClick={() => setSelectedPlan(plan.plan_key)}
+                      className={`relative grid gap-4 rounded-xl border p-5 text-left transition ${selected ? "border-primary bg-primary/5 shadow-sm" : "border-border/70 hover:border-primary/50"}`}
+                    >
+                      {current && (
+                        <span className="absolute right-4 top-4 rounded-full bg-primary/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide">
+                          Current
+                        </span>
+                      )}
+                      <div>
+                        <p className="font-display text-lg tracking-wide uppercase">{plan.name}</p>
+                        <p className="text-muted-foreground mt-1 text-sm">{plan.description}</p>
+                      </div>
+                      <p className="text-2xl font-semibold">
+                        {plan.currency} {Number(plan.amount).toLocaleString()}
+                        <span className="text-muted-foreground text-xs font-normal"> / month</span>
+                      </p>
+                      <ul className="text-muted-foreground grid gap-2 text-sm">
+                        {plan.feature_summary.map((feature) => (
+                          <li key={feature} className="flex items-start gap-2">
+                            <Check className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </button>
+                  );
+                })}
               </div>
-              {!isActive && (
+              <div className="flex flex-wrap items-center gap-3">
                 <Button
                   onClick={startCheckout}
-                  disabled={checkoutLoading}
+                  disabled={checkoutDisabled}
                   className="w-full sm:w-fit"
                 >
                   {checkoutLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Continue to secure checkout
+                  {isActive ? "Change package" : "Activate selected package"}
                 </Button>
+                {selectedPlanDetails && (
+                  <span className="text-muted-foreground text-sm">
+                    Selected: {selectedPlanDetails.name} · {selectedPlanDetails.currency}{" "}
+                    {Number(selectedPlanDetails.amount).toLocaleString()} / month
+                  </span>
+                )}
+              </div>
+              {trialActive && (
+                <p className="text-muted-foreground text-xs">
+                  You can review the packages during your trial. Package checkout unlocks after the
+                  14-day trial ends.
+                </p>
               )}
               <div className="text-muted-foreground flex items-center gap-2 text-xs">
                 <ShieldCheck className="h-4 w-4" /> Payment details are entered on Flutterwave and
@@ -142,7 +184,8 @@ function AdminSettingsPage() {
                         {new Date(payment.created_at).toLocaleDateString()}
                       </span>
                       <span>
-                        {payment.currency} {Number(payment.amount).toLocaleString()}
+                        {payment.plan_key} · {payment.currency}{" "}
+                        {Number(payment.amount).toLocaleString()}
                       </span>
                       <span className="capitalize">{payment.status}</span>
                     </div>
