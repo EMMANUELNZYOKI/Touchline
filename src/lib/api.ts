@@ -65,6 +65,44 @@ export async function fetchMyAcademySubscription(userId: string) {
   return subscription;
 }
 
+export type AcademyEntitlements = {
+  planKey: string;
+  status: "trialing" | "active" | "past_due" | "canceled" | "paused";
+  playerLimit: number | null;
+  coachLimit: number | null;
+  features: string[];
+};
+
+export async function fetchMyAcademyEntitlements(): Promise<AcademyEntitlements | null> {
+  const academyId = await fetchMyActiveAcademyAdminId();
+  const { data: subscription, error: subscriptionError } = await supabase
+    .from("academy_subscriptions")
+    .select("plan_key, status, trial_ends_at")
+    .eq("academy_id", academyId)
+    .maybeSingle();
+  if (subscriptionError) throw subscriptionError;
+  if (!subscription) return null;
+
+  const { data: plan, error: planError } = await supabase
+    .from("subscription_plans")
+    .select("plan_key, player_limit, coach_limit, feature_flags")
+    .eq("plan_key", subscription.plan_key)
+    .maybeSingle();
+  if (planError) throw planError;
+
+  const trialActive =
+    subscription.status === "trialing" &&
+    Boolean(subscription.trial_ends_at) &&
+    Date.parse(subscription.trial_ends_at!) > Date.now();
+  return {
+    planKey: subscription.plan_key,
+    status: subscription.status,
+    playerLimit: plan?.player_limit ?? null,
+    coachLimit: plan?.coach_limit ?? null,
+    features: subscription.status === "active" || trialActive ? (plan?.feature_flags ?? []) : [],
+  };
+}
+
 export async function fetchCoaches() {
   const academyId = await fetchMyActiveAcademyAdminId();
   const { data: memberships, error: membershipError } = await supabase

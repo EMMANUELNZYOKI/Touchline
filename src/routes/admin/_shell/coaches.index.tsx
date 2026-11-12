@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EmptyState, LoadingBlock } from "@/components/DataCards";
-import { fetchCoaches } from "@/lib/api";
+import { fetchCoaches, fetchMyAcademyEntitlements } from "@/lib/api";
 import { setCoachActive, updateAcademyCoach } from "@/lib/admin.functions";
 import type { Coach } from "@/lib/types";
 
@@ -49,6 +49,10 @@ function CoachesPage() {
   const [confirming, setConfirming] = useState<Coach | null>(null);
 
   const { data, isLoading } = useQuery({ queryKey: ["coaches"], queryFn: fetchCoaches });
+  const entitlementsQuery = useQuery({
+    queryKey: ["academy-entitlements"],
+    queryFn: fetchMyAcademyEntitlements,
+  });
 
   const toggleMutation = useMutation({
     mutationFn: (coach: Coach) =>
@@ -75,6 +79,13 @@ function CoachesPage() {
           <h1 className="font-display text-2xl tracking-wide uppercase">Coaches</h1>
           <p className="text-muted-foreground text-sm">
             {coaches.length} coach account{coaches.length === 1 ? "" : "s"} in the academy
+            {entitlementsQuery.data?.coachLimit != null && (
+              <span>
+                {" "}
+                · {coaches.filter((coach) => coach.is_active).length} /{" "}
+                {entitlementsQuery.data.coachLimit} active package limit
+              </span>
+            )}
           </p>
         </div>
         <Button asChild className="tracking-wider uppercase">

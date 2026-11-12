@@ -4,7 +4,7 @@ import { createFileRoute } from "@/lib/next-router-compat";
 import { useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
-import { Download, BarChart3, TrendingUp } from "lucide-react";
+import { Download, BarChart3, LockKeyhole, TrendingUp } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/select";
 import { EmptyState, LoadingBlock, ScoreCard } from "@/components/DataCards";
 import { RatingBadge } from "@/components/PlayersTable";
-import { fetchEvaluations } from "@/lib/api";
+import { fetchEvaluations, fetchMyAcademyEntitlements } from "@/lib/api";
 import { SKILL_CATEGORIES } from "@/lib/skills";
 import type { Evaluation } from "@/lib/types";
 
@@ -65,12 +65,29 @@ function csvValue(value: unknown) {
 function AdminReportsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState("");
   const [selectedComparison, setSelectedComparison] = useState("");
+  const entitlementsQuery = useQuery({
+    queryKey: ["academy-entitlements"],
+    queryFn: fetchMyAcademyEntitlements,
+  });
+  const reportsEnabled = entitlementsQuery.data?.features.includes("reports") ?? false;
   const { data, isLoading } = useQuery({
     queryKey: ["evaluations", "all"],
     queryFn: fetchEvaluations,
+    enabled: reportsEnabled,
   });
 
-  if (isLoading) return <LoadingBlock label="Building reports…" />;
+  if (entitlementsQuery.isLoading || (reportsEnabled && isLoading)) {
+    return <LoadingBlock label="Checking package access…" />;
+  }
+  if (!reportsEnabled) {
+    return (
+      <EmptyState
+        icon={LockKeyhole}
+        title="Reports are available on Growth"
+        description="Upgrade to Growth or Pro to unlock reports, comparisons, and season CSV exports."
+      />
+    );
+  }
   const evaluations = (data ?? []) as EvaluationRow[];
   const periodMap = new Map<string, { key: string; season: string; year: number }>();
   for (const evaluation of evaluations) {

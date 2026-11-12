@@ -2,10 +2,23 @@
 
 import { createFileRoute, Link } from "@/lib/next-router-compat";
 import { useQuery } from "@tanstack/react-query";
-import { Activity, ClipboardCheck, Pencil, Power, Trash2, UserPlus } from "lucide-react";
+import {
+  Activity,
+  ClipboardCheck,
+  LockKeyhole,
+  Pencil,
+  Power,
+  Trash2,
+  UserPlus,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState, LoadingBlock } from "@/components/DataCards";
-import { fetchAdminActivity, fetchEvaluations, fetchPlayers } from "@/lib/api";
+import {
+  fetchAdminActivity,
+  fetchEvaluations,
+  fetchMyAcademyEntitlements,
+  fetchPlayers,
+} from "@/lib/api";
 
 export const Route = createFileRoute("/admin/_shell/activity")({
   head: () => ({ meta: [{ title: "Academy Activity | Touchline" }] }),
@@ -22,15 +35,42 @@ interface Entry {
 }
 
 function AdminActivityPage() {
-  const playersQuery = useQuery({ queryKey: ["players", "all"], queryFn: () => fetchPlayers() });
-  const evalsQuery = useQuery({ queryKey: ["evaluations"], queryFn: fetchEvaluations });
+  const entitlementsQuery = useQuery({
+    queryKey: ["academy-entitlements"],
+    queryFn: fetchMyAcademyEntitlements,
+  });
+  const activityEnabled = entitlementsQuery.data?.features.includes("activity_history") ?? false;
+  const playersQuery = useQuery({
+    queryKey: ["players", "all"],
+    queryFn: () => fetchPlayers(),
+    enabled: activityEnabled,
+  });
+  const evalsQuery = useQuery({
+    queryKey: ["evaluations"],
+    queryFn: fetchEvaluations,
+    enabled: activityEnabled,
+  });
   const adminActivityQuery = useQuery({
     queryKey: ["admin-activity"],
     queryFn: fetchAdminActivity,
+    enabled: activityEnabled,
   });
 
-  if (playersQuery.isLoading || evalsQuery.isLoading || adminActivityQuery.isLoading) {
-    return <LoadingBlock label="Loading activity…" />;
+  if (
+    entitlementsQuery.isLoading ||
+    (activityEnabled &&
+      (playersQuery.isLoading || evalsQuery.isLoading || adminActivityQuery.isLoading))
+  ) {
+    return <LoadingBlock label="Checking package access…" />;
+  }
+  if (!activityEnabled) {
+    return (
+      <EmptyState
+        icon={LockKeyhole}
+        title="Activity history is available on Growth"
+        description="Upgrade to Growth or Pro to unlock admin actions, registrations, and evaluation history."
+      />
+    );
   }
 
   const entries: Entry[] = [

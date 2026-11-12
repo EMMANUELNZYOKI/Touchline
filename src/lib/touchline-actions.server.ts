@@ -370,7 +370,7 @@ async function dispatch(request: Request, userId: string, body: unknown) {
     const { data: plans, error: plansError } = await supabaseAdmin
       .from("subscription_plans")
       .select(
-        "plan_key, name, description, amount, currency, player_limit, feature_summary, active, display_order",
+        "plan_key, name, description, amount, currency, player_limit, coach_limit, feature_summary, feature_flags, active, display_order",
       )
       .eq("active", true)
       .order("display_order", { ascending: true });

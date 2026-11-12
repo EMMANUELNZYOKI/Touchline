@@ -7,7 +7,9 @@ export type BillingPlan = {
   amount: number;
   currency: string;
   player_limit: number | null;
+  coach_limit: number | null;
   feature_summary: string[];
+  feature_flags: string[];
   active: boolean;
   display_order: number;
 };
