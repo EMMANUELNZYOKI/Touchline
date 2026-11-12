@@ -6,6 +6,7 @@ import { Check, ImagePlus, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -360,9 +361,8 @@ function AdminSettingsPage() {
           <form className="grid gap-4" onSubmit={changePassword}>
             <div className="grid gap-2">
               <Label htmlFor="new-password">New password</Label>
-              <Input
+              <PasswordInput
                 id="new-password"
-                type="password"
                 required
                 minLength={8}
                 value={password}
@@ -371,9 +371,8 @@ function AdminSettingsPage() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="confirm-password">Confirm password</Label>
-              <Input
+              <PasswordInput
                 id="confirm-password"
-                type="password"
                 required
                 minLength={8}
                 value={confirm}

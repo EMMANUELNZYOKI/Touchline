@@ -10,6 +10,7 @@ import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { createCoachAccount } from "@/lib/admin.functions";
 import { UpgradeDialog } from "@/components/UpgradeDialog";
@@ -133,7 +134,7 @@ function CreateCoachPage() {
             <div className="grid gap-2">
               <Label htmlFor="password">Temporary password</Label>
               <div className="flex gap-2">
-                <Input
+                <PasswordInput
                   id="password"
                   required
                   minLength={8}

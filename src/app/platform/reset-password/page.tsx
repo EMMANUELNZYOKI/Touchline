@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { AuthShell } from "@/components/AuthShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -84,9 +85,8 @@ export default function PlatformResetPasswordPage() {
         <form className="grid gap-4" onSubmit={updatePassword}>
           <div className="grid gap-2">
             <Label htmlFor="password">New password</Label>
-            <Input
+            <PasswordInput
               id="password"
-              type="password"
               autoComplete="new-password"
               required
               minLength={8}
@@ -97,9 +97,8 @@ export default function PlatformResetPasswordPage() {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="confirm-password">Confirm new password</Label>
-            <Input
+            <PasswordInput
               id="confirm-password"
-              type="password"
               autoComplete="new-password"
               required
               minLength={8}

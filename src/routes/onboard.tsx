@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { AuthShell } from "@/components/AuthShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { completeAcademyOnboarding } from "@/lib/onboarding.functions";
@@ -296,9 +297,8 @@ function AcademyOnboarding() {
         </div>
         <div className="grid gap-2">
           <Label htmlFor="admin-password">Password (minimum 8 characters)</Label>
-          <Input
+          <PasswordInput
             id="admin-password"
-            type="password"
             required
             minLength={8}
             maxLength={72}
@@ -309,9 +309,8 @@ function AcademyOnboarding() {
         </div>
         <div className="grid gap-2">
           <Label htmlFor="confirm-password">Confirm password</Label>
-          <Input
+          <PasswordInput
             id="confirm-password"
-            type="password"
             required
             minLength={8}
             maxLength={72}
