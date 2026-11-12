@@ -44,6 +44,19 @@ export function updatePlatformAcademy({
   );
 }
 
-export function createPlatformAcademy({ data }: { data: { name: string; slug: string } }) {
-  return callTouchlineApi<{ academyId: string }>("/api/platform/academies", "POST", data);
+export function createPlatformAcademy({
+  data,
+}: {
+  data: {
+    name: string;
+    slug: string;
+    adminFullName: string;
+    adminEmail: string;
+    adminPhone: string;
+  };
+}) {
+  return callTouchlineApi<{
+    academyId: string;
+    administrator: { fullName: string; email: string; temporaryPassword: string };
+  }>("/api/platform/academies", "POST", data);
 }

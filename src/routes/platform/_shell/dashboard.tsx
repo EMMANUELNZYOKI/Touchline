@@ -7,8 +7,10 @@ import { useServerFn } from "@/lib/next-server-fn";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Building2,
+  CheckCircle2,
   CircleAlert,
   ClipboardCheck,
+  Copy,
   CreditCard,
   Loader2,
   Plus,
@@ -50,6 +52,14 @@ function PlatformDashboard() {
   const [createOpen, setCreateOpen] = useState(false);
   const [academyName, setAcademyName] = useState("");
   const [academySlug, setAcademySlug] = useState("");
+  const [adminFullName, setAdminFullName] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminPhone, setAdminPhone] = useState("");
+  const [provisionedCredentials, setProvisionedCredentials] = useState<{
+    fullName: string;
+    email: string;
+    temporaryPassword: string;
+  } | null>(null);
   const [slugEdited, setSlugEdited] = useState(false);
   const query = useQuery({
     queryKey: ["platform-academies"],
@@ -66,12 +76,21 @@ function PlatformDashboard() {
     },
   });
   const create = useMutation({
-    mutationFn: (input: { name: string; slug: string }) => provisionAcademy({ data: input }),
-    onSuccess: async () => {
+    mutationFn: (input: {
+      name: string;
+      slug: string;
+      adminFullName: string;
+      adminEmail: string;
+      adminPhone: string;
+    }) => provisionAcademy({ data: input }),
+    onSuccess: async (result) => {
       setAcademyName("");
       setAcademySlug("");
+      setAdminFullName("");
+      setAdminEmail("");
+      setAdminPhone("");
       setSlugEdited(false);
-      setCreateOpen(false);
+      setProvisionedCredentials(result.administrator);
       await queryClient.invalidateQueries({ queryKey: ["platform-academies"] });
     },
   });
@@ -173,15 +192,22 @@ function PlatformDashboard() {
             <div className="mb-4">
               <h2 className="font-display text-lg tracking-wide uppercase">Provision an academy</h2>
               <p className="text-muted-foreground mt-1 text-xs">
-                Creates an active workspace with a starter trial record. Add an academy
-                administrator separately after account invitation is implemented.
+                Creates an active workspace with a 14-day Starter trial and its academy
+                administrator. The temporary password is shown once after creation so you can
+                securely send it to the academy owner.
               </p>
             </div>
             <form
-              className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end"
+              className="grid gap-4 md:grid-cols-2"
               onSubmit={(event) => {
                 event.preventDefault();
-                create.mutate({ name: academyName.trim(), slug: academySlug.trim() });
+                create.mutate({
+                  name: academyName.trim(),
+                  slug: academySlug.trim(),
+                  adminFullName: adminFullName.trim(),
+                  adminEmail: adminEmail.trim(),
+                  adminPhone: adminPhone.trim(),
+                });
               }}
             >
               <label className="grid gap-2 text-xs font-medium">
@@ -221,17 +247,85 @@ function PlatformDashboard() {
                   placeholder="northside-soccer-academy"
                 />
               </label>
+              <label className="grid gap-2 text-xs font-medium">
+                Administrator full name
+                <Input
+                  required
+                  minLength={2}
+                  maxLength={120}
+                  value={adminFullName}
+                  onChange={(event) => setAdminFullName(event.target.value)}
+                  placeholder="Samuel Kamau"
+                />
+              </label>
+              <label className="grid gap-2 text-xs font-medium">
+                Administrator email
+                <Input
+                  required
+                  type="email"
+                  maxLength={255}
+                  value={adminEmail}
+                  onChange={(event) => setAdminEmail(event.target.value)}
+                  placeholder="owner@academy.co.ke"
+                />
+              </label>
+              <label className="grid gap-2 text-xs font-medium">
+                Administrator phone
+                <Input
+                  maxLength={40}
+                  value={adminPhone}
+                  onChange={(event) => setAdminPhone(event.target.value)}
+                  placeholder="0712 345 678"
+                />
+              </label>
               <Button
                 type="submit"
-                disabled={create.isPending || !academyName.trim() || !academySlug.trim()}
+                disabled={
+                  create.isPending ||
+                  !academyName.trim() ||
+                  !academySlug.trim() ||
+                  !adminFullName.trim() ||
+                  !adminEmail.trim()
+                }
               >
-                {create.isPending ? "Creating…" : "Create trial"}
+                {create.isPending ? "Creating…" : "Create academy & admin"}
               </Button>
             </form>
             {create.error && (
               <p className="text-destructive mt-3 text-xs">
                 {create.error instanceof Error ? create.error.message : "Could not create academy."}
               </p>
+            )}
+            {provisionedCredentials && (
+              <div className="border-accent/40 bg-accent/10 mt-5 rounded-xl border p-4 text-sm">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="text-accent mt-0.5 h-5 w-5 shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold">Academy and administrator created</p>
+                    <p className="text-muted-foreground mt-1 text-xs">
+                      Send these details securely to the academy owner. The temporary password is
+                      shown only here.
+                    </p>
+                    <div className="mt-3 grid gap-2 rounded-lg border bg-background/60 p-3 font-mono text-xs">
+                      <p>Email: {provisionedCredentials.email}</p>
+                      <p>Password: {provisionedCredentials.temporaryPassword}</p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="mt-3 gap-2"
+                      onClick={() =>
+                        void navigator.clipboard.writeText(
+                          `Touchline Academy Admin\nEmail: ${provisionedCredentials.email}\nTemporary password: ${provisionedCredentials.temporaryPassword}`,
+                        )
+                      }
+                    >
+                      <Copy className="h-3.5 w-3.5" /> Copy credentials
+                    </Button>
+                  </div>
+                </div>
+              </div>
             )}
           </CardContent>
         </Card>

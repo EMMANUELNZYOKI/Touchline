@@ -1,5 +1,6 @@
 import "server-only";
 
+import { randomBytes } from "node:crypto";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -39,6 +40,9 @@ const createAcademySchema = z.object({
     .min(1)
     .max(80)
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers, and single hyphens."),
+  adminFullName: z.string().trim().min(2).max(120),
+  adminEmail: z.string().trim().email().max(255),
+  adminPhone: z.string().trim().max(40).optional().default(""),
 });
 
 const signupMetadataSchema = z.object({
@@ -448,7 +452,60 @@ async function dispatch(request: Request, userId: string, body: unknown) {
       p_slug: data.slug,
     });
     if (error) throw new ApiError("Could not create academy. The slug may already be in use.", 400);
-    return { academyId };
+    if (!academyId) throw new ApiError("The academy workspace could not be created.", 500);
+
+    const temporaryPassword = `Touchline-${randomBytes(9).toString("base64url")}!`;
+    const { data: createdUser, error: userError } = await supabaseAdmin.auth.admin.createUser({
+      email: data.adminEmail,
+      password: temporaryPassword,
+      email_confirm: true,
+      user_metadata: {
+        full_name: data.adminFullName,
+        phone: data.adminPhone,
+        provisioned_by_touchline: true,
+        must_change_password: true,
+      },
+    });
+    if (userError || !createdUser.user) {
+      throw new ApiError(
+        userError?.message?.includes("already")
+          ? "That administrator email is already registered. Use another email address."
+          : "The academy workspace was created, but the administrator account could not be created.",
+        400,
+      );
+    }
+
+    const adminUserId = createdUser.user.id;
+    const { error: profileError } = await supabaseAdmin.from("profiles").upsert({
+      id: adminUserId,
+      full_name: data.adminFullName,
+      email: data.adminEmail,
+      phone: data.adminPhone || null,
+      role: "coach",
+      is_active: true,
+    });
+    const { error: membershipError } = await supabaseAdmin.from("academy_memberships").insert({
+      academy_id: academyId,
+      user_id: adminUserId,
+      role: "academy_admin",
+      status: "active",
+    });
+    if (profileError || membershipError) {
+      await supabaseAdmin.auth.admin.deleteUser(adminUserId);
+      throw new ApiError(
+        "The workspace was created, but administrator setup could not be completed.",
+        500,
+      );
+    }
+
+    return {
+      academyId,
+      administrator: {
+        fullName: data.adminFullName,
+        email: data.adminEmail,
+        temporaryPassword,
+      },
+    };
   }
 
   if (
