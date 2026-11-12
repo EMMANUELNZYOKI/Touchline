@@ -4,12 +4,10 @@ import { useEffect, useState } from "react";
 import { Check, Loader2, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   getBilling,
-  startBillingCheckout,
   startMpesaCheckout,
   type BillingPlan,
   type BillingResponse,
@@ -32,8 +30,6 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
   const [selectedPlan, setSelectedPlan] = useState("");
   const [mpesaPhone, setMpesaPhone] = useState(profile?.phone ?? "");
   const [mpesaLoading, setMpesaLoading] = useState(false);
-  const [cardLoading, setCardLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [mpesaPromptOpen, setMpesaPromptOpen] = useState(false);
 
   useEffect(() => {
@@ -42,7 +38,6 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
 
   useEffect(() => {
     if (!open) return;
-    setMessage("");
     setMpesaPromptOpen(false);
     setLoading(true);
     void getBilling()
@@ -64,7 +59,6 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
       return;
     }
     setMpesaLoading(true);
-    setMessage("");
     try {
       const result = await startMpesaCheckout(selectedPlan, mpesaPhone);
       toast.success("Opening Paystack M-Pesa checkout");
@@ -73,18 +67,6 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
       toast.error(error instanceof Error ? error.message : "Could not send the M-Pesa prompt.");
     } finally {
       setMpesaLoading(false);
-    }
-  };
-
-  const payByCard = async () => {
-    if (!selectedPlan) return;
-    setCardLoading(true);
-    try {
-      const result = await startBillingCheckout(selectedPlan);
-      window.location.assign(result.link);
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not start checkout.");
-      setCardLoading(false);
     }
   };
 
@@ -127,7 +109,6 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
                     type="button"
                     onClick={() => {
                       setSelectedPlan(plan.plan_key);
-                      setMessage("");
                       setMpesaPromptOpen(true);
                     }}
                     className={`relative flex h-full flex-col rounded-2xl border p-5 text-left transition sm:p-6 ${selected ? "border-primary bg-primary/10 shadow-[0_0_0_1px_hsl(var(--primary))]" : "border-white/10 bg-white/[0.03] hover:border-white/30"}`}
@@ -168,60 +149,6 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
                 );
               })}
             </div>
-
-            <Card className="mt-5 border-primary/25 bg-primary/5 text-white">
-              <CardContent className="grid gap-4 p-4 sm:p-5">
-                <div>
-                  <p className="font-semibold">Subscribe quickly with M-Pesa</p>
-                  <p className="mt-1 text-xs text-white/60">
-                    Selected:{" "}
-                    {selectedPlanDetails
-                      ? `${selectedPlanDetails.name} · ${formatAmount(selectedPlanDetails)} / month`
-                      : "Choose a package above"}
-                    . Continue to Paystack, choose M-Pesa, then approve the prompt with your OTP and
-                    M-Pesa PIN.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <Input
-                    value={mpesaPhone}
-                    onChange={(event) => setMpesaPhone(event.target.value)}
-                    placeholder="0712 345 678"
-                    inputMode="tel"
-                    aria-label="Safaricom M-Pesa phone number"
-                    disabled={mpesaLoading}
-                    className="border-white/15 bg-white/5 text-white placeholder:text-white/35"
-                  />
-                  <Button
-                    onClick={payWithMpesa}
-                    disabled={!selectedPlan || mpesaLoading || cardLoading}
-                    className="sm:min-w-44"
-                  >
-                    {mpesaLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Subscribe with M-Pesa
-                  </Button>
-                </div>
-                {message && (
-                  <p role="status" className="text-sm text-white/75">
-                    {message}
-                  </p>
-                )}
-                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3">
-                  <p className="flex items-center gap-2 text-xs text-white/50">
-                    <ShieldCheck className="h-4 w-4" /> Payment is verified before access changes.
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={payByCard}
-                    disabled={!selectedPlan || cardLoading || mpesaLoading}
-                    className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
-                  >
-                    {cardLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Pay by card or other method
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
           </>
         )}
       </DialogContent>
@@ -252,7 +179,7 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
             />
             <Button
               onClick={payWithMpesa}
-              disabled={!selectedPlan || mpesaLoading || cardLoading}
+              disabled={!selectedPlan || mpesaLoading}
               className="w-full"
             >
               {mpesaLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
