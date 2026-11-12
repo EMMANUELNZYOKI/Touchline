@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchMyProfile, fetchMyRole } from "@/lib/api";
+import { completeAcademyOnboarding } from "@/lib/onboarding.functions";
 import type { AppRole, Profile } from "@/lib/types";
 
 interface AuthState {
@@ -64,7 +65,27 @@ export async function signInWithRoleCheck(
   const user = data.user;
   if (!user) throw new Error("Sign in failed.");
 
-  const [role, profile] = await Promise.all([fetchMyRole(user.id), fetchMyProfile(user.id)]);
+  let [role, profile] = await Promise.all([fetchMyRole(user.id), fetchMyProfile(user.id)]);
+
+  // A confirmed academy owner may arrive here directly from the login page instead
+  // of returning through /onboard?complete=1. Finish the server-side onboarding
+  // transaction before rejecting the account for missing membership.
+  if (
+    !role &&
+    expected === "academy_admin" &&
+    user.user_metadata["touchline_onboard_pending"] === true
+  ) {
+    try {
+      await completeAcademyOnboarding();
+      [role, profile] = await Promise.all([fetchMyRole(user.id), fetchMyProfile(user.id)]);
+    } catch (error) {
+      console.error("Could not finish pending academy onboarding", error);
+      await supabase.auth.signOut();
+      throw new Error(
+        "Your email is verified, but academy setup could not finish yet. Please return to the academy signup link and try again.",
+      );
+    }
+  }
 
   if (!role) {
     await supabase.auth.signOut();

@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, CalendarClock } from "lucide-react";
 import { fetchMyAcademySubscription } from "@/lib/api";
+import { Link } from "@/lib/next-router-compat";
 
 export function AcademyReadOnlyNotice({ userId }: { userId?: string }) {
   const { data: subscription } = useQuery({
@@ -53,6 +54,12 @@ export function AcademyReadOnlyNotice({ userId }: { userId?: string }) {
           This workspace is read-only. You can view academy records, but adding or changing players,
           coaches, and evaluations is blocked until Touchline activates the subscription.
         </p>
+        <Link
+          to="/admin/settings"
+          className="text-primary mt-3 inline-flex font-semibold underline underline-offset-4"
+        >
+          Choose a package and reactivate workspace
+        </Link>
       </div>
     </div>
   );

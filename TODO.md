@@ -9,6 +9,7 @@
 - [x] Update setup and environment documentation; remove stale TanStack instructions and lock/config artifacts.
 - [x] Validate with ESLint, strict TypeScript, and a production Next.js build.
 - [x] Add Flutterwave hosted checkout, server-side transaction verification, webhook signature validation, idempotent event tracking, and academy billing status/payment history.
+- [x] Make verified academy owners self-complete pending onboarding on first admin sign-in and guide expired trials to package selection.
 - [ ] Configure the Touchline service-role key and remaining environment variables in the Vercel project.
 - [ ] Run live role-isolation smoke tests (academy admin, coach, player evaluation, platform admin) after server configuration is available.
 - [ ] Push and deploy only after the service-role key is configured and the user authorizes rollout.
