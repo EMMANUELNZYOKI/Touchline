@@ -23,9 +23,11 @@ type PaystackTransaction = {
   metadata?: string | Record<string, unknown> | null;
 };
 
-function requiredEnv(name: string) {
-  const value = process.env[name]?.trim();
-  if (!value) throw new ApiError(`Paystack is not configured. Missing ${name}.`, 503);
+function paystackSecretKey() {
+  const value = (process.env.PAYSTACK_SECRET_KEY_LIVE || process.env.PAYSTACK_SECRET_KEY)?.trim();
+  if (!value) {
+    throw new ApiError("Paystack is not configured. Missing PAYSTACK_SECRET_KEY.", 503);
+  }
   return value;
 }
 
@@ -33,7 +35,7 @@ async function paystackRequest<T>(path: string, init: RequestInit) {
   const response = await fetch(`${PAYSTACK_API}${path}`, {
     ...init,
     headers: {
-      Authorization: `Bearer ${requiredEnv("PAYSTACK_SECRET_KEY")}`,
+      Authorization: `Bearer ${paystackSecretKey()}`,
       "Content-Type": "application/json",
       ...(init.headers ?? {}),
     },
@@ -145,10 +147,7 @@ function metadataObject(metadata: PaystackTransaction["metadata"]) {
 export async function handlePaystackWebhook(request: Request) {
   const rawBody = await request.text();
   const signature = request.headers.get("x-paystack-signature") || "";
-  const expected = crypto
-    .createHmac("sha512", requiredEnv("PAYSTACK_SECRET_KEY"))
-    .update(rawBody)
-    .digest("hex");
+  const expected = crypto.createHmac("sha512", paystackSecretKey()).update(rawBody).digest("hex");
   if (!safeEqual(signature, expected)) return new Response(null, { status: 401 });
 
   const payload = JSON.parse(rawBody) as { event?: string; data?: PaystackTransaction };
