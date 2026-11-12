@@ -66,11 +66,20 @@ export async function fetchMyAcademySubscription(userId: string) {
 }
 
 export async function fetchMyAcademyProfile() {
-  const academyId = await fetchMyActiveAcademyAdminId();
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  if (authError || !authData.user) throw new Error("Sign in to a Touchline account.");
+  const { data: membership, error: membershipError } = await supabase
+    .from("academy_memberships")
+    .select("academy_id")
+    .eq("user_id", authData.user.id)
+    .eq("status", "active")
+    .maybeSingle();
+  if (membershipError) throw membershipError;
+  if (!membership) throw new Error("No active academy membership was found.");
   const { data, error } = await supabase
     .from("academies")
     .select("id, name, logo_path")
-    .eq("id", academyId)
+    .eq("id", membership.academy_id)
     .single();
   if (error) throw error;
   return data;
