@@ -454,6 +454,7 @@ interface PlayerEvaluationPDFProps {
   player: Player;
   evaluation: Evaluation | null;
   coachName: string;
+  academyName: string;
   playerPhotoUrl?: string | null;
   logoUrl?: string | null;
   season?: string;
@@ -463,8 +464,9 @@ export function PlayerEvaluationPDF({
   player,
   evaluation,
   coachName,
+  academyName,
   playerPhotoUrl,
-  logoUrl = "/touchline-mark.svg",
+  logoUrl = null,
   season = "Season 8: May-August 2026",
 }: PlayerEvaluationPDFProps) {
   const age = calculateAge(player.date_of_birth);
@@ -476,7 +478,7 @@ export function PlayerEvaluationPDF({
   return (
     <Document
       title={`Player Evaluation - ${player.first_name} ${player.last_name}`}
-      author="Touchline"
+      author={academyName}
       subject="Player Evaluation & Development Profile"
     >
       <Page size="A4" orientation="portrait" style={styles.page}>
@@ -487,7 +489,7 @@ export function PlayerEvaluationPDF({
           {playerPhotoUrl && <Image src={playerPhotoUrl} style={styles.playerPhoto} />}
 
           <View style={styles.academyHeader}>
-            <Text style={styles.academyName}>TOUCHLINE</Text>
+            <Text style={styles.academyName}>{academyName.toUpperCase()}</Text>
 
             <Text style={styles.tagline}>Transforming Lives Through Football</Text>
 
@@ -616,7 +618,7 @@ export function PlayerEvaluationPDF({
         </View>
 
         {/* FOOTER */}
-        <Text style={styles.footer}>Touchline • Player Evaluation & Development Profile</Text>
+        <Text style={styles.footer}>Powered by Touchline</Text>
       </Page>
     </Document>
   );

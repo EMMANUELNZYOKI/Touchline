@@ -2,13 +2,14 @@
 import { createFileRoute } from "@/lib/next-router-compat";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Check, Loader2, ShieldCheck } from "lucide-react";
+import { Check, ImagePlus, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { academyLogoUrl, fetchMyAcademyProfile, uploadAcademyLogo } from "@/lib/api";
 import {
   getBilling,
   startBillingCheckout,
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/admin/_shell/settings")({
 });
 
 function AdminSettingsPage() {
-  const { profile } = useAuth();
+  const { profile, session } = useAuth();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [saving, setSaving] = useState(false);
@@ -33,6 +34,9 @@ function AdminSettingsPage() {
   const [mpesaPhone, setMpesaPhone] = useState("");
   const [paymentMessage, setPaymentMessage] = useState("");
   const [selectedPlan, setSelectedPlan] = useState("");
+  const [academy, setAcademy] = useState<{ name: string; logo_path: string | null } | null>(null);
+  const [academyLogo, setAcademyLogo] = useState<string | null>(null);
+  const [logoLoading, setLogoLoading] = useState(false);
 
   useEffect(() => {
     setMpesaPhone(profile?.phone ?? "");
@@ -46,6 +50,15 @@ function AdminSettingsPage() {
       })
       .catch((error: Error) => toast.error(error.message))
       .finally(() => setBillingLoading(false));
+  }, []);
+
+  useEffect(() => {
+    void fetchMyAcademyProfile()
+      .then(async (result) => {
+        setAcademy(result);
+        setAcademyLogo(await academyLogoUrl(result.logo_path));
+      })
+      .catch((error: Error) => toast.error(error.message));
   }, []);
 
   const changePassword = async (e: React.FormEvent) => {
@@ -99,6 +112,29 @@ function AdminSettingsPage() {
     }
   };
 
+  const saveAcademyLogo = async (file: File | undefined) => {
+    if (!file || !session?.user.id) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Choose a PNG, JPG, or WebP image.");
+      return;
+    }
+    if (file.size > 3 * 1024 * 1024) {
+      toast.error("The academy logo must be smaller than 3MB.");
+      return;
+    }
+    setLogoLoading(true);
+    try {
+      const path = await uploadAcademyLogo(session.user.id, file);
+      setAcademy((current) => (current ? { ...current, logo_path: path } : current));
+      setAcademyLogo(await academyLogoUrl(path));
+      toast.success("Academy logo updated. New evaluation downloads will use it.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not upload academy logo.");
+    } finally {
+      setLogoLoading(false);
+    }
+  };
+
   const subscription = billing?.subscription;
   const trialEnds = subscription?.trial_ends_at ? new Date(subscription.trial_ends_at) : null;
   const isActive = subscription?.status === "active";
@@ -116,6 +152,50 @@ function AdminSettingsPage() {
           Manage your academy account, package, and subscription.
         </p>
       </div>
+      <Card className="border-border/70">
+        <CardHeader>
+          <CardTitle className="font-display text-base tracking-wide uppercase">
+            Academy branding
+          </CardTitle>
+          <CardDescription>
+            Reports and player evaluation downloads will show your academy name and logo.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="bg-muted/30 flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border">
+            {academyLogo ? (
+              <img
+                src={academyLogo}
+                alt={`${academy?.name ?? "Academy"} logo`}
+                className="h-full w-full object-contain p-2"
+              />
+            ) : (
+              <ImagePlus className="text-muted-foreground h-7 w-7" />
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold">{academy?.name ?? "Your academy"}</p>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Use a clear square logo. PNG, JPG, or WebP up to 3MB.
+            </p>
+          </div>
+          <Button type="button" variant="outline" disabled={logoLoading} asChild>
+            <label className="cursor-pointer">
+              {logoLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {logoLoading ? "Uploading…" : "Upload logo"}
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={(event) => {
+                  void saveAcademyLogo(event.target.files?.[0]);
+                  event.currentTarget.value = "";
+                }}
+              />
+            </label>
+          </Button>
+        </CardContent>
+      </Card>
       <Card className="border-border/70">
         <CardHeader>
           <CardTitle className="font-display text-base tracking-wide uppercase">

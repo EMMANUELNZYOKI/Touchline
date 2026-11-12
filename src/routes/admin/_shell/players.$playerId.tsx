@@ -8,7 +8,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { LoadingBlock } from "@/components/DataCards";
 import { PlayerProfileView } from "@/components/PlayerProfileView";
 import { PlayerEvaluationPDF } from "@/components/PlayerEvaluationPDF";
-import { fetchPlayer, photoUrl } from "@/lib/api";
+import { academyLogoUrl, fetchPlayer, photoUrl } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/_shell/players/$playerId")({
   head: () => ({
@@ -37,6 +37,12 @@ function AdminPlayerProfile() {
     queryKey: ["player-photo", data?.player.player_photo],
     queryFn: () => photoUrl(data?.player.player_photo ?? null),
     enabled: Boolean(data?.player.player_photo),
+  });
+
+  const { data: academyLogoUrlResult } = useQuery({
+    queryKey: ["academy-logo", data?.academyLogoPath],
+    queryFn: () => academyLogoUrl(data?.academyLogoPath ?? null),
+    enabled: Boolean(data?.academyLogoPath),
   });
 
   if (isLoading) {
@@ -74,8 +80,9 @@ function AdminPlayerProfile() {
               player={data.player}
               evaluation={data.latestEvaluation}
               coachName={data.coachName}
+              academyName={data.academyName}
               playerPhotoUrl={playerPhotoUrl ?? null}
-              logoUrl="/touchline-mark.svg"
+              logoUrl={academyLogoUrlResult ?? null}
               season={
                 data.latestEvaluation
                   ? `${data.latestEvaluation.season} ${data.latestEvaluation.season_year}`

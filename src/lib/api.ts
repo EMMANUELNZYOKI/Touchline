@@ -65,6 +65,51 @@ export async function fetchMyAcademySubscription(userId: string) {
   return subscription;
 }
 
+export async function fetchMyAcademyProfile() {
+  const academyId = await fetchMyActiveAcademyAdminId();
+  const { data, error } = await supabase
+    .from("academies")
+    .select("id, name, logo_path")
+    .eq("id", academyId)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function uploadAcademyLogo(userId: string, file: File) {
+  const { data: membership, error: membershipError } = await supabase
+    .from("academy_memberships")
+    .select("academy_id, role")
+    .eq("user_id", userId)
+    .eq("role", "academy_admin")
+    .eq("status", "active")
+    .maybeSingle();
+  if (membershipError) throw membershipError;
+  if (!membership) throw new Error("An active academy administrator membership is required.");
+
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "png";
+  const path = `${membership.academy_id}/logo.${ext}`;
+  const { error: uploadError } = await supabase.storage.from("academy-assets").upload(path, file, {
+    upsert: true,
+    contentType: file.type,
+  });
+  if (uploadError) throw uploadError;
+
+  const { error: updateError } = await supabase
+    .from("academies")
+    .update({ logo_path: path })
+    .eq("id", membership.academy_id);
+  if (updateError) throw updateError;
+  return path;
+}
+
+export async function academyLogoUrl(path: string | null): Promise<string | null> {
+  if (!path) return null;
+  const { data, error } = await supabase.storage.from("academy-assets").createSignedUrl(path, 3600);
+  if (error) throw error;
+  return data.signedUrl ?? null;
+}
+
 export type AcademyEntitlements = {
   planKey: string;
   status: "trialing" | "active" | "past_due" | "canceled" | "paused";
@@ -257,6 +302,7 @@ export async function fetchPlayer(playerId: string) {
   if (!playerRes.data) return null;
 
   const player = playerRes.data as unknown as Player;
+  const academyId = (playerRes.data as { academy_id?: string }).academy_id;
   const evaluations = (evalRes.data ?? []) as unknown as Evaluation[];
   const activeEvaluation =
     evaluations.find(
@@ -265,9 +311,18 @@ export async function fetchPlayer(playerId: string) {
     ) ?? null;
   const evaluationCoachId = activeEvaluation?.coach_id ?? evaluations[0]?.coach_id;
   const coachId = evaluationCoachId ?? player.coach_id;
-  const { data: coach } = coachId
-    ? await supabase.from("profiles").select("id, full_name, email").eq("id", coachId).maybeSingle()
-    : { data: null };
+  const [{ data: coach }, { data: academy }] = await Promise.all([
+    coachId
+      ? await supabase
+          .from("profiles")
+          .select("id, full_name, email")
+          .eq("id", coachId)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+    academyId
+      ? supabase.from("academies").select("name, logo_path").eq("id", academyId).maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
 
   return {
     player,
@@ -277,6 +332,8 @@ export async function fetchPlayer(playerId: string) {
     hasEvaluation: (evaluatedIdsRes.data ?? []).some((row) => row.player_id === playerId),
     coachName: coachId ? (coach?.full_name ?? "Unknown coach") : "Not assigned",
     coachEmail: coach?.email ?? "",
+    academyName: academy?.name ?? "Academy",
+    academyLogoPath: academy?.logo_path ?? null,
   };
 }
 
