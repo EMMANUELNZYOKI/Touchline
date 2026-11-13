@@ -31,6 +31,7 @@ import {
 import { EmptyState, LoadingBlock, ScoreCard } from "@/components/DataCards";
 import { RatingBadge } from "@/components/PlayersTable";
 import { fetchEvaluations, fetchMyAcademyEntitlements } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 import { SKILL_CATEGORIES } from "@/lib/skills";
 import type { Evaluation } from "@/lib/types";
 
@@ -63,6 +64,7 @@ function csvValue(value: unknown) {
 }
 
 function AdminReportsPage() {
+  const { role } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState("");
   const [selectedComparison, setSelectedComparison] = useState("");
   const entitlementsQuery = useQuery({
@@ -77,14 +79,18 @@ function AdminReportsPage() {
   });
 
   if (entitlementsQuery.isLoading || (reportsEnabled && isLoading)) {
-    return <LoadingBlock label="Checking package access…" />;
+    return <LoadingBlock label="Loading reports…" />;
   }
   if (!reportsEnabled) {
     return (
       <EmptyState
         icon={LockKeyhole}
-        title="Reports are available on Standard"
-        description="Upgrade to Standard or Pro to unlock reports, comparisons, and season CSV exports."
+        title="Reports are not available"
+        description={
+          role === "academy_admin"
+            ? "Your Academy Owner can review package access and subscription options in Settings."
+            : "Contact the Academy Owner if you need access to reports."
+        }
       />
     );
   }

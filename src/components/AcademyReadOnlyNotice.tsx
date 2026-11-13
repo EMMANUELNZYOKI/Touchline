@@ -4,16 +4,19 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, CalendarClock } from "lucide-react";
 import { fetchMyAcademySubscription } from "@/lib/api";
 import { Link } from "@/lib/next-router-compat";
+import { useAuth } from "@/lib/auth";
 
 export function AcademyReadOnlyNotice({ userId }: { userId?: string }) {
+  const { role } = useAuth();
   const { data: subscription } = useQuery({
     queryKey: ["academy-subscription", userId],
     queryFn: () => fetchMyAcademySubscription(userId!),
-    enabled: Boolean(userId),
+    enabled: Boolean(userId) && role === "academy_admin",
     staleTime: 30_000,
     refetchInterval: 60_000,
   });
 
+  if (role !== "academy_admin") return null;
   if (subscription === undefined) return null;
 
   const trialEnd = subscription?.trial_ends_at ? Date.parse(subscription.trial_ends_at) : null;

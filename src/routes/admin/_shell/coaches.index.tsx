@@ -47,7 +47,7 @@ export const Route = createFileRoute("/admin/_shell/coaches/")({
 function CoachesPage() {
   const queryClient = useQueryClient();
   const toggleActive = useServerFn(setCoachActive);
-  const { profile } = useAuth();
+  const { profile, role } = useAuth();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Coach | null>(null);
   const [confirming, setConfirming] = useState<Coach | null>(null);
@@ -69,10 +69,14 @@ function CoachesPage() {
     },
     onError: (error) => {
       if (isPackageLimitError(error, "coaches")) {
-        toast.error(
-          "Your package coach limit has been reached. Choose a larger package to continue.",
-        );
-        setUpgradeOpen(true);
+        if (role === "academy_admin") {
+          toast.error(
+            "Your package coach limit has been reached. Choose a larger package to continue.",
+          );
+          setUpgradeOpen(true);
+        } else {
+          toast.error("The academy coach limit has been reached. Contact the Academy Owner.");
+        }
       } else {
         toast.error(error instanceof Error ? error.message : "Action failed");
       }
@@ -88,13 +92,15 @@ function CoachesPage() {
 
   return (
     <div className="grid gap-6">
-      <UpgradeDialog open={upgradeOpen} onOpenChange={setUpgradeOpen} profile={profile} />
+      {role === "academy_admin" && (
+        <UpgradeDialog open={upgradeOpen} onOpenChange={setUpgradeOpen} profile={profile} />
+      )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl tracking-wide uppercase">Coaches</h1>
           <p className="text-muted-foreground text-sm">
             {coaches.length} coach account{coaches.length === 1 ? "" : "s"} in the academy
-            {entitlementsQuery.data?.coachLimit != null && (
+            {role === "academy_admin" && entitlementsQuery.data?.coachLimit != null && (
               <span>
                 {" "}
                 · {coaches.filter((coach) => coach.is_active).length} /{" "}

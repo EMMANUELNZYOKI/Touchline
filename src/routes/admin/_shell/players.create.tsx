@@ -52,7 +52,7 @@ const blank: PlayerInput = {
 function CreatePlayerPage() {
   const nav = useNavigate();
   const qc = useQueryClient();
-  const { profile, session } = useAuth();
+  const { profile, session, role } = useAuth();
   const [player, setPlayer] = useState<PlayerInput>(blank);
   const [photo, setPhoto] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
@@ -112,10 +112,14 @@ function CreatePlayerPage() {
       nav({ to: "/admin/players" });
     } catch (e) {
       if (isPackageLimitError(e, "players")) {
-        toast.error(
-          "Your package player limit has been reached. Choose a larger package to continue.",
-        );
-        setUpgradeOpen(true);
+        if (role === "academy_admin") {
+          toast.error(
+            "Your package player limit has been reached. Choose a larger package to continue.",
+          );
+          setUpgradeOpen(true);
+        } else {
+          toast.error("The academy player limit has been reached. Contact the Academy Owner.");
+        }
       } else {
         toast.error(e instanceof Error ? e.message : "Could not create player.");
       }
@@ -125,7 +129,9 @@ function CreatePlayerPage() {
   };
   return (
     <div className="mx-auto grid max-w-4xl gap-6">
-      <UpgradeDialog open={upgradeOpen} onOpenChange={setUpgradeOpen} profile={profile} />
+      {role === "academy_admin" && (
+        <UpgradeDialog open={upgradeOpen} onOpenChange={setUpgradeOpen} profile={profile} />
+      )}
       <Link
         to="/admin/players"
         className="text-muted-foreground inline-flex items-center gap-2 text-sm"

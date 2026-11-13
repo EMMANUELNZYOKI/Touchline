@@ -19,6 +19,7 @@ import {
   fetchMyAcademyEntitlements,
   fetchPlayers,
 } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/_shell/activity")({
   head: () => ({ meta: [{ title: "Academy Activity | Touchline" }] }),
@@ -35,6 +36,7 @@ interface Entry {
 }
 
 function AdminActivityPage() {
+  const { role } = useAuth();
   const entitlementsQuery = useQuery({
     queryKey: ["academy-entitlements"],
     queryFn: fetchMyAcademyEntitlements,
@@ -61,14 +63,18 @@ function AdminActivityPage() {
     (activityEnabled &&
       (playersQuery.isLoading || evalsQuery.isLoading || adminActivityQuery.isLoading))
   ) {
-    return <LoadingBlock label="Checking package access…" />;
+    return <LoadingBlock label="Loading activity…" />;
   }
   if (!activityEnabled) {
     return (
       <EmptyState
         icon={LockKeyhole}
-        title="Activity history is available on Standard"
-        description="Upgrade to Standard or Pro to unlock admin actions, registrations, and evaluation history."
+        title="Activity history is not available"
+        description={
+          role === "academy_admin"
+            ? "Your Academy Owner can review package access and subscription options in Settings."
+            : "Contact the Academy Owner if you need access to activity history."
+        }
       />
     );
   }

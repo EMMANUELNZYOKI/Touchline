@@ -31,7 +31,7 @@ function CreateCoachPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const createCoach = useServerFn(createCoachAccount);
-  const { profile } = useAuth();
+  const { profile, role } = useAuth();
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -62,10 +62,14 @@ function CreateCoachPage() {
       navigate({ to: "/admin/coaches" });
     } catch (error) {
       if (isPackageLimitError(error, "coaches")) {
-        toast.error(
-          "Your package coach limit has been reached. Choose a larger package to continue.",
-        );
-        setUpgradeOpen(true);
+        if (role === "academy_admin") {
+          toast.error(
+            "Your package coach limit has been reached. Choose a larger package to continue.",
+          );
+          setUpgradeOpen(true);
+        } else {
+          toast.error("The academy coach limit has been reached. Contact the Academy Owner.");
+        }
       } else {
         toast.error(error instanceof Error ? error.message : "Could not create the coach account.");
       }
@@ -87,7 +91,9 @@ function CreateCoachPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <UpgradeDialog open={upgradeOpen} onOpenChange={setUpgradeOpen} profile={profile} />
+      {role === "academy_admin" && (
+        <UpgradeDialog open={upgradeOpen} onOpenChange={setUpgradeOpen} profile={profile} />
+      )}
       <Link
         to="/admin/coaches"
         className="text-muted-foreground hover:text-foreground mb-5 inline-flex items-center gap-2 text-sm"
