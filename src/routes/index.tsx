@@ -79,7 +79,7 @@ const packages = [
   },
   {
     name: "Pro",
-    price: "KES 9,000",
+    price: "KES 7,000",
     description: "The highest capacity for established academies that want the complete system.",
     features: [
       "Unlimited players",
