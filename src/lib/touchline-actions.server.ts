@@ -336,8 +336,24 @@ async function dispatch(request: Request, userId: string, body: unknown) {
       .eq("role", "academy_manager")
       .order("created_at", { ascending: true });
     if (membershipError) throw new ApiError("Could not load academy managers.", 500);
+    const { data: subscription, error: subscriptionError } = await supabaseAdmin
+      .from("academy_subscriptions")
+      .select("plan_key")
+      .eq("academy_id", academyId)
+      .maybeSingle();
+    if (subscriptionError) throw new ApiError("Could not load manager entitlements.", 500);
+    let managerLimit: number | null = null;
+    if (subscription?.plan_key) {
+      const { data: plan, error: planError } = await supabaseAdmin
+        .from("subscription_plans")
+        .select("manager_limit")
+        .eq("plan_key", subscription.plan_key)
+        .maybeSingle();
+      if (planError) throw new ApiError("Could not load manager entitlements.", 500);
+      managerLimit = plan?.manager_limit ?? null;
+    }
     const managerIds = (memberships ?? []).map((membership) => membership.user_id);
-    if (!managerIds.length) return { managers: [] };
+    if (!managerIds.length) return { managers: [], managerLimit };
     const { data: profiles, error: profileError } = await supabaseAdmin
       .from("profiles")
       .select("id, full_name, email, phone, created_at")
@@ -345,6 +361,7 @@ async function dispatch(request: Request, userId: string, body: unknown) {
     if (profileError) throw new ApiError("Could not load academy managers.", 500);
     const profileById = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
     return {
+      managerLimit,
       managers: (memberships ?? []).map((membership) => ({
         ...profileById.get(membership.user_id),
         id: membership.user_id,
@@ -395,6 +412,9 @@ async function dispatch(request: Request, userId: string, body: unknown) {
     });
     if (membershipError) {
       await supabaseAdmin.auth.admin.deleteUser(managerId);
+      if (membershipError.message.toLowerCase().includes("manager accounts")) {
+        throw new ApiError(membershipError.message, 409);
+      }
       throw new ApiError("Could not add the academy manager to this academy.", 500);
     }
     return { ok: true, managerId };

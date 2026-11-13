@@ -206,7 +206,10 @@ export interface AcademyManager {
 }
 
 export function fetchAcademyManagers() {
-  return callTouchlineApi<{ managers: AcademyManager[] }>("/api/admin/managers", "GET");
+  return callTouchlineApi<{ managers: AcademyManager[]; managerLimit: number | null }>(
+    "/api/admin/managers",
+    "GET",
+  );
 }
 
 export async function fetchCoachProfile(coachId: string) {

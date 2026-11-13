@@ -15,6 +15,8 @@ import { LoadingBlock } from "@/components/DataCards";
 import { useAuth } from "@/lib/auth";
 import { fetchAcademyManagers } from "@/lib/api";
 import { createAcademyManager, setAcademyManagerActive } from "@/lib/admin.functions";
+import { isPackageLimitError } from "@/lib/package-limits";
+import { UpgradeDialog } from "@/components/UpgradeDialog";
 
 export const Route = createFileRoute("/admin/_shell/managers")({
   head: () => ({ meta: [{ title: "Managers | Touchline" }] }),
@@ -30,7 +32,7 @@ type Manager = {
 };
 
 function ManagersPage() {
-  const { role } = useAuth();
+  const { profile, role } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -38,6 +40,7 @@ function ManagersPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const managersQuery = useQuery({
     queryKey: ["academy-managers"],
     queryFn: fetchAcademyManagers,
@@ -57,8 +60,16 @@ function ManagersPage() {
       setPhone("");
       setPassword("");
     },
-    onError: (error) =>
-      toast.error(error instanceof Error ? error.message : "Could not create manager."),
+    onError: (error) => {
+      if (isPackageLimitError(error, "managers")) {
+        toast.error(
+          "Your package manager limit has been reached. Choose a larger package to continue.",
+        );
+        setUpgradeOpen(true);
+      } else {
+        toast.error(error instanceof Error ? error.message : "Could not create manager.");
+      }
+    },
   });
   const statusMutation = useMutation({
     mutationFn: (manager: Manager) =>
@@ -81,9 +92,11 @@ function ManagersPage() {
 
   const managers = (managersQuery.data?.managers ?? []) as Manager[];
   const activeCount = managers.filter((manager) => manager.status === "active").length;
+  const managerLimit = managersQuery.data?.managerLimit ?? null;
 
   return (
     <div className="grid gap-6">
+      <UpgradeDialog open={upgradeOpen} onOpenChange={setUpgradeOpen} profile={profile} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-primary text-xs font-semibold tracking-[0.2em] uppercase">
@@ -103,6 +116,7 @@ function ManagersPage() {
         <CardHeader>
           <CardTitle className="font-display text-base tracking-wide uppercase">
             {activeCount} active manager{activeCount === 1 ? "" : "s"}
+            {managerLimit != null && ` · ${managerLimit} allowed on your package`}
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3">

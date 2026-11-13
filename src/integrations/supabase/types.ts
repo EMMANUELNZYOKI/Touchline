@@ -312,6 +312,7 @@ export type Database = {
           currency: string;
           player_limit: number | null;
           coach_limit: number | null;
+          manager_limit: number | null;
           feature_summary: string[];
           feature_flags: string[];
           flutterwave_plan_id: string | null;
@@ -328,6 +329,7 @@ export type Database = {
           currency?: string;
           player_limit?: number | null;
           coach_limit?: number | null;
+          manager_limit?: number | null;
           feature_summary?: string[];
           feature_flags?: string[];
           flutterwave_plan_id?: string | null;
@@ -344,6 +346,7 @@ export type Database = {
           currency?: string;
           player_limit?: number | null;
           coach_limit?: number | null;
+          manager_limit?: number | null;
           feature_summary?: string[];
           feature_flags?: string[];
           flutterwave_plan_id?: string | null;
