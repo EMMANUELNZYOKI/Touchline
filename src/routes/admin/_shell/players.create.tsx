@@ -48,7 +48,6 @@ const blank: PlayerInput = {
   weight: null,
   medical_notes: null,
 };
-const TEAM_CATEGORIES = ["U-7", "U-9", "U-11", "U-13", "U-15"] as const;
 
 function CreatePlayerPage() {
   const nav = useNavigate();
@@ -238,22 +237,17 @@ function CreatePlayerPage() {
             </p>
           </div>
           <div className="grid gap-2">
-            <Label>Category / team</Label>
-            <Select
+            <Label htmlFor="team-category">Category / team</Label>
+            <Input
+              id="team-category"
+              maxLength={80}
+              placeholder="e.g. Under 7, Under 11, Seniors"
               value={player.team_category ?? ""}
-              onValueChange={(v) => set("team_category", v)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select team category" />
-              </SelectTrigger>
-              <SelectContent>
-                {TEAM_CATEGORIES.map((v) => (
-                  <SelectItem key={v} value={v}>
-                    {v}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onChange={(event) => set("team_category", event.target.value || null)}
+            />
+            <p className="text-muted-foreground text-xs">
+              Enter the team or category naming used by your academy.
+            </p>
           </div>
           {field("Jersey number", "jersey_number", "number")}
           {field("Height (cm)", "height", "number")}

@@ -35,8 +35,6 @@ export const Route = createFileRoute("/admin/_shell/players/edit/$playerId")({
   head: () => ({ meta: [{ title: "Edit Player | Touchline" }] }),
 });
 
-const TEAM_CATEGORIES = ["U-7", "U-9", "U-11", "U-13", "U-15"] as const;
-
 function playerInputFromPlayer(
   player: NonNullable<Awaited<ReturnType<typeof fetchPlayer>>>["player"],
 ): PlayerInput {
@@ -250,12 +248,19 @@ function EditPlayerPage() {
               Enter the season format used by your academy.
             </p>
           </div>
-          <SelectField
-            label="Category / team"
-            value={player.team_category}
-            options={TEAM_CATEGORIES}
-            onChange={(value) => set("team_category", value)}
-          />
+          <div className="grid gap-2">
+            <Label htmlFor="team-category">Category / team</Label>
+            <Input
+              id="team-category"
+              maxLength={80}
+              placeholder="e.g. Under 7, Under 11, Seniors"
+              value={player.team_category ?? ""}
+              onChange={(event) => set("team_category", event.target.value || null)}
+            />
+            <p className="text-muted-foreground text-xs">
+              Enter the team or category naming used by your academy.
+            </p>
+          </div>
           {field("Jersey number", "jersey_number", "number")}
           {field("Height (cm)", "height", "number")}
           {field("Weight (kg)", "weight", "number")}
