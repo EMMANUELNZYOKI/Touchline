@@ -93,9 +93,10 @@ export async function signInWithRoleCheck(
       "This account has no active academy membership. Contact your academy administrator.",
     );
   }
-  if (expected === "academy_admin" && role !== "academy_admin" && role !== "academy_manager") {
+  if (expected !== "any" && role !== expected) {
     await supabase.auth.signOut();
-    throw new Error("This account is not an academy administrator. Use the Coach Sign In page.");
+    const roleName = expected === "academy_admin" ? "Academy Owner" : "Academy Manager";
+    throw new Error(`This account is not an ${roleName} account. Use the correct role login page.`);
   }
   return { role, profile };
 }

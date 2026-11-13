@@ -33,7 +33,7 @@ function CoachLogin() {
   const handleSignIn = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const { role } = await signInWithRoleCheck(email, password, "any");
+      const { role } = await signInWithRoleCheck(email, password, "coach");
       toast.success("Signed in successfully");
       navigate({
         to:

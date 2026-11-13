@@ -21,7 +21,7 @@ interface AppShellProps {
   userName: string;
   academyName?: string;
   children: ReactNode;
-  signOutTo?: "/platform/login" | "/admin/login" | "/coach/login";
+  signOutTo?: "/platform/login" | "/admin/login" | "/manager/login" | "/coach/login";
 }
 
 export function AppShell({

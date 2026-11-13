@@ -7,9 +7,9 @@ import { toast } from "sonner";
 import { AuthShell, CredentialsForm } from "@/components/AuthShell";
 import { signInWithRoleCheck } from "@/lib/auth";
 
-const title = "Academy Owner or Manager Login | Touchline";
+const title = "Academy Owner Login | Touchline";
 const description =
-  "Owners and managers sign in to run their academy's players, coaches, evaluations, and reports.";
+  "Academy owners sign in to manage settings, billing, branding, managers, coaches, players, and reports.";
 
 export const Route = createFileRoute("/admin/login")({
   head: () => ({
@@ -34,7 +34,7 @@ function AdminLogin() {
     setLoading(true);
     try {
       await signInWithRoleCheck(email, password, "academy_admin");
-      toast.success("Welcome back, academy owner or manager");
+      toast.success("Welcome back, academy owner");
       await navigate({ to: "/admin/dashboard", replace: true });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not sign in.");
@@ -45,10 +45,10 @@ function AdminLogin() {
 
   return (
     <AuthShell
-      badge="Academy workspace"
-      title="Academy Owner or Manager Login"
-      description="Owners manage settings, billing, branding, and managers. Managers run day-to-day academy operations."
-      footer="Coach? Use the Coach Login page instead."
+      badge="Academy ownership"
+      title="Academy Owner Login"
+      description="Manage academy settings, billing, branding, managers, coaches, players, evaluations, and reports."
+      footer="Academy Manager? Use the Academy Manager Login page instead."
     >
       <CredentialsForm
         submitLabel="Sign in to your academy"

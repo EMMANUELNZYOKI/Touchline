@@ -57,7 +57,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         profile?.full_name || (role === "academy_admin" ? "Academy Owner" : "Academy Manager")
       }
       academyName={academyQuery.data?.name}
-      signOutTo="/admin/login"
+      signOutTo={role === "academy_manager" ? "/manager/login" : "/admin/login"}
     >
       <AcademyReadOnlyNotice userId={profile?.id} />
       {children}

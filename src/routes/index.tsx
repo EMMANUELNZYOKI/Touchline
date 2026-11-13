@@ -219,7 +219,7 @@ function Landing() {
                   variant="outline"
                   className="border-white/25 bg-white/5 h-13 gap-2 px-5 text-sm text-white hover:bg-white/10 hover:text-white sm:text-base"
                 >
-                  <Link to="/admin/login">
+                  <Link to="/manager/login">
                     <UserCog className="h-4 w-4" /> Academy Manager Login
                   </Link>
                 </Button>
@@ -530,7 +530,7 @@ function Landing() {
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <Link to="/admin/login">Academy owner or manager login</Link>
+                  <Link to="/admin/login">Academy Owner login</Link>
                 </Button>
               </div>
             </div>
