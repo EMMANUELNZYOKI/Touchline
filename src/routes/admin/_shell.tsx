@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   Settings,
   UserSquare2,
+  UserCog,
   Users,
 } from "lucide-react";
 import { AppShell, type NavItem } from "@/components/AppShell";
@@ -49,7 +50,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
     <AppShell
       items={
         role === "academy_admin"
-          ? [...items, { label: "Settings", to: "/admin/settings", icon: Settings }]
+          ? [
+              ...items,
+              { label: "Managers", to: "/admin/managers", icon: UserCog },
+              { label: "Settings", to: "/admin/settings", icon: Settings },
+            ]
           : items
       }
       areaLabel={role === "academy_admin" ? "Academy Owner" : "Academy Manager"}
