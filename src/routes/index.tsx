@@ -53,6 +53,43 @@ const features = [
   },
 ];
 
+const packages = [
+  {
+    name: "Starter",
+    price: "KES 3,000",
+    description: "A focused starting point for small academies building consistent player records.",
+    features: [
+      "Up to 30 players",
+      "Player profiles and evaluations",
+      "Up to 5 coach accounts",
+      "Academy dashboard",
+    ],
+  },
+  {
+    name: "Growth",
+    price: "KES 6,000",
+    description: "More room and more insight for academies growing their programme.",
+    features: [
+      "Up to 100 players",
+      "Everything in Starter",
+      "Up to 15 coach accounts",
+      "Reports and activity history",
+    ],
+    featured: true,
+  },
+  {
+    name: "Pro",
+    price: "KES 9,000",
+    description: "The highest capacity for established academies that want the complete system.",
+    features: [
+      "Unlimited players",
+      "Everything in Growth",
+      "Up to 20 coach accounts",
+      "Advanced analytics and priority support",
+    ],
+  },
+];
+
 function Brand({ light = false }: { light?: boolean }) {
   return (
     <span className="inline-flex items-center gap-3">
@@ -94,6 +131,12 @@ function Landing() {
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
               How it works
+            </a>
+            <a
+              href="#packages"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Packages
             </a>
             <a
               href="#built-for"
@@ -312,6 +355,93 @@ function Landing() {
           </div>
         </section>
 
+        <section id="packages" className="border-border/60 border-y bg-card/40">
+          <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-28">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="text-primary text-xs font-semibold tracking-[0.2em] uppercase">
+                Plans for every academy
+              </p>
+              <h2 className="font-display mt-4 text-3xl leading-tight tracking-wide uppercase sm:text-5xl">
+                Start with a 14-day trial. Grow at your pace.
+              </h2>
+              <p className="text-muted-foreground mt-5 leading-7">
+                Create your academy workspace and explore Touchline for 14 days. When your trial is
+                complete, choose the package that fits your player and coaching capacity. Every
+                package keeps your academy organized; higher plans unlock more room and more tools.
+              </p>
+            </div>
+            <div className="mt-12 grid gap-5 lg:grid-cols-3">
+              {packages.map((plan) => (
+                <Card
+                  key={plan.name}
+                  className={`relative flex flex-col border-border/70 bg-gradient-panel ${
+                    plan.featured ? "ring-primary/60 shadow-glow ring-2" : ""
+                  }`}
+                >
+                  {plan.featured && (
+                    <span className="bg-primary text-primary-foreground absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-[10px] font-bold tracking-[0.16em] uppercase">
+                      Most popular
+                    </span>
+                  )}
+                  <CardContent className="flex flex-1 flex-col p-7">
+                    <p className="text-primary text-xs font-semibold tracking-[0.18em] uppercase">
+                      {plan.name}
+                    </p>
+                    <p className="font-display mt-4 text-3xl tracking-wide">{plan.price}</p>
+                    <p className="text-muted-foreground mt-1 text-xs">per month</p>
+                    <p className="text-muted-foreground mt-5 min-h-12 text-sm leading-6">
+                      {plan.description}
+                    </p>
+                    <div className="border-border/70 mt-6 space-y-3 border-t pt-6">
+                      {plan.features.map((feature) => (
+                        <div key={feature} className="flex items-start gap-2 text-sm">
+                          <Check className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Button
+                      asChild
+                      variant={plan.featured ? "default" : "outline"}
+                      className="mt-8 w-full gap-2"
+                    >
+                      <Link to="/onboard">
+                        Start with a trial <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <div className="mt-12 grid gap-4 md:grid-cols-3">
+              {[
+                ["01", "Create your workspace", "Set up your academy and invite your team."],
+                [
+                  "02",
+                  "Explore for 14 days",
+                  "Use player profiles, evaluations, and your academy dashboard.",
+                ],
+                [
+                  "03",
+                  "Choose your package",
+                  "Upgrade to Starter, Growth, or Pro when you are ready.",
+                ],
+              ].map(([number, heading, text]) => (
+                <div
+                  key={number}
+                  className="border-border/70 bg-background/70 flex gap-4 rounded-2xl border p-5"
+                >
+                  <span className="font-display text-primary text-xl">{number}</span>
+                  <div>
+                    <h3 className="font-display tracking-wide uppercase">{heading}</h3>
+                    <p className="text-muted-foreground mt-2 text-sm leading-6">{text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="workflow" className="border-border/60 border-y bg-card/40">
           <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 sm:py-24 lg:grid-cols-2 lg:items-center">
             <div>
@@ -408,6 +538,9 @@ function Landing() {
             </a>
             <a href="#workflow" className="hover:text-foreground">
               How it works
+            </a>
+            <a href="#packages" className="hover:text-foreground">
+              Packages
             </a>
             <Link to="/platform/login" className="hover:text-foreground">
               Platform admin
