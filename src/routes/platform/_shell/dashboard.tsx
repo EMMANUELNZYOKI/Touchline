@@ -19,6 +19,7 @@ import {
   Power,
   Trash2,
   UserCheck,
+  UserCog,
   UsersRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -139,6 +140,10 @@ function PlatformDashboard() {
   );
   const totalCoaches = academies.reduce(
     (sum, academy) => sum + Number(academy.coach_count || 0),
+    0,
+  );
+  const totalManagers = academies.reduce(
+    (sum, academy) => sum + Number(academy.manager_count || 0),
     0,
   );
   const totalEvaluations = academies.reduce(
@@ -394,7 +399,7 @@ function PlatformDashboard() {
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
         <MetricCard
           icon={Building2}
           label="Total academies"
@@ -417,6 +422,12 @@ function PlatformDashboard() {
           icon={UserCheck}
           label="Coaches managed"
           value={totalCoaches}
+          note="Across all academies"
+        />
+        <MetricCard
+          icon={UserCog}
+          label="Managers managed"
+          value={totalManagers}
           note="Across all academies"
         />
         <MetricCard

@@ -14,6 +14,7 @@ export type PlatformAcademy = {
   evaluation_count: number;
   coach_count: number;
   academy_admin_count: number;
+  manager_count: number;
 };
 
 export function claimInitialPlatformAdmin() {
