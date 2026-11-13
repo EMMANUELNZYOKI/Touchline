@@ -48,7 +48,6 @@ const blank: PlayerInput = {
   weight: null,
   medical_notes: null,
 };
-const SEASONS = ["JAN-APR", "MAY-AUG", "SEP-DEC"] as const;
 const TEAM_CATEGORIES = ["U-7", "U-9", "U-11", "U-13", "U-15"] as const;
 
 function CreatePlayerPage() {
@@ -226,19 +225,17 @@ function CreatePlayerPage() {
             </Select>
           </div>
           <div className="grid gap-2">
-            <Label>Season</Label>
-            <Select value={player.season ?? ""} onValueChange={(v) => set("season", v)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select season" />
-              </SelectTrigger>
-              <SelectContent>
-                {SEASONS.map((v) => (
-                  <SelectItem key={v} value={v}>
-                    {v}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="season">Season</Label>
+            <Input
+              id="season"
+              maxLength={80}
+              placeholder="e.g. January to May"
+              value={player.season ?? ""}
+              onChange={(event) => set("season", event.target.value || null)}
+            />
+            <p className="text-muted-foreground text-xs">
+              Enter the season format used by your academy.
+            </p>
           </div>
           <div className="grid gap-2">
             <Label>Category / team</Label>

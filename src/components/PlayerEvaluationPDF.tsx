@@ -472,8 +472,9 @@ export function PlayerEvaluationPDF({
   const age = calculateAge(player.date_of_birth);
   const overallRating = getOverallRating(evaluation?.overall_rating);
 
-  // Active season Priority: player object > season prop
-  const activeSeason = player.season || season;
+  const activeSeason = evaluation
+    ? `${evaluation.season} / ${evaluation.season_year}`
+    : player.season || season;
 
   return (
     <Document
@@ -503,7 +504,7 @@ export function PlayerEvaluationPDF({
               PROFILE
             </Text>
 
-            <Text style={styles.season}>{activeSeason}</Text>
+            <Text style={styles.season}>Season / Year: {activeSeason}</Text>
           </View>
         </View>
 

@@ -35,7 +35,6 @@ export const Route = createFileRoute("/admin/_shell/players/edit/$playerId")({
   head: () => ({ meta: [{ title: "Edit Player | Touchline" }] }),
 });
 
-const SEASONS = ["JAN-APR", "MAY-AUG", "SEP-DEC"] as const;
 const TEAM_CATEGORIES = ["U-7", "U-9", "U-11", "U-13", "U-15"] as const;
 
 function playerInputFromPlayer(
@@ -238,12 +237,19 @@ function EditPlayerPage() {
             options={PREFERRED_FOOT}
             onChange={(value) => set("preferred_foot", value)}
           />
-          <SelectField
-            label="Season"
-            value={player.season}
-            options={SEASONS}
-            onChange={(value) => set("season", value)}
-          />
+          <div className="grid gap-2">
+            <Label htmlFor="season">Season</Label>
+            <Input
+              id="season"
+              maxLength={80}
+              placeholder="e.g. January to May"
+              value={player.season ?? ""}
+              onChange={(event) => set("season", event.target.value || null)}
+            />
+            <p className="text-muted-foreground text-xs">
+              Enter the season format used by your academy.
+            </p>
+          </div>
           <SelectField
             label="Category / team"
             value={player.team_category}
