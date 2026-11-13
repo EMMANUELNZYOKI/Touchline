@@ -51,8 +51,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
       items={
         role === "academy_admin"
           ? [
-              ...items,
+              items[0],
               { label: "Managers", to: "/admin/managers", icon: UserCog },
+              ...items.slice(1),
               { label: "Settings", to: "/admin/settings", icon: Settings },
             ]
           : items
