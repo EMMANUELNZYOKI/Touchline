@@ -27,10 +27,12 @@ export function CoachShell({ children }: { children: ReactNode }) {
     staleTime: 60_000,
   });
   useEffect(() => {
-    if (!loading && !role) router.replace("/coach/login");
+    if (loading) return;
+    if (!role) router.replace("/coach/login");
+    else if (role !== "coach") router.replace("/admin/dashboard");
   }, [loading, role, router]);
 
-  if (loading || !role) return <LoadingBlock />;
+  if (loading || role !== "coach") return <LoadingBlock />;
   return (
     <AppShell
       items={items}

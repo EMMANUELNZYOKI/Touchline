@@ -120,7 +120,7 @@ export function AppShell({
               Welcome, {userName}
             </p>
             <p className="text-muted-foreground truncate text-xs">
-              {academyName ?? "Touchline"} · {areaLabel} area
+              Signed in to {academyName ?? "Touchline"} · {areaLabel} area
             </p>
           </div>
         </header>

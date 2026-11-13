@@ -90,7 +90,7 @@ export async function signInWithRoleCheck(
   if (!role) {
     await supabase.auth.signOut();
     throw new Error(
-      "This account has no active academy membership. Contact your academy administrator.",
+      "This account has no active academy membership. Contact your Academy Owner or platform administrator.",
     );
   }
   if (expected !== "any" && role !== expected) {
