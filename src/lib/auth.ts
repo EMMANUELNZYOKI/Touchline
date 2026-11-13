@@ -93,7 +93,7 @@ export async function signInWithRoleCheck(
       "This account has no active academy membership. Contact your academy administrator.",
     );
   }
-  if (expected === "academy_admin" && role !== "academy_admin") {
+  if (expected === "academy_admin" && role !== "academy_admin" && role !== "academy_manager") {
     await supabase.auth.signOut();
     throw new Error("This account is not an academy administrator. Use the Coach Sign In page.");
   }

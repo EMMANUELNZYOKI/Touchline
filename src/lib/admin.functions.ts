@@ -30,3 +30,26 @@ export function updateAcademyCoach({
     data,
   );
 }
+
+export interface CreateManagerInput {
+  full_name: string;
+  email: string;
+  phone?: string;
+  password: string;
+}
+
+export function createAcademyManager({ data }: { data: CreateManagerInput }) {
+  return callTouchlineApi<{ ok: true; managerId: string }>("/api/admin/managers", "POST", data);
+}
+
+export function setAcademyManagerActive({
+  data,
+}: {
+  data: { managerId: string; isActive: boolean };
+}) {
+  return callTouchlineApi<{ ok: true }>(
+    `/api/admin/managers/${encodeURIComponent(data.managerId)}`,
+    "PATCH",
+    data,
+  );
+}

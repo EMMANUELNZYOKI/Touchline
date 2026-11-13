@@ -19,6 +19,11 @@ const coachStatusSchema = z.object({
   isActive: z.boolean(),
 });
 
+const managerStatusSchema = z.object({
+  managerId: z.string().uuid(),
+  isActive: z.boolean(),
+});
+
 const updateCoachSchema = z.object({
   coachId: z.string().uuid(),
   full_name: z.string().trim().min(2).max(120),
@@ -64,7 +69,7 @@ async function requireAcademyAdmin(userId: string, options: { allowReadOnly?: bo
     .from("academy_memberships")
     .select("academy_id")
     .eq("user_id", userId)
-    .eq("role", "academy_admin")
+    .in("role", ["academy_admin", "academy_manager"])
     .eq("status", "active")
     .maybeSingle();
   if (error) throw new ApiError("Could not verify academy administrator access.", 500);
@@ -97,6 +102,19 @@ async function requireAcademyAdmin(userId: string, options: { allowReadOnly?: bo
     );
   }
   return data.academy_id;
+}
+
+async function requireAcademyOwner(userId: string, options: { allowReadOnly?: boolean } = {}) {
+  const { data, error } = await supabaseAdmin
+    .from("academy_memberships")
+    .select("academy_id")
+    .eq("user_id", userId)
+    .eq("role", "academy_admin")
+    .eq("status", "active")
+    .maybeSingle();
+  if (error) throw new ApiError("Could not verify academy owner access.", 500);
+  if (!data) throw new ApiError("Only the academy owner can perform this action.", 403);
+  return requireAcademyAdmin(userId, options);
 }
 
 async function requireAcademyCoach(academyId: string, coachId: string) {
@@ -309,6 +327,106 @@ async function dispatch(request: Request, userId: string, body: unknown) {
     return { ok: true, coachId };
   }
 
+  if (segments.join("/") === "api/admin/managers" && method === "GET") {
+    const academyId = await requireAcademyOwner(userId, { allowReadOnly: true });
+    const { data: memberships, error: membershipError } = await supabaseAdmin
+      .from("academy_memberships")
+      .select("user_id, status, created_at")
+      .eq("academy_id", academyId)
+      .eq("role", "academy_manager")
+      .order("created_at", { ascending: true });
+    if (membershipError) throw new ApiError("Could not load academy managers.", 500);
+    const managerIds = (memberships ?? []).map((membership) => membership.user_id);
+    if (!managerIds.length) return { managers: [] };
+    const { data: profiles, error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .select("id, full_name, email, phone, created_at")
+      .in("id", managerIds);
+    if (profileError) throw new ApiError("Could not load academy managers.", 500);
+    const profileById = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
+    return {
+      managers: (memberships ?? []).map((membership) => ({
+        ...profileById.get(membership.user_id),
+        id: membership.user_id,
+        status: membership.status,
+        created_at: membership.created_at,
+      })),
+    };
+  }
+
+  if (segments.join("/") === "api/admin/managers" && method === "POST") {
+    const data = createCoachSchema.parse(body);
+    const academyId = await requireAcademyOwner(userId);
+    const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
+      email: data.email,
+      password: data.password,
+      email_confirm: true,
+      user_metadata: {
+        full_name: data.full_name,
+        phone: data.phone,
+        touchline_role: "academy_manager",
+      },
+    });
+    if (error) {
+      if (error.code === "email_exists" || /already (registered|exists)/i.test(error.message)) {
+        throw new ApiError("An account with this email already exists.", 409);
+      }
+      throw new ApiError("Could not create the academy manager account.", 500);
+    }
+    if (!created.user) throw new ApiError("Could not create the academy manager account.", 500);
+    const managerId = created.user.id;
+    const { error: profileError } = await supabaseAdmin.from("profiles").upsert({
+      id: managerId,
+      full_name: data.full_name,
+      email: data.email,
+      phone: data.phone || null,
+      role: "coach",
+      is_active: true,
+    });
+    if (profileError) {
+      await supabaseAdmin.auth.admin.deleteUser(managerId);
+      throw new ApiError("Could not create the academy manager profile.", 500);
+    }
+    const { error: membershipError } = await supabaseAdmin.from("academy_memberships").insert({
+      academy_id: academyId,
+      user_id: managerId,
+      role: "academy_manager",
+      status: "active",
+    });
+    if (membershipError) {
+      await supabaseAdmin.auth.admin.deleteUser(managerId);
+      throw new ApiError("Could not add the academy manager to this academy.", 500);
+    }
+    return { ok: true, managerId };
+  }
+
+  if (segments[1] === "admin" && segments[2] === "managers" && segments[3] && method === "PATCH") {
+    const managerId = segments[3];
+    const academyId = await requireAcademyOwner(userId);
+    const data = managerStatusSchema.parse(body);
+    if (data.managerId !== managerId) {
+      throw new ApiError("Manager ID does not match the request path.", 400);
+    }
+    const { data: manager, error: managerError } = await supabaseAdmin
+      .from("academy_memberships")
+      .select("user_id")
+      .eq("academy_id", academyId)
+      .eq("user_id", managerId)
+      .eq("role", "academy_manager")
+      .maybeSingle();
+    if (managerError || !manager) {
+      throw new ApiError("This manager does not belong to your academy.", 403);
+    }
+    const { error } = await supabaseAdmin
+      .from("academy_memberships")
+      .update({ status: data.isActive ? "active" : "suspended" })
+      .eq("academy_id", academyId)
+      .eq("user_id", managerId)
+      .eq("role", "academy_manager");
+    if (error) throw new ApiError("Could not update this manager's academy access.", 500);
+    return { ok: true };
+  }
+
   if (segments[1] === "admin" && segments[2] === "coaches" && segments[3] && method === "PATCH") {
     const coachId = segments[3];
     const academyId = await requireAcademyAdmin(userId);
@@ -352,7 +470,7 @@ async function dispatch(request: Request, userId: string, body: unknown) {
   }
 
   if (segments.join("/") === "api/billing" && method === "GET") {
-    const academyId = await requireAcademyAdmin(userId, { allowReadOnly: true });
+    const academyId = await requireAcademyOwner(userId, { allowReadOnly: true });
     const [
       { data: subscription, error: subscriptionError },
       { data: payments, error: paymentsError },
@@ -382,7 +500,7 @@ async function dispatch(request: Request, userId: string, body: unknown) {
     return { subscription, plans: plans ?? [], payments: payments ?? [] };
   }
   if (segments.join("/") === "api/billing/checkout" && method === "POST") {
-    const academyId = await requireAcademyAdmin(userId, { allowReadOnly: true });
+    const academyId = await requireAcademyOwner(userId, { allowReadOnly: true });
     const { data: profile, error: profileError } = await supabaseAdmin
       .from("profiles")
       .select("full_name, email, phone")
@@ -401,7 +519,7 @@ async function dispatch(request: Request, userId: string, body: unknown) {
     });
   }
   if (segments.join("/") === "api/billing/mpesa" && method === "POST") {
-    const academyId = await requireAcademyAdmin(userId, { allowReadOnly: true });
+    const academyId = await requireAcademyOwner(userId, { allowReadOnly: true });
     const { data: profile, error: profileError } = await supabaseAdmin
       .from("profiles")
       .select("full_name, email")

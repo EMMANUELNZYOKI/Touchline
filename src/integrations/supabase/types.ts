@@ -235,7 +235,7 @@ export type Database = {
         Row: {
           academy_id: string;
           user_id: string;
-          role: "academy_admin" | "coach";
+          role: "academy_admin" | "academy_manager" | "coach";
           status: "active" | "invited" | "suspended";
           created_at: string;
           updated_at: string;
@@ -243,7 +243,7 @@ export type Database = {
         Insert: {
           academy_id: string;
           user_id: string;
-          role: "academy_admin" | "coach";
+          role: "academy_admin" | "academy_manager" | "coach";
           status?: "active" | "invited" | "suspended";
           created_at?: string;
           updated_at?: string;
@@ -251,7 +251,7 @@ export type Database = {
         Update: {
           academy_id?: string;
           user_id?: string;
-          role?: "academy_admin" | "coach";
+          role?: "academy_admin" | "academy_manager" | "coach";
           status?: "active" | "invited" | "suspended";
           created_at?: string;
           updated_at?: string;

@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 import type { Evaluation, Player, Profile } from "./types";
+import { callTouchlineApi } from "./next-server-fn";
 import { SKILL_CATEGORIES, averageScore, type SkillState } from "./skills";
 
 // Storage bucket configuration
@@ -16,6 +17,7 @@ export async function fetchMyRole(userId: string) {
 
   if (error) throw error;
   if (data?.role === "academy_admin") return "academy_admin" as const;
+  if (data?.role === "academy_manager") return "academy_manager" as const;
   if (data?.role === "coach") return "coach" as const;
   return null;
 }
@@ -38,7 +40,7 @@ async function fetchMyActiveAcademyAdminId() {
     .from("academy_memberships")
     .select("academy_id")
     .eq("user_id", authData.user.id)
-    .eq("role", "academy_admin")
+    .in("role", ["academy_admin", "academy_manager"])
     .eq("status", "active")
     .maybeSingle();
   if (error) throw error;
@@ -192,6 +194,19 @@ export async function fetchCoaches() {
     evaluatedPlayerCount: new Set(evals.filter((e) => e.coach_id === p.id).map((e) => e.player_id))
       .size,
   }));
+}
+
+export interface AcademyManager {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  status: "active" | "suspended";
+  created_at: string;
+}
+
+export function fetchAcademyManagers() {
+  return callTouchlineApi<{ managers: AcademyManager[] }>("/api/admin/managers", "GET");
 }
 
 export async function fetchCoachProfile(coachId: string) {

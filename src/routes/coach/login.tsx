@@ -36,7 +36,10 @@ function CoachLogin() {
       const { role } = await signInWithRoleCheck(email, password, "any");
       toast.success("Signed in successfully");
       navigate({
-        to: role === "academy_admin" ? "/admin/dashboard" : "/coach/dashboard",
+        to:
+          role === "academy_admin" || role === "academy_manager"
+            ? "/admin/dashboard"
+            : "/coach/dashboard",
         replace: true,
       });
     } catch (error) {

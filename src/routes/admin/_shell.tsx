@@ -25,7 +25,6 @@ const items: NavItem[] = [
   { label: "Evaluations", to: "/admin/evaluations", icon: ClipboardCheck },
   { label: "Reports", to: "/admin/reports", icon: BarChart3 },
   { label: "Activity", to: "/admin/activity", icon: Activity },
-  { label: "Settings", to: "/admin/settings", icon: Settings },
 ];
 
 export function AdminShell({ children }: { children: ReactNode }) {
@@ -34,21 +33,26 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const academyQuery = useQuery({
     queryKey: ["my-academy-profile"],
     queryFn: fetchMyAcademyProfile,
-    enabled: role === "academy_admin",
+    enabled: role === "academy_admin" || role === "academy_manager",
     staleTime: 60_000,
   });
 
   useEffect(() => {
     if (loading) return;
     if (!role) router.replace("/admin/login");
-    else if (role !== "academy_admin") router.replace("/coach/dashboard");
+    else if (role !== "academy_admin" && role !== "academy_manager")
+      router.replace("/coach/dashboard");
   }, [loading, role, router]);
 
-  if (loading || role !== "academy_admin") return <LoadingBlock />;
+  if (loading || (role !== "academy_admin" && role !== "academy_manager")) return <LoadingBlock />;
   return (
     <AppShell
-      items={items}
-      areaLabel="Academy Admin"
+      items={
+        role === "academy_admin"
+          ? [...items, { label: "Settings", to: "/admin/settings", icon: Settings }]
+          : items
+      }
+      areaLabel={role === "academy_admin" ? "Academy Owner" : "Academy Manager"}
       userName={profile?.full_name || "Academy Admin"}
       academyName={academyQuery.data?.name}
       signOutTo="/admin/login"

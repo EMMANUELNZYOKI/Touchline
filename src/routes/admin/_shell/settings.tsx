@@ -24,7 +24,7 @@ export const Route = createFileRoute("/admin/_shell/settings")({
 });
 
 function AdminSettingsPage() {
-  const { profile, session } = useAuth();
+  const { profile, session, role } = useAuth();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [saving, setSaving] = useState(false);
@@ -44,6 +44,7 @@ function AdminSettingsPage() {
   }, [profile?.phone]);
 
   useEffect(() => {
+    if (role !== "academy_admin") return;
     void getBilling()
       .then((result) => {
         setBilling(result);
@@ -51,16 +52,33 @@ function AdminSettingsPage() {
       })
       .catch((error: Error) => toast.error(error.message))
       .finally(() => setBillingLoading(false));
-  }, []);
+  }, [role]);
 
   useEffect(() => {
+    if (role !== "academy_admin") return;
     void fetchMyAcademyProfile()
       .then(async (result) => {
         setAcademy(result);
         setAcademyLogo(await academyLogoUrl(result.logo_path));
       })
       .catch((error: Error) => toast.error(error.message));
-  }, []);
+  }, [role]);
+
+  if (role === "academy_manager") {
+    return (
+      <Card className="border-border/70">
+        <CardHeader>
+          <CardTitle className="font-display text-base tracking-wide uppercase">
+            Owner settings
+          </CardTitle>
+          <CardDescription>
+            Billing, academy branding, and subscription settings are available only to the academy
+            owner.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
 
   const changePassword = async (e: React.FormEvent) => {
     e.preventDefault();
