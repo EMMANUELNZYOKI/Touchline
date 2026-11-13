@@ -59,15 +59,15 @@ const packages = [
     price: "KES 3,000",
     description: "A focused starting point for small academies building consistent player records.",
     features: [
-      "Up to 30 players",
+      "Up to 50 players",
       "Player profiles and evaluations",
       "Up to 5 coach accounts",
       "Academy dashboard",
     ],
   },
   {
-    name: "Growth",
-    price: "KES 6,000",
+    name: "Standard",
+    price: "KES 5,000",
     description: "More room and more insight for academies growing their programme.",
     features: [
       "Up to 100 players",
@@ -83,7 +83,7 @@ const packages = [
     description: "The highest capacity for established academies that want the complete system.",
     features: [
       "Unlimited players",
-      "Everything in Growth",
+      "Everything in Standard",
       "Up to 20 coach accounts",
       "Advanced analytics and priority support",
     ],
@@ -424,7 +424,7 @@ function Landing() {
                 [
                   "03",
                   "Choose your package",
-                  "Upgrade to Starter, Growth, or Pro when you are ready.",
+                  "Upgrade to Starter, Standard, or Pro when you are ready.",
                 ],
               ].map(([number, heading, text]) => (
                 <div

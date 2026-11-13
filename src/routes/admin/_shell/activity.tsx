@@ -67,8 +67,8 @@ function AdminActivityPage() {
     return (
       <EmptyState
         icon={LockKeyhole}
-        title="Activity history is available on Growth"
-        description="Upgrade to Growth or Pro to unlock admin actions, registrations, and evaluation history."
+        title="Activity history is available on Standard"
+        description="Upgrade to Standard or Pro to unlock admin actions, registrations, and evaluation history."
       />
     );
   }

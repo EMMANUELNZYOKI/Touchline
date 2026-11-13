@@ -18,12 +18,12 @@ INSERT INTO public.subscription_plans (
   plan_key, name, description, amount, currency, player_limit, feature_summary, display_order
 )
 VALUES
-  ('starter', 'Starter', 'For small academies getting organized.', 3000, 'KES', 30,
-    ARRAY['Up to 30 players', 'Player profiles and evaluations', 'Coach accounts', 'Academy dashboard'], 1),
-  ('growth', 'Growth', 'More capacity and features for growing academies.', 6000, 'KES', 100,
-    ARRAY['Up to 100 players', 'Everything in Starter', 'More coach capacity', 'Reports and activity history'], 2),
-  ('pro', 'Pro', 'Highest limits with priority support.', 9000, 'KES', NULL,
-    ARRAY['Unlimited players', 'Everything in Growth', 'Advanced academy capacity', 'Priority support'], 3)
+  ('starter', 'Starter', 'For small academies getting organized.', 3000, 'KES', 50,
+    ARRAY['Up to 50 players', 'Player profiles and evaluations', 'Up to 5 coach accounts', 'Academy dashboard'], 1),
+  ('standard', 'Standard', 'More capacity and features for growing academies.', 5000, 'KES', 100,
+    ARRAY['Up to 100 players', 'Everything in Starter', 'Up to 15 coach accounts', 'Reports and activity history'], 2),
+  ('pro', 'Pro', 'Highest limits with priority support.', 7000, 'KES', NULL,
+    ARRAY['Unlimited players', 'Everything in Standard', 'Up to 20 coach accounts', 'Advanced analytics and priority support'], 3)
 ON CONFLICT (plan_key) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,

@@ -102,7 +102,7 @@ export function UpgradeDialog({ open, onOpenChange, profile }: UpgradeDialogProp
               {(billing?.plans ?? []).map((plan) => {
                 const selected = selectedPlan === plan.plan_key;
                 const current = currentPlan === plan.plan_key;
-                const featured = plan.plan_key === "growth";
+                const featured = plan.plan_key === "standard";
                 return (
                   <button
                     key={plan.plan_key}

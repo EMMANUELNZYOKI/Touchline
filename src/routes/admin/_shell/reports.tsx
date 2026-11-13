@@ -83,8 +83,8 @@ function AdminReportsPage() {
     return (
       <EmptyState
         icon={LockKeyhole}
-        title="Reports are available on Growth"
-        description="Upgrade to Growth or Pro to unlock reports, comparisons, and season CSV exports."
+        title="Reports are available on Standard"
+        description="Upgrade to Standard or Pro to unlock reports, comparisons, and season CSV exports."
       />
     );
   }
