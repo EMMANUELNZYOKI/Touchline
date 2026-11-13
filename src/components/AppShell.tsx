@@ -35,7 +35,11 @@ export function AppShell({
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isAdmin = areaLabel === "Academy Admin" || areaLabel === "Touchline Platform";
+  const isAdmin =
+    areaLabel === "Academy Owner" ||
+    areaLabel === "Academy Manager" ||
+    areaLabel === "Academy Admin" ||
+    areaLabel === "Touchline Platform";
 
   const handleSignOut = async () => {
     await signOutCompletely();

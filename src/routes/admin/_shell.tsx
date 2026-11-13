@@ -53,7 +53,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
           : items
       }
       areaLabel={role === "academy_admin" ? "Academy Owner" : "Academy Manager"}
-      userName={profile?.full_name || "Academy Admin"}
+      userName={
+        profile?.full_name || (role === "academy_admin" ? "Academy Owner" : "Academy Manager")
+      }
       academyName={academyQuery.data?.name}
       signOutTo="/admin/login"
     >

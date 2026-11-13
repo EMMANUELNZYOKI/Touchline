@@ -214,7 +214,7 @@ function AcademyOnboarding() {
     <AuthShell
       badge="14-day starter trial"
       title="Create your academy workspace"
-      description="Set up the academy administrator account. You can add coaches and players after verification."
+      description="Set up the Academy Owner account. After verification, the owner can add managers, coaches, and players."
       footer={
         <span>
           Already have an account?{" "}

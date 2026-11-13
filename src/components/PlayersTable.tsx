@@ -106,7 +106,7 @@ export function PlayersTable({ players, area, showCoach, emptyAction }: Props) {
         title="No players yet"
         description={
           area === "coach"
-            ? "Players registered by the Super Admin will appear here for evaluation."
+            ? "Players registered by your Academy Owner or Manager will appear here for evaluation."
             : "Register players here and make them available to coaches for evaluation."
         }
         action={emptyAction}

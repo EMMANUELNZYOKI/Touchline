@@ -91,7 +91,7 @@ function CoachDashboard() {
         <EmptyState
           icon={UserSquare2}
           title="No players registered yet"
-          description="Players registered by the Super Admin will appear here for evaluation."
+          description="Players registered by your Academy Owner or Manager will appear here for evaluation."
           action={
             <Button asChild>
               <Link to="/coach/players">Evaluate players</Link>

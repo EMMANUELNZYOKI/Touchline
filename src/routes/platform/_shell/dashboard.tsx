@@ -229,9 +229,9 @@ function PlatformDashboard() {
             <div className="mb-4">
               <h2 className="font-display text-lg tracking-wide uppercase">Provision an academy</h2>
               <p className="text-muted-foreground mt-1 text-xs">
-                Creates an active workspace with a 14-day Starter trial and its academy
-                administrator. The temporary password is shown once after creation so you can
-                securely send it to the academy owner.
+                Creates an active workspace with a 14-day Starter trial and its academy Academy
+                Owner. The temporary password is shown once after creation so you can securely send
+                it to the academy owner.
               </p>
             </div>
             <form
@@ -285,7 +285,7 @@ function PlatformDashboard() {
                 />
               </label>
               <label className="grid gap-2 text-xs font-medium">
-                Administrator full name
+                Academy Owner full name
                 <Input
                   required
                   minLength={2}
@@ -296,7 +296,7 @@ function PlatformDashboard() {
                 />
               </label>
               <label className="grid gap-2 text-xs font-medium">
-                Administrator email
+                Academy Owner email
                 <Input
                   required
                   type="email"
@@ -307,7 +307,7 @@ function PlatformDashboard() {
                 />
               </label>
               <label className="grid gap-2 text-xs font-medium">
-                Administrator phone
+                Academy Owner phone
                 <Input
                   maxLength={40}
                   value={adminPhone}
@@ -325,7 +325,7 @@ function PlatformDashboard() {
                   !adminEmail.trim()
                 }
               >
-                {create.isPending ? "Creating…" : "Create academy & admin"}
+                {create.isPending ? "Creating…" : "Create academy & owner"}
               </Button>
             </form>
             {create.error && (
@@ -338,7 +338,7 @@ function PlatformDashboard() {
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="text-accent mt-0.5 h-5 w-5 shrink-0" />
                   <div className="min-w-0 flex-1">
-                    <p className="font-semibold">Academy and administrator created</p>
+                    <p className="font-semibold">Academy and owner created</p>
                     <p className="text-muted-foreground mt-1 text-xs">
                       Send these details securely to the academy owner. The temporary password is
                       shown only here.
@@ -354,7 +354,7 @@ function PlatformDashboard() {
                       className="mt-3 gap-2"
                       onClick={() =>
                         void navigator.clipboard.writeText(
-                          `Touchline Academy Admin\nEmail: ${provisionedCredentials.email}\nTemporary password: ${provisionedCredentials.temporaryPassword}`,
+                          `Touchline Academy Owner\nEmail: ${provisionedCredentials.email}\nTemporary password: ${provisionedCredentials.temporaryPassword}`,
                         )
                       }
                     >

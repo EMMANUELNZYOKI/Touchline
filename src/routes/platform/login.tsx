@@ -45,7 +45,7 @@ function PlatformLogin() {
       badge="Touchline platform"
       title="Platform administrator"
       description="Manage academy accounts and subscription status across Touchline. This portal is restricted to platform operators."
-      footer="Academy administrator or coach? Use your academy sign-in instead."
+      footer="Academy owner, manager, or coach? Use your academy sign-in instead."
     >
       <div className="grid gap-3">
         <CredentialsForm submitLabel="Sign in to platform" loading={loading} onSubmit={submit} />

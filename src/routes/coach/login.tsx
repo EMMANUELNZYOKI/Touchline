@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { AuthShell, CredentialsForm } from "@/components/AuthShell";
 import { signInWithRoleCheck } from "@/lib/auth";
 
-const title = "Coach Sign In | Touchline";
+const title = "Coach Login | Touchline";
 const description =
   "Coaches sign in to register players, complete evaluations and track development at Touchline.";
 
@@ -52,9 +52,9 @@ function CoachLogin() {
   return (
     <AuthShell
       badge="Coaching Staff"
-      title="Coach Sign In"
-      description="Use the credentials issued to you by your academy administrator."
-      footer="Accounts are created by academy administrators. Contact your academy office if you cannot sign in."
+      title="Coach Login"
+      description="Use the credentials issued to you by your Academy Owner or Academy Manager."
+      footer="Coach accounts are created by academy staff. Contact your academy office if you cannot sign in."
     >
       <CredentialsForm submitLabel="Sign in as Coach" loading={loading} onSubmit={handleSignIn} />
     </AuthShell>

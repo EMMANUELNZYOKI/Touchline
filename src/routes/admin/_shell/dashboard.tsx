@@ -34,7 +34,7 @@ import { useAuth } from "@/lib/auth";
 import { UpgradeDialog } from "@/components/UpgradeDialog";
 
 export const Route = createFileRoute("/admin/_shell/dashboard")({
-  head: () => ({ meta: [{ title: "Academy Admin Dashboard | Touchline" }] }),
+  head: () => ({ meta: [{ title: "Academy Owner and Manager Dashboard | Touchline" }] }),
   component: AdminDashboard,
 });
 

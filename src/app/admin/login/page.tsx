@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Academy Admin Login | Touchline",
-  description: "Sign in to manage your soccer academy's coaches, players, and evaluations.",
+  title: "Academy Owner or Manager Login | Touchline",
+  description:
+    "Owners and managers sign in to run their academy's players, coaches, evaluations, and reports.",
   robots: { index: false, follow: false },
 };
 

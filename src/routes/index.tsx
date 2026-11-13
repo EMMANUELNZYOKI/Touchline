@@ -10,6 +10,7 @@ import {
   ClipboardCheck,
   ShieldCheck,
   Target,
+  UserCog,
   UsersRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -190,7 +191,8 @@ function Landing() {
               </h1>
               <p className="text-muted-foreground mt-7 max-w-xl text-base leading-7 sm:text-lg">
                 Touchline gives soccer academies a focused place to organize player information,
-                guide coach evaluations, and keep every development conversation moving forward.
+                guide coach evaluations, and keep every development conversation moving forward—with
+                clear access for platform teams, academy owners, managers, and coaches.
               </p>
               <div
                 id="sign-in"
@@ -208,7 +210,17 @@ function Landing() {
                   className="border-white/25 bg-white/5 h-13 gap-2 px-5 text-sm text-white hover:bg-white/10 hover:text-white sm:text-base"
                 >
                   <Link to="/admin/login">
-                    <UsersRound className="h-4 w-4" /> Academy Admin Login
+                    <UsersRound className="h-4 w-4" /> Academy Owner Login
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="border-white/25 bg-white/5 h-13 gap-2 px-5 text-sm text-white hover:bg-white/10 hover:text-white sm:text-base"
+                >
+                  <Link to="/admin/login">
+                    <UserCog className="h-4 w-4" /> Academy Manager Login
                   </Link>
                 </Button>
                 <Button
@@ -218,7 +230,7 @@ function Landing() {
                   className="border-primary/50 bg-primary/10 text-primary h-13 gap-2 px-5 text-sm hover:bg-primary/20 sm:text-base"
                 >
                   <Link to="/coach/login">
-                    <ClipboardCheck className="h-4 w-4" /> Coach Sign In
+                    <ClipboardCheck className="h-4 w-4" /> Coach Login
                   </Link>
                 </Button>
               </div>
@@ -457,7 +469,7 @@ function Landing() {
               </p>
               <Button asChild className="mt-8 gap-2">
                 <Link to="/coach/login">
-                  Coach sign in <ArrowRight className="h-4 w-4" />
+                  Coach login <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             </div>
@@ -518,7 +530,7 @@ function Landing() {
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <Link to="/admin/login">Academy admin sign in</Link>
+                  <Link to="/admin/login">Academy owner or manager login</Link>
                 </Button>
               </div>
             </div>
@@ -543,7 +555,7 @@ function Landing() {
               Packages
             </a>
             <Link to="/platform/login" className="hover:text-foreground">
-              Platform admin
+              Super Admin login
             </Link>
             <span>© {new Date().getFullYear()} Touchline</span>
           </div>
