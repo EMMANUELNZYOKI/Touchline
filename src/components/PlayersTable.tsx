@@ -117,7 +117,7 @@ export function PlayersTable({ players, area, showCoach, emptyAction }: Props) {
   return (
     <div className="grid gap-4">
       <div className="flex flex-wrap gap-3">
-        <div className="relative min-w-[220px] flex-1">
+        <div className="relative min-w-0 basis-full flex-1 sm:min-w-[220px] sm:basis-auto">
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
             className="pl-9"
@@ -127,7 +127,7 @@ export function PlayersTable({ players, area, showCoach, emptyAction }: Props) {
           />
         </div>
         <Select value={position} onValueChange={setPosition}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Position" />
           </SelectTrigger>
           <SelectContent>
@@ -140,7 +140,7 @@ export function PlayersTable({ players, area, showCoach, emptyAction }: Props) {
           </SelectContent>
         </Select>
         <Select value={sort} onValueChange={setSort}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Sort" />
           </SelectTrigger>
           <SelectContent>

@@ -120,7 +120,8 @@
   --gradient-pitch: linear-gradient(135deg, oklch(0.63 0.155 152), oklch(0.5 0.12 172));
   --gradient-panel: linear-gradient(150deg, oklch(0.24 0.026 252), oklch(0.2 0.022 252));
   --shadow-elevated: 0 18px 45px -18px oklch(0.09 0.02 250 / 0.85);
-  --shadow-glow: 0 0 0 1px oklch(0.81 0.152 85.5 / 0.35), 0 12px 40px -12px oklch(0.81 0.152 85.5 / 0.35);
+  --shadow-glow:
+    0 0 0 1px oklch(0.81 0.152 85.5 / 0.35), 0 12px 40px -12px oklch(0.81 0.152 85.5 / 0.35);
 }
 
 .dark {
@@ -141,6 +142,7 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
   h1,

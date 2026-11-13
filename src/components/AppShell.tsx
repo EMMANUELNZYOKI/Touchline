@@ -91,7 +91,7 @@ export function AppShell({
             className="absolute inset-0 bg-background/80 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
-          <aside className="animate-in slide-in-from-left absolute inset-y-0 left-0 flex w-72 flex-col border-r border-sidebar-border bg-sidebar p-4">
+          <aside className="animate-in slide-in-from-left absolute inset-y-0 left-0 flex w-[min(18rem,calc(100vw-1rem))] flex-col overflow-y-auto border-r border-sidebar-border bg-sidebar p-4">
             <div className="mb-2 flex items-start justify-between">
               <BrandBlock areaLabel={areaLabel} isAdmin={isAdmin} />
               <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
@@ -124,7 +124,7 @@ export function AppShell({
             </p>
           </div>
         </header>
-        <main className="flex-1 p-4 sm:p-6">{children}</main>
+        <main className="min-w-0 flex-1 p-4 sm:p-6">{children}</main>
       </div>
     </div>
   );
