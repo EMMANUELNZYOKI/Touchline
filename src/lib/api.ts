@@ -367,7 +367,7 @@ export async function fetchPlayer(playerId: string) {
 export async function fetchEvaluations() {
   const [evalsRes, playersRes, profilesRes] = await Promise.all([
     supabase.from("player_evaluations").select("*").order("created_at", { ascending: false }),
-    supabase.from("players").select("id, first_name, last_name, position"),
+    supabase.from("players").select("id, first_name, last_name, position, team_category"),
     supabase.from("profiles").select("id, full_name"),
   ]);
 
@@ -382,6 +382,7 @@ export async function fetchEvaluations() {
       ...e,
       playerName: player ? `${player.first_name} ${player.last_name}` : "Unknown player",
       position: player?.position ?? "—",
+      teamCategory: player?.team_category ?? "Unassigned",
       coachName: profiles.find((p) => p.id === e.coach_id)?.full_name ?? "Unknown coach",
     };
   });

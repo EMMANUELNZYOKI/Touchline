@@ -2,7 +2,7 @@
 import { createFileRoute } from "@/lib/next-router-compat";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Check, ImagePlus, Loader2, ShieldCheck } from "lucide-react";
+import { Check, Headset, ImagePlus, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -353,6 +353,28 @@ function AdminSettingsPage() {
           )}
         </CardContent>
       </Card>
+      {currentPlan?.plan_key === "pro" && (
+        <Card className="border-primary/25 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="font-display flex items-center gap-2 text-base tracking-wide uppercase">
+              <Headset className="h-4 w-4" /> Pro priority support
+            </CardTitle>
+            <CardDescription>
+              Your Pro package includes priority handling for workspace, payment, and account
+              issues.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-2 text-sm">
+            <p>• Faster support escalation for urgent academy issues</p>
+            <p>• Guided onboarding for managers, coaches, teams, and seasons</p>
+            <p>• Assistance with player-data imports and package setup</p>
+            <p className="text-muted-foreground text-xs">
+              Include your academy name and account email whenever you contact Touchline support so
+              your request can be identified quickly.
+            </p>
+          </CardContent>
+        </Card>
+      )}
       <Card className="border-border/70">
         <CardHeader>
           <CardTitle className="font-display text-base tracking-wide uppercase">Account</CardTitle>

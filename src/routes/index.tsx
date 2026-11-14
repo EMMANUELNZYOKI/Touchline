@@ -89,7 +89,11 @@ const packages = [
       "Everything in Standard",
       "Up to 20 coach accounts",
       "Up to 5 Academy Managers",
-      "Advanced analytics and priority support",
+      "Player development trends and progress tracking",
+      "Team, category, season, and coach comparisons",
+      "Advanced PDF, CSV, and academy exports",
+      "Coach activity insights",
+      "Priority support and onboarding assistance",
     ],
   },
 ];

@@ -1,10 +1,10 @@
 "use client";
 
-import { createFileRoute } from "@/lib/next-router-compat";
+import { createFileRoute, Link } from "@/lib/next-router-compat";
 import { useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
-import { Download, BarChart3, LockKeyhole, TrendingUp } from "lucide-react";
+import { BarChart3, Download, LockKeyhole, TrendingUp, Users } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -50,6 +50,7 @@ const SEASON_ORDER: Record<string, number> = {
 type EvaluationRow = Evaluation & {
   playerName: string;
   position: string;
+  teamCategory: string;
   coachName: string;
 };
 
@@ -72,6 +73,12 @@ function AdminReportsPage() {
     queryFn: fetchMyAcademyEntitlements,
   });
   const reportsEnabled = entitlementsQuery.data?.features.includes("reports") ?? false;
+  const advancedAnalyticsEnabled =
+    entitlementsQuery.data?.features.includes("advanced_analytics") ?? false;
+  const advancedExportsEnabled =
+    entitlementsQuery.data?.features.includes("advanced_exports") ?? false;
+  const coachInsightsEnabled =
+    entitlementsQuery.data?.features.includes("coach_activity_insights") ?? false;
   const { data, isLoading } = useQuery({
     queryKey: ["evaluations", "all"],
     queryFn: fetchEvaluations,
@@ -152,6 +159,29 @@ function AdminReportsPage() {
       return acc;
     }, {}),
   ).map(([name, values]) => ({ name, rating: average(values) }));
+  const byTeamCategory = Object.entries(
+    selectedEvaluations.reduce<Record<string, number[]>>((acc, evaluation) => {
+      const key = evaluation.teamCategory || "Unassigned";
+      acc[key] = [...(acc[key] ?? []), evaluation.overall_rating ?? 0];
+      return acc;
+    }, {}),
+  )
+    .map(([name, values]) => ({ name, rating: average(values), evaluations: values.length }))
+    .sort((a, b) => b.rating - a.rating);
+  const coachActivity = Object.entries(
+    selectedEvaluations.reduce<Record<string, { evaluations: number; players: Set<string> }>>(
+      (acc, evaluation) => {
+        const current = acc[evaluation.coachName] ?? { evaluations: 0, players: new Set<string>() };
+        current.evaluations += 1;
+        current.players.add(evaluation.player_id);
+        acc[evaluation.coachName] = current;
+        return acc;
+      },
+      {},
+    ),
+  )
+    .map(([name, activity]) => ({ name, ...activity }))
+    .sort((a, b) => b.evaluations - a.evaluations);
   const topPlayers = [...selectedEvaluations]
     .sort((a, b) => (b.overall_rating ?? 0) - (a.overall_rating ?? 0))
     .slice(0, 10);
@@ -221,6 +251,37 @@ function AdminReportsPage() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
+  const exportAdvancedCsv = () => {
+    if (!evaluations.length) return;
+    const header = [
+      "Season",
+      "Year",
+      "Player",
+      "Team/category",
+      "Position",
+      "Evaluating coach",
+      "Overall",
+      "Evaluated on",
+    ];
+    const rows = evaluations.map((evaluation) => [
+      evaluation.season,
+      evaluation.season_year,
+      evaluation.playerName,
+      evaluation.teamCategory,
+      evaluation.position,
+      evaluation.coachName,
+      evaluation.overall_rating,
+      new Date(evaluation.created_at).toISOString().slice(0, 10),
+    ]);
+    const csv = [header, ...rows].map((row) => row.map(csvValue).join(",")).join("\r\n");
+    const url = URL.createObjectURL(new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "touchline-pro-academy-analytics.csv";
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
   const periodLabel = (period: { season: string; year: number } | undefined) =>
     period ? `${period.season} ${period.year}` : "Select a season";
 
@@ -233,9 +294,16 @@ function AdminReportsPage() {
             {selectedEvaluations.length} player evaluations · {periodLabel(primaryPeriod)}
           </p>
         </div>
-        <Button variant="outline" onClick={exportCsv} disabled={!selectedEvaluations.length}>
-          <Download className="mr-2 h-4 w-4" /> Download season CSV
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={exportCsv} disabled={!selectedEvaluations.length}>
+            <Download className="mr-2 h-4 w-4" /> Download season CSV
+          </Button>
+          {advancedExportsEnabled && (
+            <Button variant="outline" onClick={exportAdvancedCsv} disabled={!evaluations.length}>
+              <Download className="mr-2 h-4 w-4" /> Export academy analytics
+            </Button>
+          )}
+        </div>
       </div>
 
       <Card className="border-border/70">
@@ -297,7 +365,7 @@ function AdminReportsPage() {
             ))}
           </div>
 
-          {comparisonPeriod && (
+          {comparisonPeriod && advancedAnalyticsEnabled && (
             <Card className="border-border/70">
               <CardHeader>
                 <CardTitle className="font-display flex items-center gap-2 text-base tracking-wide uppercase">
@@ -448,6 +516,77 @@ function AdminReportsPage() {
               ))}
             </CardContent>
           </Card>
+
+          {advancedAnalyticsEnabled ? (
+            <div className="grid gap-6 lg:grid-cols-2">
+              <Card className="border-primary/25 bg-primary/5">
+                <CardHeader>
+                  <CardTitle className="font-display flex items-center gap-2 text-base tracking-wide uppercase">
+                    <TrendingUp className="h-4 w-4" /> Team and category comparison
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-3">
+                  {byTeamCategory.map((category) => (
+                    <div key={category.name} className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">{category.name}</p>
+                        <p className="text-muted-foreground text-xs">
+                          {category.evaluations} evaluation{category.evaluations === 1 ? "" : "s"}
+                        </p>
+                      </div>
+                      <RatingBadge rating={category.rating} />
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {coachInsightsEnabled && (
+                <Card className="border-primary/25 bg-primary/5">
+                  <CardHeader>
+                    <CardTitle className="font-display flex items-center gap-2 text-base tracking-wide uppercase">
+                      <Users className="h-4 w-4" /> Coach activity insights
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid gap-3">
+                    {coachActivity.map((coach) => (
+                      <div key={coach.name} className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate font-medium">{coach.name}</p>
+                          <p className="text-muted-foreground text-xs">
+                            {coach.players.size} players covered
+                          </p>
+                        </div>
+                        <span className="text-sm font-semibold">
+                          {coach.evaluations} evaluations
+                        </span>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          ) : (
+            <Card className="border-border/70">
+              <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-3">
+                  <LockKeyhole className="text-primary mt-0.5 h-5 w-5 shrink-0" />
+                  <div>
+                    <p className="font-semibold">Unlock Pro academy intelligence</p>
+                    <p className="text-muted-foreground mt-1 text-sm">
+                      Compare player development across seasons and teams, review coach activity,
+                      and export complete academy analytics.
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  to="/admin/settings"
+                  className="text-primary whitespace-nowrap text-sm font-semibold hover:underline"
+                >
+                  View Pro package
+                </Link>
+              </CardContent>
+            </Card>
+          )}
         </>
       )}
     </div>
