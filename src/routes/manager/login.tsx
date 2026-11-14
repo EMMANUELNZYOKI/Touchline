@@ -48,6 +48,7 @@ function ManagerLogin() {
       badge="Academy operations"
       title="Academy Manager Login"
       description="Use the credentials given to you by the Academy Owner. Manage daily academy operations without access to billing, branding, or owner settings."
+      forgotPasswordHref="/forgot-password"
       footer="Academy Owner? Use the Academy Owner Login page instead."
     >
       <CredentialsForm

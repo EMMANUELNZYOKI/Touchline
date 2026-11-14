@@ -48,6 +48,7 @@ function AdminLogin() {
       badge="Academy ownership"
       title="Academy Owner Login"
       description="Manage academy settings, billing, branding, managers, coaches, players, evaluations, and reports."
+      forgotPasswordHref="/forgot-password"
       footer="Academy Manager? Use the Academy Manager Login page instead."
     >
       <CredentialsForm

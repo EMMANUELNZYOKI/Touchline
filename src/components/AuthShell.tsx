@@ -15,9 +15,17 @@ interface AuthShellProps {
   description: string;
   children: ReactNode;
   footer?: ReactNode;
+  forgotPasswordHref?: string;
 }
 
-export function AuthShell({ badge, title, description, children, footer }: AuthShellProps) {
+export function AuthShell({
+  badge,
+  title,
+  description,
+  children,
+  footer,
+  forgotPasswordHref,
+}: AuthShellProps) {
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
@@ -35,7 +43,17 @@ export function AuthShell({ badge, title, description, children, footer }: AuthS
             <CardTitle className="font-display text-2xl tracking-wide uppercase">{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </CardHeader>
-          <CardContent>{children}</CardContent>
+          <CardContent>
+            {children}
+            {forgotPasswordHref && (
+              <Link
+                to={forgotPasswordHref}
+                className="text-primary hover:text-primary/80 mt-4 block text-center text-sm font-medium underline-offset-4 hover:underline"
+              >
+                Forgot your password?
+              </Link>
+            )}
+          </CardContent>
         </Card>
         {footer && <div className="text-muted-foreground mt-5 text-center text-xs">{footer}</div>}
       </div>

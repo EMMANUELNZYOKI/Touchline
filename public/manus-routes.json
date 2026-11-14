@@ -9,6 +9,7 @@
     { "path": "/admin/dashboard", "title": "Academy Dashboard" },
     { "path": "/admin/evaluations", "title": "Evaluations" },
     { "path": "/admin/login", "title": "Academy Admin Login" },
+    { "path": "/admin/managers", "title": "Managers" },
     { "path": "/admin/players", "title": "Players" },
     { "path": "/admin/players/:playerId", "title": "Player Profile" },
     { "path": "/admin/players/create", "title": "Create Player" },
@@ -25,10 +26,13 @@
     { "path": "/coach/players/:playerId/evaluate", "title": "Evaluate Player" },
     { "path": "/coach/profile", "title": "Coach Profile" },
     { "path": "/onboard", "title": "Academy Signup" },
+    { "path": "/forgot-password", "title": "Recover Touchline Password" },
+    { "path": "/manager/login", "title": "Academy Manager Login" },
     { "path": "/platform", "title": "Touchline Platform" },
     { "path": "/platform/dashboard", "title": "Platform Dashboard" },
     { "path": "/platform/forgot-password", "title": "Recover Platform Admin Password" },
     { "path": "/platform/login", "title": "Platform Admin Login" },
-    { "path": "/platform/reset-password", "title": "Reset Platform Admin Password" }
+    { "path": "/platform/reset-password", "title": "Reset Platform Admin Password" },
+    { "path": "/reset-password", "title": "Reset Touchline Password" }
   ]
 }

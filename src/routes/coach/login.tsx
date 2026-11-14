@@ -54,6 +54,7 @@ function CoachLogin() {
       badge="Coaching Staff"
       title="Coach Login"
       description="Use the credentials issued to you by your Academy Owner or Academy Manager."
+      forgotPasswordHref="/forgot-password"
       footer="Coach accounts are created by academy staff. Contact your academy office if you cannot sign in."
     >
       <CredentialsForm submitLabel="Sign in as Coach" loading={loading} onSubmit={handleSignIn} />
