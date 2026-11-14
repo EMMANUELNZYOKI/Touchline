@@ -50,6 +50,11 @@ const createAcademySchema = z.object({
   adminPhone: z.string().trim().max(40).optional().default(""),
 });
 
+const changeAcademyPackageSchema = z.object({
+  planKey: z.enum(["starter", "standard", "pro"]),
+  reason: z.string().trim().min(3).max(500),
+});
+
 const signupMetadataSchema = z.object({
   full_name: z.string().trim().min(2).max(120),
   phone: z.string().trim().max(40).optional().default(""),
@@ -644,6 +649,31 @@ async function dispatch(request: Request, userId: string, body: unknown) {
         temporaryPassword,
       },
     };
+  }
+
+  if (
+    segments[1] === "platform" &&
+    segments[2] === "academies" &&
+    segments[3] &&
+    segments[4] === "package" &&
+    method === "POST"
+  ) {
+    await assertPlatformAdmin(userId);
+    const academyId = z.string().uuid().parse(segments[3]);
+    const data = changeAcademyPackageSchema.parse(body);
+    const { data: result, error } = await supabaseAdmin.rpc("set_platform_academy_package", {
+      p_academy_id: academyId,
+      p_plan_key: data.planKey,
+      p_reason: data.reason,
+      p_changed_by: userId,
+    });
+    if (error) {
+      const knownMessage = /already active|package|academy/i.test(error.message)
+        ? error.message
+        : "Could not change the academy package.";
+      throw new ApiError(knownMessage, 400);
+    }
+    return { ok: true, change: result?.[0] ?? null };
   }
 
   if (

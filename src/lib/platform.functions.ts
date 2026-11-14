@@ -53,6 +53,28 @@ export function deletePlatformAcademy(academyId: string) {
   );
 }
 
+export function changePlatformAcademyPackage({
+  data,
+}: {
+  data: {
+    academyId: string;
+    planKey: "starter" | "standard" | "pro";
+    reason: string;
+  };
+}) {
+  return callTouchlineApi<{
+    ok: true;
+    change: {
+      previous_plan_key: string;
+      new_plan_key: string;
+      subscription_status: string;
+    } | null;
+  }>(`/api/platform/academies/${encodeURIComponent(data.academyId)}/package`, "POST", {
+    planKey: data.planKey,
+    reason: data.reason,
+  });
+}
+
 export function createPlatformAcademy({
   data,
 }: {

@@ -31,7 +31,10 @@ import {
   getPlatformAcademies,
   updatePlatformAcademy,
   type PlatformAcademy,
+  changePlatformAcademyPackage,
 } from "@/lib/platform.functions";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/platform/_shell/dashboard")({
   head: () => ({ meta: [{ title: "Academies | Touchline Platform" }] }),
@@ -39,6 +42,7 @@ export const Route = createFileRoute("/platform/_shell/dashboard")({
 });
 
 type AcademyDraft = Pick<PlatformAcademy, "academy_status" | "subscription_status">;
+type PackageKey = "starter" | "standard" | "pro";
 const subscriptionStatuses: PlatformAcademy["subscription_status"][] = [
   "trialing",
   "active",
@@ -52,6 +56,7 @@ function PlatformDashboard() {
   const getAcademies = useServerFn(getPlatformAcademies);
   const saveAcademy = useServerFn(updatePlatformAcademy);
   const provisionAcademy = useServerFn(createPlatformAcademy);
+  const changePackage = useServerFn(changePlatformAcademyPackage);
   const [search, setSearch] = useState("");
   const [drafts, setDrafts] = useState<Record<string, AcademyDraft>>({});
   const [createOpen, setCreateOpen] = useState(false);
@@ -66,6 +71,10 @@ function PlatformDashboard() {
     temporaryPassword: string;
   } | null>(null);
   const [slugEdited, setSlugEdited] = useState(false);
+  const [packageAcademy, setPackageAcademy] = useState<PlatformAcademy | null>(null);
+  const [packageKey, setPackageKey] = useState<PackageKey>("starter");
+  const [packageReason, setPackageReason] = useState("");
+  const [packageError, setPackageError] = useState<string | null>(null);
   const query = useQuery({
     queryKey: ["platform-academies"],
     queryFn: () => getAcademies(),
@@ -109,6 +118,26 @@ function PlatformDashboard() {
       setProvisionedCredentials(result.administrator);
       await queryClient.invalidateQueries({ queryKey: ["platform-academies"] });
     },
+  });
+  const packageMutation = useMutation({
+    mutationFn: () => {
+      if (!packageAcademy) throw new Error("Select an academy first.");
+      return changePackage({
+        data: {
+          academyId: packageAcademy.academy_id,
+          planKey: packageKey,
+          reason: packageReason.trim(),
+        },
+      });
+    },
+    onSuccess: async () => {
+      setPackageAcademy(null);
+      setPackageReason("");
+      setPackageError(null);
+      await queryClient.invalidateQueries({ queryKey: ["platform-academies"] });
+    },
+    onError: (error) =>
+      setPackageError(error instanceof Error ? error.message : "Could not change the package."),
   });
 
   const academies = useMemo(() => query.data ?? [], [query.data]);
@@ -191,6 +220,15 @@ function PlatformDashboard() {
       `Permanently delete ${academy.academy_name}? This removes its workspace data, subscription, players, evaluations, and academy-only user accounts. This cannot be undone.`,
     );
     if (confirmed) deleteAcademy.mutate(academy.academy_id);
+  };
+
+  const openPackageChange = (academy: PlatformAcademy) => {
+    setPackageAcademy(academy);
+    setPackageKey(
+      academy.plan_key === "standard" || academy.plan_key === "pro" ? academy.plan_key : "starter",
+    );
+    setPackageReason("");
+    setPackageError(null);
   };
 
   return (
@@ -547,6 +585,14 @@ function PlatformDashboard() {
                             <Button
                               size="sm"
                               variant="outline"
+                              disabled={packageMutation.isPending}
+                              onClick={() => openPackageChange(academy)}
+                            >
+                              Change package
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
                               className="gap-1.5"
                               disabled={update.isPending}
                               onClick={() => toggleAcademy(academy)}
@@ -574,6 +620,81 @@ function PlatformDashboard() {
           )}
         </CardContent>
       </Card>
+      <Dialog
+        open={Boolean(packageAcademy)}
+        onOpenChange={(open) => {
+          if (!open && !packageMutation.isPending) setPackageAcademy(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="font-display tracking-wide uppercase">
+              Change academy package
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4">
+            <p className="text-muted-foreground text-sm">
+              {packageAcademy?.academy_name} is currently on the {packageAcademy?.plan_key} package.
+              This manual change activates the selected package immediately and is recorded in the
+              platform subscription history.
+            </p>
+            <div className="grid gap-2">
+              <Label htmlFor="package-plan">New package</Label>
+              <select
+                id="package-plan"
+                value={packageKey}
+                onChange={(event) => setPackageKey(event.target.value as PackageKey)}
+                className="border-input bg-background ring-offset-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              >
+                <option value="starter">
+                  Starter · KES 3,000 · 50 players · 5 coaches · 1 manager
+                </option>
+                <option value="standard">
+                  Standard · KES 5,000 · 100 players · 15 coaches · 3 managers
+                </option>
+                <option value="pro">
+                  Pro · KES 7,000 · unlimited players · 20 coaches · 5 managers
+                </option>
+              </select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="package-reason">Reason for manual change</Label>
+              <Input
+                id="package-reason"
+                required
+                minLength={3}
+                maxLength={500}
+                value={packageReason}
+                onChange={(event) => setPackageReason(event.target.value)}
+                placeholder="Manual payment received from academy owner"
+              />
+            </div>
+            {packageError && (
+              <p className="text-destructive text-sm" role="alert">
+                {packageError}
+              </p>
+            )}
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setPackageAcademy(null)}
+                disabled={packageMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={() => packageMutation.mutate()}
+                disabled={packageMutation.isPending || packageReason.trim().length < 3}
+              >
+                {packageMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {packageMutation.isPending ? "Applying…" : "Apply package change"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       <p className="text-muted-foreground text-xs">
         Counts are aggregated by a server-only RPC. This dashboard does not expose player names,
         medical notes, or evaluation details.

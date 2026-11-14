@@ -514,6 +514,7 @@ export type Database = {
           evaluation_count: number;
           coach_count: number;
           academy_admin_count: number;
+          manager_count: number;
         }[];
       };
       set_platform_academy_state: {
@@ -522,6 +523,19 @@ export type Database = {
       };
       create_platform_academy: { Args: { p_name: string; p_slug: string }; Returns: string };
       delete_platform_academy: { Args: { p_academy_id: string }; Returns: string[] };
+      set_platform_academy_package: {
+        Args: {
+          p_academy_id: string;
+          p_plan_key: string;
+          p_reason: string;
+          p_changed_by: string;
+        };
+        Returns: {
+          previous_plan_key: string;
+          new_plan_key: string;
+          subscription_status: string;
+        }[];
+      };
       complete_academy_onboarding: {
         Args: {
           p_owner_user_id: string;
