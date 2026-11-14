@@ -60,7 +60,7 @@ export async function fetchMyAcademySubscription(userId: string) {
 
   const { data: subscription, error: subscriptionError } = await supabase
     .from("academy_subscriptions")
-    .select("status, trial_ends_at")
+    .select("status, trial_ends_at, current_period_end")
     .eq("academy_id", membership.academy_id)
     .maybeSingle();
   if (subscriptionError) throw subscriptionError;

@@ -86,7 +86,7 @@ async function requireAcademyAdmin(userId: string, options: { allowReadOnly?: bo
       supabaseAdmin.from("academies").select("status").eq("id", data.academy_id).maybeSingle(),
       supabaseAdmin
         .from("academy_subscriptions")
-        .select("status, trial_ends_at")
+        .select("status, trial_ends_at, current_period_end")
         .eq("academy_id", data.academy_id)
         .maybeSingle(),
     ]);
@@ -95,8 +95,11 @@ async function requireAcademyAdmin(userId: string, options: { allowReadOnly?: bo
   if (academy?.status !== "active")
     throw new ApiError("This academy workspace is suspended. Contact Touchline support.", 403);
 
+  const paidPeriodActive =
+    subscription?.status === "active" &&
+    (!subscription.current_period_end || Date.parse(subscription.current_period_end) > Date.now());
   const canWrite =
-    subscription?.status === "active" ||
+    paidPeriodActive ||
     (subscription?.status === "trialing" &&
       Boolean(subscription.trial_ends_at) &&
       Date.parse(subscription.trial_ends_at!) > Date.now());
@@ -522,7 +525,13 @@ async function dispatch(request: Request, userId: string, body: unknown) {
       .eq("active", true)
       .order("display_order", { ascending: true });
     if (plansError) throw new ApiError("Could not load subscription packages.", 500);
-    return { subscription, plans: plans ?? [], payments: payments ?? [] };
+    const effectiveSubscription =
+      subscription?.status === "active" &&
+      subscription.current_period_end &&
+      Date.parse(subscription.current_period_end) <= Date.now()
+        ? { ...subscription, status: "past_due" as const }
+        : subscription;
+    return { subscription: effectiveSubscription, plans: plans ?? [], payments: payments ?? [] };
   }
   if (segments.join("/") === "api/billing/checkout" && method === "POST") {
     const academyId = await requireAcademyOwner(userId, { allowReadOnly: true });

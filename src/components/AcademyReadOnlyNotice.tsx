@@ -22,7 +22,10 @@ export function AcademyReadOnlyNotice({ userId }: { userId?: string }) {
   const trialEnd = subscription?.trial_ends_at ? Date.parse(subscription.trial_ends_at) : null;
   const trialActive =
     subscription?.status === "trialing" && trialEnd !== null && trialEnd > Date.now();
-  if (subscription?.status === "active") return null;
+  const paidPeriodActive =
+    subscription?.status === "active" &&
+    (!subscription.current_period_end || Date.parse(subscription.current_period_end) > Date.now());
+  if (paidPeriodActive) return null;
 
   if (trialActive && trialEnd !== null) {
     return (
