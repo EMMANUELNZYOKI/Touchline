@@ -32,10 +32,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const { profile, loading, role } = useAuth();
   const router = useRouter();
   const academyQuery = useQuery({
-    queryKey: ["my-academy-profile"],
+    queryKey: ["my-academy-profile", profile?.id],
     queryFn: fetchMyAcademyProfile,
-    enabled: role === "academy_admin" || role === "academy_manager",
-    staleTime: 60_000,
+    enabled: Boolean(profile?.id) && (role === "academy_admin" || role === "academy_manager"),
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 
   useEffect(() => {
@@ -62,7 +63,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
       userName={
         profile?.full_name || (role === "academy_admin" ? "Academy Owner" : "Academy Manager")
       }
-      academyName={academyQuery.data?.name}
+      academyName={
+        academyQuery.isPending
+          ? "Loading academy…"
+          : (academyQuery.data?.name ?? "Academy unavailable")
+      }
       signOutTo={role === "academy_manager" ? "/manager/login" : "/admin/login"}
     >
       <AcademyReadOnlyNotice userId={profile?.id} />

@@ -22,10 +22,13 @@ export function useAuth(): AuthState {
 
   useEffect(() => {
     let active = true;
+    let loadVersion = 0;
 
     const load = async (session: Session | null) => {
+      const version = ++loadVersion;
       if (!session?.user) {
-        if (active) setState({ loading: false, session: null, profile: null, role: null });
+        if (active && version === loadVersion)
+          setState({ loading: false, session: null, profile: null, role: null });
         return;
       }
       try {
@@ -33,9 +36,10 @@ export function useAuth(): AuthState {
           fetchMyRole(session.user.id),
           fetchMyProfile(session.user.id),
         ]);
-        if (active) setState({ loading: false, session, profile, role });
+        if (active && version === loadVersion) setState({ loading: false, session, profile, role });
       } catch {
-        if (active) setState({ loading: false, session, profile: null, role: null });
+        if (active && version === loadVersion)
+          setState({ loading: false, session, profile: null, role: null });
       }
     };
 
