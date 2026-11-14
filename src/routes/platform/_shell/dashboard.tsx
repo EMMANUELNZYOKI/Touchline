@@ -561,6 +561,17 @@ function PlatformDashboard() {
                                 : `Trial ends ${new Date(academy.trial_ends_at).toLocaleDateString()}`}
                             </p>
                           )}
+                          {academy.subscription_status === "active" && (
+                            <p className="text-muted-foreground mt-2 text-[11px]">
+                              {academy.plan_key
+                                .replace(/_/g, " ")
+                                .replace(/^\w/, (letter) => letter.toUpperCase())}{" "}
+                              ends{" "}
+                              {academy.current_period_end
+                                ? new Date(academy.current_period_end).toLocaleDateString()
+                                : "date unavailable"}
+                            </p>
+                          )}
                         </td>
                         <td className="px-4 py-4">
                           <StatusSelect

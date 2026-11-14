@@ -199,8 +199,7 @@ export async function handlePaystackWebhook(request: Request) {
   if (updateError) throw updateError;
 
   const periodStart = new Date(paidAt);
-  const periodEnd = new Date(periodStart);
-  periodEnd.setMonth(periodEnd.getMonth() + 1);
+  const periodEnd = new Date(periodStart.getTime() + 30 * 24 * 60 * 60 * 1000);
   const metadata = metadataObject(verified.metadata);
   const { error: subscriptionError } = await supabaseAdmin
     .from("academy_subscriptions")
