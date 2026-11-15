@@ -738,7 +738,32 @@ async function dispatch(request: Request, userId: string, body: unknown) {
   throw new ApiError("Not found.", 404);
 }
 
+function corsHeaders(request: Request) {
+  const origin = request.headers.get("origin");
+  return {
+    "Access-Control-Allow-Origin": origin ?? "*",
+    "Access-Control-Allow-Headers": "Authorization, Content-Type, apikey, x-client-info",
+    "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+    "Access-Control-Max-Age": "86400",
+    Vary: "Origin",
+  };
+}
+
+function withCors(request: Request, response: Response) {
+  const headers = new Headers(response.headers);
+  for (const [key, value] of Object.entries(corsHeaders(request))) headers.set(key, value);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export async function handleTouchlineApi(request: Request) {
+  if (request.method.toUpperCase() === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+
   try {
     const { userId } = await requireSupabaseAuth(request);
     let body: unknown = {};
@@ -750,13 +775,20 @@ export async function handleTouchlineApi(request: Request) {
       }
     }
     const result = await dispatch(request, userId, body);
-    return jsonResponse(result);
+    return withCors(request, jsonResponse(result));
   } catch (error) {
-    if (error instanceof ApiError) return jsonResponse({ error: error.message }, error.status);
+    if (error instanceof ApiError)
+      return withCors(request, jsonResponse({ error: error.message }, error.status));
     if (error instanceof z.ZodError) {
-      return jsonResponse({ error: error.issues[0]?.message ?? "Invalid request." }, 400);
+      return withCors(
+        request,
+        jsonResponse({ error: error.issues[0]?.message ?? "Invalid request." }, 400),
+      );
     }
     console.error("Touchline API request failed", error);
-    return jsonResponse({ error: "The request could not be completed. Please try again." }, 500);
+    return withCors(
+      request,
+      jsonResponse({ error: "The request could not be completed. Please try again." }, 500),
+    );
   }
 }
