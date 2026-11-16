@@ -470,6 +470,7 @@ interface PlayerEvaluationPDFProps {
   coachName: string;
   academyName: string;
   academySlug?: string;
+  academyTagline?: string;
   academyEmail?: string;
   academyPhone?: string;
   playerPhotoUrl?: string | null;
@@ -483,6 +484,7 @@ export function PlayerEvaluationPDF({
   coachName,
   academyName,
   academySlug = "",
+  academyTagline = "Transforming Lives Through Football",
   academyEmail = "",
   academyPhone = "",
   playerPhotoUrl,
@@ -512,6 +514,7 @@ export function PlayerEvaluationPDF({
           <View style={styles.academyHeader}>
             <Text style={styles.academyName}>{academyName.toUpperCase()}</Text>
 
+            {academyTagline && <Text style={styles.tagline}>{academyTagline}</Text>}
             {academySlug && <Text style={styles.academySlug}>Slug: {academySlug}</Text>}
             {academyEmail && <Text style={styles.contact}>Email: {academyEmail}</Text>}
             {academyPhone && <Text style={styles.contact}>Phone: {academyPhone}</Text>}

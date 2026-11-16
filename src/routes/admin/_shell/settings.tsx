@@ -10,7 +10,12 @@ import { PasswordInput } from "@/components/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { academyLogoUrl, fetchMyAcademyProfile, uploadAcademyLogo } from "@/lib/api";
+import {
+  academyLogoUrl,
+  fetchMyAcademyProfile,
+  updateAcademyReportBranding,
+  uploadAcademyLogo,
+} from "@/lib/api";
 import {
   getBilling,
   startBillingCheckout,
@@ -35,9 +40,18 @@ function AdminSettingsPage() {
   const [mpesaPhone, setMpesaPhone] = useState("");
   const [paymentMessage, setPaymentMessage] = useState("");
   const [selectedPlan, setSelectedPlan] = useState("");
-  const [academy, setAcademy] = useState<{ name: string; logo_path: string | null } | null>(null);
+  const [academy, setAcademy] = useState<{
+    id: string;
+    name: string;
+    slug: string;
+    logo_path: string | null;
+    report_tagline: string;
+    contact_email: string | null;
+    contact_phone: string | null;
+  } | null>(null);
   const [academyLogo, setAcademyLogo] = useState<string | null>(null);
   const [logoLoading, setLogoLoading] = useState(false);
+  const [brandingSaving, setBrandingSaving] = useState(false);
 
   useEffect(() => {
     setMpesaPhone(profile?.phone ?? "");
@@ -154,6 +168,27 @@ function AdminSettingsPage() {
     }
   };
 
+  const saveReportBranding = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!academy) return;
+    setBrandingSaving(true);
+    try {
+      await updateAcademyReportBranding({
+        academyId: academy.id,
+        name: academy.name,
+        slug: academy.slug,
+        reportTagline: academy.report_tagline,
+        contactEmail: academy.contact_email ?? "",
+        contactPhone: academy.contact_phone ?? "",
+      });
+      toast.success("Evaluation report identity saved.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not save report identity.");
+    } finally {
+      setBrandingSaving(false);
+    }
+  };
+
   const subscription = billing?.subscription;
   const trialEnds = subscription?.trial_ends_at ? new Date(subscription.trial_ends_at) : null;
   const isActive = subscription?.status === "active";
@@ -213,6 +248,96 @@ function AdminSettingsPage() {
               />
             </label>
           </Button>
+        </CardContent>
+      </Card>
+      <Card className="border-border/70">
+        <CardHeader>
+          <CardTitle className="font-display text-base tracking-wide uppercase">
+            Evaluation report identity
+          </CardTitle>
+          <CardDescription>
+            These details appear in the centered header of every player evaluation PDF.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="grid gap-4" onSubmit={saveReportBranding}>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label htmlFor="report-academy-name">Academy name</Label>
+                <Input
+                  id="report-academy-name"
+                  value={academy?.name ?? ""}
+                  onChange={(event) =>
+                    setAcademy((current) =>
+                      current ? { ...current, name: event.target.value } : current,
+                    )
+                  }
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="report-academy-slug">Academy slug</Label>
+                <Input
+                  id="report-academy-slug"
+                  value={academy?.slug ?? ""}
+                  onChange={(event) =>
+                    setAcademy((current) =>
+                      current ? { ...current, slug: event.target.value.toLowerCase() } : current,
+                    )
+                  }
+                  placeholder="dios-talented-academy"
+                  required
+                />
+                <p className="text-muted-foreground text-xs">
+                  Lowercase letters, numbers, and hyphens only.
+                </p>
+              </div>
+              <div className="grid gap-2 sm:col-span-2">
+                <Label htmlFor="report-tagline">Academy tagline</Label>
+                <Input
+                  id="report-tagline"
+                  value={academy?.report_tagline ?? ""}
+                  onChange={(event) =>
+                    setAcademy((current) =>
+                      current ? { ...current, report_tagline: event.target.value } : current,
+                    )
+                  }
+                  placeholder="Transforming Lives Through Football"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="report-email">Academy email</Label>
+                <Input
+                  id="report-email"
+                  type="email"
+                  value={academy?.contact_email ?? ""}
+                  onChange={(event) =>
+                    setAcademy((current) =>
+                      current ? { ...current, contact_email: event.target.value } : current,
+                    )
+                  }
+                  placeholder="academy@example.com"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="report-phone">Academy phone</Label>
+                <Input
+                  id="report-phone"
+                  value={academy?.contact_phone ?? ""}
+                  onChange={(event) =>
+                    setAcademy((current) =>
+                      current ? { ...current, contact_phone: event.target.value } : current,
+                    )
+                  }
+                  placeholder="+254 700 000 000"
+                />
+              </div>
+            </div>
+            <Button type="submit" className="w-fit" disabled={brandingSaving || !academy}>
+              {brandingSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {brandingSaving ? "Saving report identity…" : "Save report identity"}
+            </Button>
+          </form>
         </CardContent>
       </Card>
       <Card className="border-border/70">

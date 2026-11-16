@@ -203,8 +203,11 @@ export type Database = {
       };
       academies: {
         Row: {
+          contact_email: string | null;
+          contact_phone: string | null;
           id: string;
           name: string;
+          report_tagline: string;
           slug: string;
           logo_path: string | null;
           status: "active" | "suspended";
@@ -212,8 +215,11 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          contact_email?: string | null;
+          contact_phone?: string | null;
           id?: string;
           name: string;
+          report_tagline?: string;
           slug: string;
           logo_path?: string | null;
           status?: "active" | "suspended";
@@ -221,8 +227,11 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          contact_email?: string | null;
+          contact_phone?: string | null;
           id?: string;
           name?: string;
+          report_tagline?: string;
           slug?: string;
           logo_path?: string | null;
           status?: "active" | "suspended";

@@ -83,6 +83,7 @@ function AdminPlayerProfile() {
                 coachName={data.coachName}
                 academyName={data.academyName}
                 academySlug={data.academySlug}
+                academyTagline={data.academyTagline}
                 academyEmail={data.academyEmail}
                 academyPhone={data.academyPhone}
                 playerPhotoUrl={playerPhotoUrl ?? null}

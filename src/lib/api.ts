@@ -80,7 +80,7 @@ export async function fetchMyAcademyProfile() {
   if (!membership) throw new Error("No active academy membership was found.");
   const { data, error } = await supabase
     .from("academies")
-    .select("id, name, logo_path")
+    .select("id, name, slug, logo_path, report_tagline, contact_email, contact_phone")
     .eq("id", membership.academy_id)
     .single();
   if (error) throw error;
@@ -114,6 +114,31 @@ export async function uploadAcademyLogo(userId: string, file: File) {
   return path;
 }
 
+export async function updateAcademyReportBranding(input: {
+  academyId: string;
+  name: string;
+  slug: string;
+  reportTagline: string;
+  contactEmail: string;
+  contactPhone: string;
+}) {
+  const slug = input.slug.trim().toLowerCase();
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 80) {
+    throw new Error("Slug must use lowercase letters, numbers, and hyphens.");
+  }
+  const { error } = await supabase
+    .from("academies")
+    .update({
+      name: input.name.trim(),
+      slug,
+      report_tagline: input.reportTagline.trim() || "Transforming Lives Through Football",
+      contact_email: input.contactEmail.trim() || null,
+      contact_phone: input.contactPhone.trim() || null,
+    })
+    .eq("id", input.academyId);
+  if (error) throw error;
+}
+
 export async function academyLogoUrl(path: string | null): Promise<string | null> {
   if (!path) return null;
   const { data, error } = await supabase.storage.from("academy-assets").createSignedUrl(path, 3600);
@@ -128,12 +153,11 @@ export async function academyLogoUrl(path: string | null): Promise<string | null
  */
 export async function academyLogoDataUrl(path: string | null): Promise<string | null> {
   const signedUrl = await academyLogoUrl(path);
-  if (!signedUrl || typeof window === "undefined") return signedUrl;
+  if (!path || !signedUrl || typeof window === "undefined") return signedUrl;
 
   try {
-    const response = await fetch(signedUrl);
-    if (!response.ok) return signedUrl;
-    const blob = await response.blob();
+    const { data: blob, error } = await supabase.storage.from("academy-assets").download(path);
+    if (error || !blob) return signedUrl;
     return await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -385,7 +409,11 @@ export async function fetchPlayer(playerId: string) {
           .maybeSingle()
       : Promise.resolve({ data: null }),
     academyId
-      ? supabase.from("academies").select("name, slug, logo_path").eq("id", academyId).maybeSingle()
+      ? supabase
+          .from("academies")
+          .select("name, slug, logo_path, report_tagline, contact_email, contact_phone")
+          .eq("id", academyId)
+          .maybeSingle()
       : Promise.resolve({ data: null }),
     academyId
       ? supabase
@@ -419,8 +447,9 @@ export async function fetchPlayer(playerId: string) {
     coachEmail: coach?.email ?? "",
     academyName: academy?.name ?? "Academy",
     academySlug: academy?.slug ?? "",
-    academyEmail: academyOwner?.email ?? "",
-    academyPhone: academyOwner?.phone ?? "",
+    academyTagline: academy?.report_tagline ?? "Transforming Lives Through Football",
+    academyEmail: academy?.contact_email ?? academyOwner?.email ?? "",
+    academyPhone: academy?.contact_phone ?? academyOwner?.phone ?? "",
     academyLogoPath: academy?.logo_path ?? null,
   };
 }
