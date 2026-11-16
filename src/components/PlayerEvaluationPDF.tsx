@@ -625,11 +625,11 @@ export function PlayerEvaluationPDF({
             </Text>
 
             <Text style={styles.season}>
-              Season: {activeSeason}
+              SEASON: {activeSeason}
             </Text>
 
             <Text style={styles.season}>
-              Year: {evaluation?.season_year || "—"}
+              YEAR: {evaluation?.season_year || "—"}
             </Text>
           </View>
         </View>
@@ -810,8 +810,7 @@ export function PlayerEvaluationPDF({
 
         {/* FOOTER */}
         <Text style={styles.footer}>
-          Dios Soccer Academy • Player Evaluation &
-          Development Profile
+          Powered by Touchline
         </Text>
       </Page>
     </Document>
