@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
   profileRow: {
     flexDirection: "row",
     alignItems: "center",
-    minHeight: 112,
-    paddingBottom: 10,
+    minHeight: 94,
+    paddingBottom: 6,
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
   },
@@ -90,31 +90,31 @@ const styles = StyleSheet.create({
   },
 
   playerPhoto: {
-    width: 96,
-    height: 105,
+    width: 82,
+    height: 90,
     objectFit: "cover",
   },
 
   reportBlock: {
     width: "72%",
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     alignItems: "center",
     justifyContent: "center",
   },
 
   reportTitle: {
     color: BLUE,
-    fontSize: 15,
+    fontSize: 13.5,
     fontWeight: "bold",
     textAlign: "center",
-    lineHeight: 19,
+    lineHeight: 16,
   },
 
   season: {
     color: BLUE,
-    fontSize: 9,
+    fontSize: 8.5,
     fontWeight: "bold",
-    marginTop: 5,
+    marginTop: 2,
     textAlign: "center",
   },
 
