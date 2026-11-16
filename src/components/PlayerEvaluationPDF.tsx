@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
     position: "relative",
     flexDirection: "row",
     alignItems: "center",
-    height: 96,
-    paddingBottom: 5,
+    height: 88,
+    paddingBottom: 4,
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
   },
@@ -85,8 +85,8 @@ const styles = StyleSheet.create({
   },
 
   playerPhoto: {
-    width: 78,
-    height: 86,
+    width: 76,
+    height: 82,
     objectFit: "cover",
   },
 
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: "25%",
     right: 0,
-    top: 25,
+    top: 24,
   },
 
   seasonInline: {
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: "25%",
     right: 0,
-    top: 39,
+    top: 38,
     textAlign: "center",
   },
 
@@ -127,25 +127,25 @@ const styles = StyleSheet.create({
   playerInfo: {
     borderWidth: 1,
     borderColor: BORDER,
-    marginBottom: 13,
+    marginBottom: 8,
   },
 
   infoRow: {
     flexDirection: "row",
-    minHeight: 23,
+    minHeight: 20,
     borderBottomWidth: 1,
     borderBottomColor: BORDER,
   },
 
   infoRowLast: {
     flexDirection: "row",
-    minHeight: 23,
+    minHeight: 20,
   },
 
   infoCellLabel: {
     width: "17%",
     paddingHorizontal: 5,
-    paddingVertical: 5,
+    paddingVertical: 3,
     fontWeight: "bold",
     backgroundColor: "#f2f5f8",
     borderRightWidth: 1,
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   infoCellValue: {
     width: "33%",
     paddingHorizontal: 5,
-    paddingVertical: 5,
+    paddingVertical: 3,
     borderRightWidth: 1,
     borderRightColor: BORDER,
   },
@@ -163,20 +163,20 @@ const styles = StyleSheet.create({
   infoCellValueLast: {
     width: "33%",
     paddingHorizontal: 5,
-    paddingVertical: 5,
+    paddingVertical: 3,
   },
 
   // EVALUATION SECTIONS
   section: {
-    marginBottom: 12,
+    marginBottom: 7,
   },
 
   sectionTitle: {
     color: BLUE,
     fontSize: 10,
     fontWeight: "bold",
-    marginBottom: 5,
-    paddingBottom: 3,
+    marginBottom: 3,
+    paddingBottom: 2,
     borderBottomWidth: 1,
     borderBottomColor: BLUE,
   },
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
 
   tableHeader: {
     flexDirection: "row",
-    minHeight: 29,
+    height: 23,
     backgroundColor: "#edf2f7",
     borderBottomWidth: 1,
     borderBottomColor: BORDER,
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
 
   tableRow: {
     flexDirection: "row",
-    minHeight: 19,
+    height: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#cccccc",
   },
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   skillHeader: {
     width: "22%",
     paddingHorizontal: 5,
-    paddingVertical: 5,
+    paddingVertical: 3,
     fontWeight: "bold",
     borderRightWidth: 1,
     borderRightColor: BORDER,
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   skillCell: {
     width: "22%",
     paddingHorizontal: 5,
-    paddingVertical: 4,
+    paddingVertical: 2,
     borderRightWidth: 1,
     borderRightColor: BORDER,
     justifyContent: "center",
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   ratingHeader: {
     width: "19.5%",
     paddingHorizontal: 2,
-    paddingVertical: 4,
+    paddingVertical: 2,
     textAlign: "center",
     fontWeight: "bold",
     borderRightWidth: 1,
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   ratingHeaderLast: {
     width: "19.5%",
     paddingHorizontal: 2,
-    paddingVertical: 4,
+    paddingVertical: 2,
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 7,
@@ -270,19 +270,19 @@ const styles = StyleSheet.create({
 
   // COACH COMMENT
   commentSection: {
-    marginTop: 3,
-    marginBottom: 12,
+    marginTop: 6,
+    marginBottom: 8,
   },
 
   commentTitle: {
     color: BLUE,
     fontSize: 10,
     fontWeight: "bold",
-    marginBottom: 5,
+    marginBottom: 3,
   },
 
   commentBox: {
-    minHeight: 55,
+    minHeight: 48,
     borderWidth: 1,
     borderColor: BORDER,
     padding: 8,
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BORDER,
     marginTop: 4,
-    minHeight: 95,
+    minHeight: 88,
   },
 
   overallColumn: {
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingLeft: 9,
-    marginTop: 7,
+    marginTop: 5,
   },
 
   overallBox: {
@@ -612,7 +612,6 @@ export function PlayerEvaluationPDF({
         {hasEvaluation && evaluation ? (
           <>
             <SkillSection title="Technical Ability" skills={evaluation.technical_skills} />
-            <SkillSection title="Tactical Awareness" skills={evaluation.tactical_skills} />
           </>
         ) : (
           <View style={styles.commentBox} wrap={false}>
@@ -625,6 +624,7 @@ export function PlayerEvaluationPDF({
         {/* SECOND-PAGE EVALUATION SECTIONS */}
         {hasEvaluation && evaluation ? (
           <>
+            <SkillSection title="Tactical Awareness" skills={evaluation.tactical_skills} />
             <SkillSection title="Physical Attributes" skills={evaluation.physical_skills} />
             <SkillSection title="Personality Traits" skills={evaluation.personality_skills} />
 
