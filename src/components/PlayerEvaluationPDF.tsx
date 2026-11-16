@@ -30,23 +30,23 @@ const styles = StyleSheet.create({
 
   // ACADEMY HEADER
   header: {
-    marginBottom: 14,
+    marginBottom: 6,
   },
 
   brandingBlock: {
     alignItems: "center",
     justifyContent: "center",
-    paddingBottom: 10,
+    paddingBottom: 6,
     borderBottomWidth: 1,
     borderBottomColor: BLUE,
-    marginBottom: 12,
+    marginBottom: 7,
   },
 
   logo: {
-    width: 128,
-    height: 145,
+    width: 90,
+    height: 95,
     objectFit: "contain",
-    marginBottom: 5,
+    marginBottom: 3,
   },
 
   academyHeader: {
@@ -81,27 +81,27 @@ const styles = StyleSheet.create({
   profileRow: {
     flexDirection: "row",
     alignItems: "center",
-    minHeight: 112,
-    paddingBottom: 6,
+    minHeight: 96,
+    paddingBottom: 5,
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
   },
 
   playerPhotoColumn: {
-    width: "24%",
+    width: "25%",
     alignItems: "center",
     justifyContent: "center",
   },
 
   playerPhoto: {
-    width: 96,
-    height: 105,
+    width: 78,
+    height: 86,
     objectFit: "cover",
   },
 
   reportBlock: {
-    width: "76%",
-    paddingHorizontal: 6,
+    width: "75%",
+    paddingHorizontal: 8,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -111,15 +111,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",
-    lineHeight: 16,
+    lineHeight: 17,
   },
 
   season: {
     color: BLUE,
     fontSize: 9,
     fontWeight: "bold",
-    marginTop: 2,
-    lineHeight: 11,
+    marginTop: 4,
+    lineHeight: 12,
     textAlign: "center",
   },
 
@@ -557,7 +557,7 @@ export function PlayerEvaluationPDF({
       >
         {/* ACADEMY BRANDING */}
         <View style={styles.header}>
-          <View style={styles.brandingBlock}>
+          <View style={styles.brandingBlock} wrap={false}>
             {logoUrl && (
               <Image
                 src={logoUrl}
@@ -599,7 +599,7 @@ export function PlayerEvaluationPDF({
           </View>
 
           {/* PLAYER PHOTO AND REPORT TITLE */}
-          <View style={styles.profileRow}>
+          <View style={styles.profileRow} wrap={false}>
             <View style={styles.playerPhotoColumn}>
               {playerPhotoUrl && (
                 <Image
