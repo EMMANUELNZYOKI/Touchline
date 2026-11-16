@@ -38,13 +38,21 @@ const styles = StyleSheet.create({
    * academy text and centered at the top.
    */
   logo: {
-    position: "absolute",
-    top: 0,
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: 54,
-    height: 54,
+    width: 58,
+    height: 58,
     objectFit: "contain",
+  },
+
+  logoRow: {
+    height: 62,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  headerColumns: {
+    width: "100%",
+    height: 96,
+    flexDirection: "row",
   },
 
   /*
@@ -65,9 +73,6 @@ const styles = StyleSheet.create({
    * Starts below the logo.
    */
   academyHeader: {
-    position: "absolute",
-    top: 62,
-    left: 0,
     width: "50%",
     paddingLeft: 84,
     paddingRight: 8,
@@ -105,13 +110,11 @@ const styles = StyleSheet.create({
   },
 
   reportBlock: {
-    position: "absolute",
-    top: 68,
-    left: "50%",
-    right: 0,
+    width: "50%",
     paddingLeft: 8,
     paddingRight: 4,
     alignItems: "center",
+    justifyContent: "center",
   },
 
   reportTitle: {
@@ -517,28 +520,34 @@ export function PlayerEvaluationPDF({
       <Page size="A4" orientation="portrait" style={styles.page}>
         {/* HEADER */}
         <View style={styles.header}>
-          {logoUrl && <Image src={logoUrl} style={styles.logo} />}
+          <View style={styles.logoRow}>
+            {logoUrl && <Image src={logoUrl} style={styles.logo} />}
+          </View>
 
           {playerPhotoUrl && <Image src={playerPhotoUrl} style={styles.playerPhoto} />}
 
-          <View style={styles.academyHeader}>
-            <Text style={styles.academyName}>{academyName.toUpperCase()}</Text>
+          <View style={styles.headerColumns}>
+            <View style={styles.academyHeader}>
+              <Text style={styles.academyName}>{academyName.toUpperCase()}</Text>
 
-            {academyTagline && <Text style={styles.tagline}>{academyTagline}</Text>}
-            {academySlug && <Text style={styles.academySlug}>Slug: {academySlug}</Text>}
-            {academyEmail && <Text style={styles.contact}>Email: {academyEmail}</Text>}
-            {academyPhone && <Text style={styles.contact}>Phone: {academyPhone}</Text>}
-          </View>
+              {academyTagline && <Text style={styles.tagline}>{academyTagline}</Text>}
+              {academySlug && <Text style={styles.academySlug}>Slug: {academySlug}</Text>}
+              {academyEmail && <Text style={styles.contact}>Email: {academyEmail}</Text>}
+              {academyPhone && <Text style={styles.contact}>Phone: {academyPhone}</Text>}
+            </View>
 
-          <View style={styles.reportBlock}>
-            <Text style={styles.reportTitle}>
-              PLAYER EVALUATION &amp; DEVELOPMENT
-              {"\n"}
-              PROFILE
-            </Text>
+            <View style={styles.reportBlock}>
+              <Text style={styles.reportTitle}>
+                PLAYER EVALUATION &amp; DEVELOPMENT
+                {"\n"}
+                PROFILE
+              </Text>
 
-            <Text style={styles.season}>Season: {evaluation?.season || player.season || "—"}</Text>
-            <Text style={styles.season}>Year: {evaluation?.season_year || "—"}</Text>
+              <Text style={styles.season}>
+                Season: {evaluation?.season || player.season || "—"}
+              </Text>
+              <Text style={styles.season}>Year: {evaluation?.season_year || "—"}</Text>
+            </View>
           </View>
         </View>
 
