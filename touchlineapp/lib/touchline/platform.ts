@@ -43,8 +43,13 @@ async function platformRequest<T>(path: string, method: string, body?: unknown):
 }
 
 export async function fetchPlatformAcademies(): Promise<PlatformAcademy[]> {
+  await claimInitialPlatformAdmin();
   const result = await platformRequest<{ academies?: PlatformAcademy[] }>("/api/platform/academies", "GET");
   return result.academies ?? [];
+}
+
+export function claimInitialPlatformAdmin() {
+  return platformRequest<{ authorized: boolean }>("/api/platform/admin/claim", "POST", {});
 }
 
 export function updatePlatformAcademy(input: {
