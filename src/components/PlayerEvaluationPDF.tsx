@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   ========================= */
 
   header: {
-    height: 184,
+    height: 208,
     marginBottom: 7,
   },
 
@@ -35,13 +35,13 @@ const styles = StyleSheet.create({
    * academy text and centered at the top.
    */
   logo: {
-    width: 70,
-    height: 70,
+    width: 88,
+    height: 88,
     objectFit: "contain",
   },
 
   brandingBlock: {
-    height: 101,
+    height: 125,
     alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: BLUE,
@@ -500,10 +500,6 @@ export function PlayerEvaluationPDF({
   const age = calculateAge(player.date_of_birth);
   const overallRating = getOverallRating(evaluation?.overall_rating);
 
-  const activeSeason = evaluation
-    ? `${evaluation.season} ${evaluation.season_year}`
-    : player.season || season;
-
   return (
     <Document
       title={`Player Evaluation - ${player.first_name} ${player.last_name}`}
@@ -518,6 +514,7 @@ export function PlayerEvaluationPDF({
             <View style={styles.academyHeader}>
               <Text style={styles.academyName}>{academyName.toUpperCase()}</Text>
               {academyTagline && <Text style={styles.tagline}>{academyTagline}</Text>}
+              {academySlug && <Text style={styles.academySlug}>Slug: {academySlug}</Text>}
               {academyEmail && <Text style={styles.contact}>Email: {academyEmail}</Text>}
               {academyPhone && <Text style={styles.contact}>Phone: {academyPhone}</Text>}
             </View>
@@ -534,7 +531,10 @@ export function PlayerEvaluationPDF({
                 {"\n"}
                 PROFILE
               </Text>
-              <Text style={styles.season}>Season: {activeSeason}</Text>
+              <Text style={styles.season}>
+                Season: {evaluation?.season || player.season || season || "—"}
+              </Text>
+              <Text style={styles.season}>Year: {evaluation?.season_year || "—"}</Text>
             </View>
           </View>
         </View>
