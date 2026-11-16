@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   },
 
   playerPhotoColumn: {
-    width: "28%",
+    width: "22%",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -96,8 +96,8 @@ const styles = StyleSheet.create({
   },
 
   reportBlock: {
-    width: "72%",
-    paddingHorizontal: 12,
+    width: "78%",
+    paddingHorizontal: 4,
     alignItems: "center",
     justifyContent: "center",
   },
