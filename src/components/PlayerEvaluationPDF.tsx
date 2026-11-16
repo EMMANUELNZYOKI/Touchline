@@ -25,6 +25,8 @@ const styles = StyleSheet.create({
   ========================= */
 
   header: {
+    height: 315,
+    position: "relative",
     marginBottom: 3,
   },
 
@@ -41,8 +43,11 @@ const styles = StyleSheet.create({
   },
 
   brandingBlock: {
-    paddingTop: 0,
-    paddingBottom: 2,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 205,
     alignItems: "center",
     justifyContent: "flex-start",
     borderBottomWidth: 1,
@@ -50,6 +55,10 @@ const styles = StyleSheet.create({
   },
 
   profileRow: {
+    position: "absolute",
+    top: 205,
+    left: 0,
+    right: 0,
     height: 108,
     flexDirection: "row",
     alignItems: "center",
