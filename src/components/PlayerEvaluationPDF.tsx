@@ -35,20 +35,20 @@ const styles = StyleSheet.create({
    * academy text and centered at the top.
    */
   logo: {
-    width: 50,
-    height: 50,
+    width: 54,
+    height: 54,
     objectFit: "contain",
   },
 
   brandingBlock: {
-    height: 77,
+    height: 76,
     alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: BLUE,
   },
 
   profileRow: {
-    height: 89,
+    height: 84,
     flexDirection: "row",
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
 
   academyName: {
     color: BLUE,
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: "bold",
     letterSpacing: 0.3,
     textAlign: "center",
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
 
   reportTitle: {
     color: BLUE,
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: "bold",
     textAlign: "center",
     lineHeight: 12,
@@ -501,7 +501,7 @@ export function PlayerEvaluationPDF({
   const overallRating = getOverallRating(evaluation?.overall_rating);
 
   const activeSeason = evaluation
-    ? `${evaluation.season} / ${evaluation.season_year}`
+    ? `${evaluation.season} ${evaluation.season_year}`
     : player.season || season;
 
   return (
@@ -534,10 +534,7 @@ export function PlayerEvaluationPDF({
                 {"\n"}
                 PROFILE
               </Text>
-              <Text style={styles.season}>
-                Season: {evaluation?.season || player.season || "—"}
-              </Text>
-              <Text style={styles.season}>Year: {evaluation?.season_year || "—"}</Text>
+              <Text style={styles.season}>Season: {activeSeason}</Text>
             </View>
           </View>
         </View>
