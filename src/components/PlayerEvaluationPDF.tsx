@@ -75,6 +75,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  academyDetails: {
+    width: "100%",
+    textAlign: "center",
+    lineHeight: 10.5,
+  },
+
   academyName: {
     color: BLUE,
     fontSize: 17,
@@ -105,7 +111,8 @@ const styles = StyleSheet.create({
   },
 
   reportBlock: {
-    width: "72%",
+    flexGrow: 1,
+    flexShrink: 1,
     paddingLeft: 10,
     paddingRight: 8,
     alignItems: "center",
@@ -518,13 +525,31 @@ export function PlayerEvaluationPDF({
         <View style={styles.header} wrap={false}>
           <View style={styles.brandingBlock} wrap={false}>
             {logoUrl && <Image src={logoUrl} style={styles.logo} />}
-            <View style={styles.academyHeader}>
-              <Text style={styles.academyName}>{academyName.toUpperCase()}</Text>
-              {academyTagline && <Text style={styles.tagline}>{academyTagline}</Text>}
-              {academySlug && <Text style={styles.academySlug}>{academySlug}</Text>}
-              {academyEmail && <Text style={styles.contact}>Email: {academyEmail}</Text>}
+            <Text style={styles.academyDetails}>
+              <Text style={styles.academyName}>
+                {academyName.toUpperCase()}
+                {"\n"}
+              </Text>
+              {academyTagline && (
+                <Text style={styles.tagline}>
+                  {academyTagline}
+                  {"\n"}
+                </Text>
+              )}
+              {academySlug && (
+                <Text style={styles.academySlug}>
+                  {academySlug}
+                  {"\n"}
+                </Text>
+              )}
+              {academyEmail && (
+                <Text style={styles.contact}>
+                  Email: {academyEmail}
+                  {"\n"}
+                </Text>
+              )}
               {academyPhone && <Text style={styles.contact}>Phone: {academyPhone}</Text>}
-            </View>
+            </Text>
           </View>
 
           <View style={styles.profileRow} wrap={false}>
