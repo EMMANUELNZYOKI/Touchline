@@ -608,15 +608,24 @@ export function PlayerEvaluationPDF({
           </View>
         </View>
 
-        {/* SAVED EVALUATION SECTIONS */}
+        {/* FIRST-PAGE EVALUATION SECTIONS */}
         {hasEvaluation && evaluation ? (
           <>
             <SkillSection title="Technical Ability" skills={evaluation.technical_skills} />
-
             <SkillSection title="Tactical Awareness" skills={evaluation.tactical_skills} />
+          </>
+        ) : (
+          <View style={styles.commentBox} wrap={false}>
+            <Text>No saved evaluation is available for this player.</Text>
+          </View>
+        )}
+      </Page>
 
+      <Page size="A4" orientation="portrait" style={styles.page}>
+        {/* SECOND-PAGE EVALUATION SECTIONS */}
+        {hasEvaluation && evaluation ? (
+          <>
             <SkillSection title="Physical Attributes" skills={evaluation.physical_skills} />
-
             <SkillSection title="Personality Traits" skills={evaluation.personality_skills} />
 
             {/* COACH COMMENT */}
@@ -664,11 +673,7 @@ export function PlayerEvaluationPDF({
               </View>
             </View>
           </>
-        ) : (
-          <View style={styles.commentBox} wrap={false}>
-            <Text>No saved evaluation is available for this player.</Text>
-          </View>
-        )}
+        ) : null}
 
         {/* POWERED BY TOUCHLINE - BELOW EVALUATION */}
         <Text style={styles.footer}>Powered by Touchline</Text>
