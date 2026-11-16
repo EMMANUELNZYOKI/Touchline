@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     position: "relative",
     flexDirection: "row",
     alignItems: "center",
-    minHeight: 96,
+    height: 96,
     paddingBottom: 5,
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
@@ -102,14 +102,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
     textAlign: "center",
-    lineHeight: 14,
+    lineHeight: 12,
   },
 
   reportTitlePosition: {
     position: "absolute",
     left: "25%",
     right: 0,
-    top: 28,
+    top: 25,
   },
 
   seasonInline: {
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: "25%",
     right: 0,
-    top: 44,
+    top: 39,
     textAlign: "center",
   },
 
