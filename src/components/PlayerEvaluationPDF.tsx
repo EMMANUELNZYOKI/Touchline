@@ -1,14 +1,4 @@
-
-import {
-  Document,
-  Image,
-  Page,
-  Path,
-  Svg,
-  StyleSheet,
-  Text,
-  View,
-} from "@react-pdf/renderer";
+import { Document, Image, Page, Path, Svg, StyleSheet, Text, View } from "@react-pdf/renderer";
 
 import type { Evaluation, Player } from "@/lib/types";
 import { calculateAge } from "@/lib/skills";
@@ -79,6 +69,7 @@ const styles = StyleSheet.create({
 
   // PLAYER PROFILE HEADER
   profileRow: {
+    position: "relative",
     flexDirection: "row",
     alignItems: "center",
     minHeight: 96,
@@ -102,8 +93,6 @@ const styles = StyleSheet.create({
   reportBlock: {
     width: "75%",
     paddingHorizontal: 8,
-    alignItems: "center",
-    justifyContent: "center",
   },
 
   // Keep the report title and season in ONE text flow.
@@ -116,10 +105,22 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
 
+  reportTitlePosition: {
+    position: "absolute",
+    left: "25%",
+    right: 0,
+    top: 28,
+  },
+
   seasonInline: {
     color: BLUE,
     fontSize: 8,
     fontWeight: "bold",
+    position: "absolute",
+    left: "25%",
+    right: 0,
+    top: 44,
+    textAlign: "center",
   },
 
   // PLAYER INFORMATION
@@ -391,20 +392,14 @@ function Checkbox({ checked }: { checked: boolean }) {
 }
 
 // SKILL TABLE
-function SkillTable({
-  skills,
-}: {
-  skills: Record<string, number>;
-}) {
+function SkillTable({ skills }: { skills: Record<string, number> }) {
   const entries = Object.entries(skills);
 
   return (
     <View style={styles.table}>
       <View style={styles.tableHeader}>
         <Text style={styles.skillHeader}>Skill</Text>
-        <Text style={styles.ratingHeader}>
-          Needs{"\n"}Improvement
-        </Text>
+        <Text style={styles.ratingHeader}>Needs{"\n"}Improvement</Text>
         <Text style={styles.ratingHeader}>On Target</Text>
         <Text style={styles.ratingHeader}>Above Target</Text>
         <Text style={styles.ratingHeaderLast}>Exceptional</Text>
@@ -416,10 +411,7 @@ function SkillTable({
         return (
           <View
             key={skill}
-            style={[
-              styles.tableRow,
-              index === entries.length - 1 ? styles.lastRow : {},
-            ]}
+            style={[styles.tableRow, index === entries.length - 1 ? styles.lastRow : {}]}
           >
             <Text style={styles.skillCell}>{skill}</Text>
 
@@ -502,24 +494,14 @@ export function PlayerEvaluationPDF({
 }: PlayerEvaluationPDFProps) {
   const age = calculateAge(player.date_of_birth);
 
-  const overallRating = getOverallRating(
-    evaluation?.overall_rating
-  );
+  const overallRating = getOverallRating(evaluation?.overall_rating);
 
   // Get season and year dynamically.
-  const seasonLabel = String(
-    evaluation?.season || season || ""
-  ).trim();
+  const seasonLabel = String(evaluation?.season || season || "").trim();
 
-  const extractedYear =
-    seasonLabel.match(/\b20\d{2}\b/)?.[0] || "";
+  const extractedYear = seasonLabel.match(/\b20\d{2}\b/)?.[0] || "";
 
-  const yearLabel = String(
-    evaluation?.season_year ||
-      seasonYear ||
-      extractedYear ||
-      ""
-  ).trim();
+  const yearLabel = String(evaluation?.season_year || seasonYear || extractedYear || "").trim();
 
   // Remove an existing year to prevent duplication.
   const seasonWithoutYear = seasonLabel
@@ -534,12 +516,7 @@ export function PlayerEvaluationPDF({
       : `Season ${seasonWithoutYear}`
     : "";
 
-  const seasonDisplay = [
-    seasonPrefix,
-    yearLabel,
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const seasonDisplay = [seasonPrefix, yearLabel].filter(Boolean).join(" ");
 
   const hasEvaluation = evaluation !== null;
 
@@ -549,226 +526,120 @@ export function PlayerEvaluationPDF({
       author={academyName}
       subject="Player Evaluation & Development Profile"
     >
-      <Page
-        size="A4"
-        orientation="portrait"
-        style={styles.page}
-      >
+      <Page size="A4" orientation="portrait" style={styles.page}>
         {/* ACADEMY BRANDING */}
         <View style={styles.header}>
           <View style={styles.brandingBlock} wrap={false}>
-            {logoUrl && (
-              <Image
-                src={logoUrl}
-                style={styles.logo}
-              />
-            )}
+            {logoUrl && <Image src={logoUrl} style={styles.logo} />}
 
             <View style={styles.academyHeader}>
-              {academyName && (
-                <Text style={styles.academyName}>
-                  {academyName.toUpperCase()}
-                </Text>
-              )}
+              {academyName && <Text style={styles.academyName}>{academyName.toUpperCase()}</Text>}
 
-              {academyTagline && (
-                <Text style={styles.tagline}>
-                  {academyTagline}
-                </Text>
-              )}
+              {academyTagline && <Text style={styles.tagline}>{academyTagline}</Text>}
 
-              {academySlug && (
-                <Text style={styles.contact}>
-                  Slug: {academySlug}
-                </Text>
-              )}
+              {academySlug && <Text style={styles.contact}>Slug: {academySlug}</Text>}
 
-              {academyEmail && (
-                <Text style={styles.contact}>
-                  Email: {academyEmail}
-                </Text>
-              )}
+              {academyEmail && <Text style={styles.contact}>Email: {academyEmail}</Text>}
 
-              {academyPhone && (
-                <Text style={styles.contact}>
-                  Phone: {academyPhone}
-                </Text>
-              )}
+              {academyPhone && <Text style={styles.contact}>Phone: {academyPhone}</Text>}
             </View>
           </View>
 
           {/* PLAYER PHOTO AND REPORT TITLE */}
           <View style={styles.profileRow} wrap={false}>
             <View style={styles.playerPhotoColumn}>
-              {playerPhotoUrl && (
-                <Image
-                  src={playerPhotoUrl}
-                  style={styles.playerPhoto}
-                />
-              )}
+              {playerPhotoUrl && <Image src={playerPhotoUrl} style={styles.playerPhoto} />}
             </View>
 
-            <View style={styles.reportBlock}>
-              <Text style={styles.reportHeading}>
-                PLAYER EVALUATION &amp; DEVELOPMENT PROFILE
-                {seasonDisplay ? "\\n" : null}
-                {seasonDisplay ? (
-                  <Text style={styles.seasonInline}>
-                    {seasonDisplay}
-                  </Text>
-                ) : null}
-              </Text>
-            </View>
+            <View style={styles.reportBlock} />
+            <Text style={[styles.reportHeading, styles.reportTitlePosition]}>
+              PLAYER EVALUATION &amp; DEVELOPMENT PROFILE
+            </Text>
+            {seasonDisplay ? <Text style={styles.seasonInline}>{seasonDisplay}</Text> : null}
           </View>
         </View>
 
         {/* PLAYER INFORMATION */}
         <View style={styles.playerInfo} wrap={false}>
           <View style={styles.infoRow}>
-            <Text style={styles.infoCellLabel}>
-              Player Name
-            </Text>
+            <Text style={styles.infoCellLabel}>Player Name</Text>
 
             <Text style={styles.infoCellValue}>
               {player.first_name} {player.last_name}
             </Text>
 
-            <Text style={styles.infoCellLabel}>
-              Age
-            </Text>
+            <Text style={styles.infoCellLabel}>Age</Text>
 
-            <Text style={styles.infoCellValueLast}>
-              {age ?? "-"}
-            </Text>
+            <Text style={styles.infoCellValueLast}>{age ?? "-"}</Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoCellLabel}>
-              Jersey No.
-            </Text>
+            <Text style={styles.infoCellLabel}>Jersey No.</Text>
 
-            <Text style={styles.infoCellValue}>
-              {player.jersey_number ?? "-"}
-            </Text>
+            <Text style={styles.infoCellValue}>{player.jersey_number ?? "-"}</Text>
 
-            <Text style={styles.infoCellLabel}>
-              Position
-            </Text>
+            <Text style={styles.infoCellLabel}>Position</Text>
 
-            <Text style={styles.infoCellValueLast}>
-              {player.position ?? "-"}
-            </Text>
+            <Text style={styles.infoCellValueLast}>{player.position ?? "-"}</Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoCellLabel}>
-              Category/Team
-            </Text>
+            <Text style={styles.infoCellLabel}>Category/Team</Text>
 
-            <Text style={styles.infoCellValue}>
-              {player.team_category ?? "—"}
-            </Text>
+            <Text style={styles.infoCellValue}>{player.team_category ?? "—"}</Text>
 
-            <Text style={styles.infoCellLabel}>
-              Strong foot
-            </Text>
+            <Text style={styles.infoCellLabel}>Strong foot</Text>
 
-            <Text style={styles.infoCellValueLast}>
-              {player.preferred_foot ?? "-"}
-            </Text>
+            <Text style={styles.infoCellValueLast}>{player.preferred_foot ?? "-"}</Text>
           </View>
 
           <View style={styles.infoRowLast}>
-            <Text style={styles.infoCellLabel}>
-              DOB
-            </Text>
+            <Text style={styles.infoCellLabel}>DOB</Text>
 
             <Text style={styles.infoCellValue}>
               {player.date_of_birth
-                ? new Date(
-                    player.date_of_birth
-                  ).toLocaleDateString("en-GB")
+                ? new Date(player.date_of_birth).toLocaleDateString("en-GB")
                 : "-"}
             </Text>
 
-            <Text style={styles.infoCellLabel}>
-              Coach
-            </Text>
+            <Text style={styles.infoCellLabel}>Coach</Text>
 
-            <Text style={styles.infoCellValueLast}>
-              {coachName}
-            </Text>
+            <Text style={styles.infoCellValueLast}>{coachName}</Text>
           </View>
         </View>
 
         {/* SAVED EVALUATION SECTIONS */}
         {hasEvaluation && evaluation ? (
           <>
-            <SkillSection
-              title="Technical Ability"
-              skills={evaluation.technical_skills}
-            />
+            <SkillSection title="Technical Ability" skills={evaluation.technical_skills} />
 
-            <SkillSection
-              title="Tactical Awareness"
-              skills={evaluation.tactical_skills}
-            />
+            <SkillSection title="Tactical Awareness" skills={evaluation.tactical_skills} />
 
-            <SkillSection
-              title="Physical Attributes"
-              skills={evaluation.physical_skills}
-            />
+            <SkillSection title="Physical Attributes" skills={evaluation.physical_skills} />
 
-            <SkillSection
-              title="Personality Traits"
-              skills={evaluation.personality_skills}
-            />
+            <SkillSection title="Personality Traits" skills={evaluation.personality_skills} />
 
             {/* COACH COMMENT */}
-            <View
-              style={styles.commentSection}
-              wrap={false}
-            >
-              <Text style={styles.commentTitle}>
-                Coach's Overall Comment
-              </Text>
+            <View style={styles.commentSection} wrap={false}>
+              <Text style={styles.commentTitle}>Coach's Overall Comment</Text>
 
               <View style={styles.commentBox}>
                 <Text>
-                  {evaluation.coach_notes ||
-                    evaluation.coach_verdict ||
-                    "No comment recorded."}
+                  {evaluation.coach_notes || evaluation.coach_verdict || "No comment recorded."}
                 </Text>
               </View>
             </View>
 
             {/* OVERALL RATING AND COACH */}
-            <View
-              style={styles.bottomTable}
-              wrap={false}
-            >
+            <View style={styles.bottomTable} wrap={false}>
               <View style={styles.overallColumn}>
-                <Text style={styles.bottomHeader}>
-                  Overall Rating
-                </Text>
+                <Text style={styles.bottomHeader}>Overall Rating</Text>
 
-                {[
-                  "Needs Improvement",
-                  "Developing",
-                  "Good",
-                  "Excellent",
-                ].map((rating) => (
-                  <View
-                    key={rating}
-                    style={styles.overallItem}
-                  >
+                {["Needs Improvement", "Developing", "Good", "Excellent"].map((rating) => (
+                  <View key={rating} style={styles.overallItem}>
                     <View style={styles.overallBox}>
                       {overallRating === rating && (
-                        <Svg
-                          width={7}
-                          height={7}
-                          viewBox="0 0 10 10"
-                        >
+                        <Svg width={7} height={7} viewBox="0 0 10 10">
                           <Path
                             d="M1 5.2 L3.8 8 L9 1.5"
                             stroke={LIGHT_BLUE}
@@ -787,28 +658,20 @@ export function PlayerEvaluationPDF({
               </View>
 
               <View style={styles.coachColumn}>
-                <Text style={styles.bottomHeader}>
-                  Coach's Name
-                </Text>
+                <Text style={styles.bottomHeader}>Coach's Name</Text>
 
-                <Text style={styles.coachName}>
-                  {coachName}
-                </Text>
+                <Text style={styles.coachName}>{coachName}</Text>
               </View>
             </View>
           </>
         ) : (
           <View style={styles.commentBox} wrap={false}>
-            <Text>
-              No saved evaluation is available for this player.
-            </Text>
+            <Text>No saved evaluation is available for this player.</Text>
           </View>
         )}
 
         {/* POWERED BY TOUCHLINE - BELOW EVALUATION */}
-        <Text style={styles.footer}>
-          Powered by Touchline
-        </Text>
+        <Text style={styles.footer}>Powered by Touchline</Text>
       </Page>
     </Document>
   );
