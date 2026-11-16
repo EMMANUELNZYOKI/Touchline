@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
   profileRow: {
     flexDirection: "row",
     alignItems: "center",
-    minHeight: 94,
-    paddingBottom: 6,
+    minHeight: 112,
+    paddingBottom: 10,
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
   },
@@ -90,32 +90,36 @@ const styles = StyleSheet.create({
   },
 
   playerPhoto: {
-    width: 82,
-    height: 90,
+    width: 96,
+    height: 105,
     objectFit: "cover",
   },
 
   reportBlock: {
     width: "72%",
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     alignItems: "center",
     justifyContent: "center",
   },
 
   reportTitle: {
     color: BLUE,
-    fontSize: 13.5,
+    fontSize: 15,
     fontWeight: "bold",
     textAlign: "center",
-    lineHeight: 16,
+    lineHeight: 19,
   },
 
   season: {
     color: BLUE,
-    fontSize: 8.5,
+    fontSize: 9,
     fontWeight: "bold",
-    marginTop: 2,
+    marginTop: 1,
     textAlign: "center",
+  },
+
+  seasonLast: {
+    marginTop: 0,
   },
 
   /* =========================
@@ -573,7 +577,9 @@ export function PlayerEvaluationPDF({
 
               {seasonLabel && <Text style={styles.season}>Season: {seasonLabel}</Text>}
 
-              {yearLabel && <Text style={styles.season}>Year: {yearLabel}</Text>}
+              {yearLabel && (
+                <Text style={[styles.season, styles.seasonLast]}>Year: {yearLabel}</Text>
+              )}
             </View>
           </View>
         </View>
