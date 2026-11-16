@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   ========================= */
 
   header: {
-    height: 208,
+    height: 276,
     marginBottom: 7,
   },
 
@@ -35,20 +35,20 @@ const styles = StyleSheet.create({
    * academy text and centered at the top.
    */
   logo: {
-    width: 88,
-    height: 88,
+    width: 120,
+    height: 120,
     objectFit: "contain",
   },
 
   brandingBlock: {
-    height: 125,
+    height: 180,
     alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: BLUE,
   },
 
   profileRow: {
-    height: 83,
+    height: 96,
     flexDirection: "row",
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
@@ -62,8 +62,8 @@ const styles = StyleSheet.create({
   },
 
   playerPhoto: {
-    width: 76,
-    height: 76,
+    width: 86,
+    height: 86,
     objectFit: "cover",
   },
 
@@ -74,32 +74,32 @@ const styles = StyleSheet.create({
 
   academyName: {
     color: BLUE,
-    fontSize: 13.5,
+    fontSize: 16,
     fontWeight: "bold",
     letterSpacing: 0.3,
     textAlign: "center",
-    lineHeight: 13,
+    lineHeight: 16,
   },
 
   tagline: {
     color: "#555555",
-    fontSize: 8,
+    fontSize: 10,
     fontStyle: "italic",
     marginTop: 1,
-    lineHeight: 8,
+    lineHeight: 10,
   },
 
   contact: {
-    fontSize: 7.5,
-    marginTop: 1,
-    lineHeight: 8,
+    fontSize: 9,
+    marginTop: 2,
+    lineHeight: 10,
   },
 
   academySlug: {
     color: "#555555",
-    fontSize: 7,
-    marginTop: 1,
-    lineHeight: 8,
+    fontSize: 9,
+    marginTop: 2,
+    lineHeight: 10,
   },
 
   reportBlock: {
@@ -112,19 +112,19 @@ const styles = StyleSheet.create({
 
   reportTitle: {
     color: BLUE,
-    fontSize: 10.5,
+    fontSize: 13,
     fontWeight: "bold",
     textAlign: "center",
-    lineHeight: 12,
+    lineHeight: 14,
     maxWidth: 330,
   },
 
   season: {
     color: BLUE,
-    fontSize: 8.5,
+    fontSize: 10,
     fontWeight: "bold",
-    lineHeight: 9,
-    marginTop: 2,
+    lineHeight: 11,
+    marginTop: 4,
   },
 
   /* =========================
@@ -455,14 +455,16 @@ function SkillTable({ skills }: { skills: Record<string, number> }) {
 function SkillSection({
   title,
   skills,
+  breakBefore = false,
 }: {
   title: string;
   skills: Record<string, number> | null | undefined;
+  breakBefore?: boolean;
 }) {
   if (!skills) return null;
 
   return (
-    <View style={styles.section} wrap={false}>
+    <View style={styles.section} wrap={false} break={breakBefore}>
       <Text style={styles.sectionTitle}>{title}</Text>
 
       <SkillTable skills={skills} />
@@ -599,7 +601,11 @@ export function PlayerEvaluationPDF({
         <SkillSection title="Tactical Awareness" skills={evaluation?.tactical_skills} />
 
         {/* PHYSICAL */}
-        <SkillSection title="Physical Attributes" skills={evaluation?.physical_skills} />
+        <SkillSection
+          title="Physical Attributes"
+          skills={evaluation?.physical_skills}
+          breakBefore
+        />
 
         {/* PERSONALITY */}
         <SkillSection title="Personality Traits" skills={evaluation?.personality_skills} />
