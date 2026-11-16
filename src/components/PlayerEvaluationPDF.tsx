@@ -106,21 +106,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  reportTitle: {
+  // Keep the report title and season in ONE text flow.
+  // This avoids unexpected vertical separation between sibling Text nodes.
+  reportHeading: {
     color: BLUE,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
     textAlign: "center",
-    lineHeight: 17,
+    lineHeight: 14,
   },
 
-  season: {
+  seasonInline: {
     color: BLUE,
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: "bold",
-    marginTop: 4,
-    lineHeight: 12,
-    textAlign: "center",
   },
 
   // PLAYER INFORMATION
@@ -610,15 +609,15 @@ export function PlayerEvaluationPDF({
             </View>
 
             <View style={styles.reportBlock}>
-              <Text style={styles.reportTitle}>
+              <Text style={styles.reportHeading}>
                 PLAYER EVALUATION &amp; DEVELOPMENT PROFILE
+                {seasonDisplay ? "\\n" : null}
+                {seasonDisplay ? (
+                  <Text style={styles.seasonInline}>
+                    {seasonDisplay}
+                  </Text>
+                ) : null}
               </Text>
-
-              {seasonDisplay ? (
-                <Text style={styles.season}>
-                  {seasonDisplay}
-                </Text>
-              ) : null}
             </View>
           </View>
         </View>
