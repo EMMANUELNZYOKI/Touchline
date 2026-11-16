@@ -57,9 +57,9 @@ export function AppShell({
             to={item.to}
             onClick={() => setOpen(false)}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
+              "tl-nav-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all",
               active
-                ? "bg-primary/15 text-primary shadow-glow"
+                ? "tl-nav-link-active text-primary"
                 : "text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
             )}
           >
@@ -73,8 +73,11 @@ export function AppShell({
 
   return (
     <div className="flex min-h-screen w-full bg-background">
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar p-4 lg:flex">
+      <aside className="tl-app-sidebar hidden w-72 shrink-0 flex-col border-r border-sidebar-border bg-sidebar p-5 lg:flex">
         <BrandBlock areaLabel={areaLabel} isAdmin={isAdmin} />
+        <p className="text-muted-foreground mb-3 px-3 text-[10px] font-bold tracking-[0.2em] uppercase">
+          Workspace menu
+        </p>
         {nav}
         <Button
           variant="outline"
@@ -91,10 +94,15 @@ export function AppShell({
             className="absolute inset-0 bg-background/80 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
-          <aside className="animate-in slide-in-from-left absolute inset-y-0 left-0 flex w-[min(18rem,calc(100vw-1rem))] flex-col overflow-y-auto border-r border-sidebar-border bg-sidebar p-4">
+          <aside className="tl-app-sidebar animate-in slide-in-from-left absolute inset-y-0 left-0 flex w-[min(19rem,calc(100vw-1rem))] flex-col overflow-y-auto border-r border-sidebar-border bg-sidebar p-5">
             <div className="mb-2 flex items-start justify-between">
               <BrandBlock areaLabel={areaLabel} isAdmin={isAdmin} />
-              <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Close navigation"
+                onClick={() => setOpen(false)}
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -111,7 +119,7 @@ export function AppShell({
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-card/80 px-4 backdrop-blur-md sm:px-6">
+        <header className="tl-app-topbar sticky top-0 z-30 flex min-h-16 items-center gap-3 border-b border-border px-4 py-2 sm:px-6">
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
@@ -123,8 +131,13 @@ export function AppShell({
               Signed in to {academyName ?? "Touchline"} · {areaLabel} area
             </p>
           </div>
+          <span className="ml-auto hidden rounded-full border border-border/80 bg-background/45 px-3 py-1.5 text-xs font-semibold text-muted-foreground sm:inline-flex">
+            {areaLabel}
+          </span>
         </header>
-        <main className="min-w-0 flex-1 p-4 sm:p-6">{children}</main>
+        <main className="tl-app-content min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
+          <div className="mx-auto w-full max-w-[1600px]">{children}</div>
+        </main>
       </div>
     </div>
   );

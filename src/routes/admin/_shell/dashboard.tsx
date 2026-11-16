@@ -107,6 +107,22 @@ function AdminDashboard() {
 
   return (
     <div className="grid gap-6">
+      <div className="tl-page-heading flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-primary text-[10px] font-bold tracking-[0.2em] uppercase">
+            Academy workspace
+          </p>
+          <h1 className="font-display mt-1 text-3xl tracking-wide uppercase sm:text-4xl">
+            Academy overview
+          </h1>
+          <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-6">
+            A focused snapshot of your roster, coaching activity, and player development.
+          </p>
+        </div>
+        <span className="mb-1 inline-flex w-fit items-center gap-2 rounded-full border border-border/80 bg-card/70 px-3 py-1.5 text-xs font-medium text-muted-foreground">
+          <span className="h-1.5 w-1.5 rounded-full bg-accent" /> Academy snapshot
+        </span>
+      </div>
       {role === "academy_admin" && (
         <div className="flex flex-col justify-between gap-4 rounded-2xl border border-primary/20 bg-primary/5 p-5 sm:flex-row sm:items-center sm:p-6">
           <div>
@@ -174,7 +190,7 @@ function AdminDashboard() {
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-border/70">
+        <Card className="tl-chart-card border-border/70">
           <CardHeader>
             <CardTitle className="font-display text-base tracking-wide uppercase">
               Registrations &amp; evaluations (6 months)
@@ -206,7 +222,7 @@ function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/70">
+        <Card className="tl-chart-card border-border/70">
           <CardHeader>
             <CardTitle className="font-display text-base tracking-wide uppercase">
               Players by position
@@ -236,7 +252,7 @@ function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/70">
+        <Card className="tl-chart-card border-border/70">
           <CardHeader>
             <CardTitle className="font-display text-base tracking-wide uppercase">
               Players evaluated by coach
@@ -265,7 +281,7 @@ function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/70">
+        <Card className="tl-chart-card border-border/70">
           <CardHeader>
             <CardTitle className="font-display text-base tracking-wide uppercase">
               Average evaluation scores

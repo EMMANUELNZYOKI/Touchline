@@ -3,9 +3,10 @@
 import { createFileRoute, Link } from "@/lib/next-router-compat";
 import {
   ArrowRight,
+  ArrowUpRight,
   Activity,
   BarChart3,
-  Brain,
+  Building2,
   Check,
   ClipboardCheck,
   ShieldCheck,
@@ -53,6 +54,33 @@ const features = [
     body: "Turn evaluations into useful conversations about strengths, next steps, and growth over time.",
   },
 ];
+
+const roleLinks = [
+  {
+    label: "Super Admin",
+    detail: "Platform operations",
+    to: "/platform/login",
+    icon: ShieldCheck,
+  },
+  {
+    label: "Academy Owner",
+    detail: "Academy workspace",
+    to: "/admin/login",
+    icon: Building2,
+  },
+  {
+    label: "Academy Manager",
+    detail: "Daily academy work",
+    to: "/manager/login",
+    icon: UserCog,
+  },
+  {
+    label: "Coach",
+    detail: "Player evaluations",
+    to: "/coach/login",
+    icon: ClipboardCheck,
+  },
+] as const;
 
 const packages = [
   {
@@ -122,12 +150,12 @@ function Brand({ light = false }: { light?: boolean }) {
 function Landing() {
   return (
     <div className="min-h-screen overflow-hidden">
-      <header className="border-border/60 bg-background/80 sticky top-0 z-40 border-b backdrop-blur-xl">
+      <header className="tl-site-header sticky top-0 z-40 border-b backdrop-blur-xl">
         <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between px-5 sm:px-8">
           <Link to="/" aria-label="Touchline home">
             <Brand />
           </Link>
-          <nav className="hidden items-center gap-8 text-sm md:flex">
+          <nav className="tl-site-nav hidden items-center gap-7 text-sm lg:flex xl:gap-8">
             <a
               href="#platform"
               className="text-muted-foreground transition-colors hover:text-foreground"
@@ -160,7 +188,7 @@ function Landing() {
             </a>
           </nav>
           <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" className="sm:hidden">
+            <Button asChild variant="ghost" className="lg:hidden">
               <a href="#sign-in">Sign in</a>
             </Button>
             <Button asChild className="gap-2">
@@ -173,81 +201,57 @@ function Landing() {
       </header>
 
       <main>
-        <section className="relative isolate min-h-[650px] overflow-hidden sm:min-h-[720px]">
-          <img
-            src={heroPitch.src}
+        <section className="tl-hero relative isolate min-h-[650px] overflow-hidden sm:min-h-[720px]">
+          <Image
+            src={heroPitch}
             alt="A football pitch ready for training"
-            width={1920}
-            height={1088}
+            fill
+            priority
+            sizes="100vw"
             className="absolute inset-0 -z-20 h-full w-full object-cover object-center"
           />
-          <div className="bg-gradient-hero absolute inset-0 -z-10" />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-background/90 via-background/65 to-background/15" />
-          <div className="mx-auto grid min-h-[650px] max-w-7xl items-center gap-12 px-5 py-20 sm:min-h-[720px] sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
+          <div className="tl-hero-shade absolute inset-0 -z-10" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-transparent to-background/55" />
+          <div className="mx-auto grid min-h-[650px] max-w-7xl items-center gap-12 px-5 py-20 sm:min-h-[720px] sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-24">
             <div className="max-w-2xl">
-              <div className="border-primary/35 bg-primary/10 text-primary inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold tracking-[0.15em] uppercase">
+              <div className="tl-kicker inline-flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-bold tracking-[0.19em] uppercase">
                 <span className="bg-primary h-1.5 w-1.5 rounded-full" /> Player development,
                 connected
               </div>
-              <h1 className="font-display mt-7 max-w-2xl text-5xl leading-[0.98] tracking-tight uppercase sm:text-6xl lg:text-7xl">
+              <h1 className="font-display mt-7 max-w-2xl text-5xl leading-[0.93] tracking-[-0.035em] uppercase sm:text-6xl lg:text-[5.5rem] xl:text-8xl">
                 Better records.
                 <br />
                 <span className="text-gradient-gold">Better player</span>
                 <br />
                 development.
               </h1>
-              <p className="text-muted-foreground mt-7 max-w-xl text-base leading-7 sm:text-lg">
+              <p className="text-foreground/78 mt-7 max-w-xl text-base leading-7 sm:text-lg sm:leading-8">
                 Touchline gives soccer academies a focused place to organize player information,
                 guide coach evaluations, and keep every development conversation moving forward—with
                 clear access for platform teams, academy owners, managers, and coaches.
               </p>
-              <div
-                id="sign-in"
-                className="mt-9 flex scroll-mt-24 flex-col gap-3 sm:flex-row sm:flex-wrap"
-              >
-                <Button asChild size="lg" className="h-13 gap-2 px-5 text-sm sm:text-base">
-                  <Link to="/platform/login">
-                    <ShieldCheck className="h-4 w-4" /> Super Admin Login
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <Button asChild size="lg" className="gap-2 px-5 text-sm sm:text-base">
+                  <Link to="/onboard">
+                    Start your free 14-day trial <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
                 <Button
                   asChild
                   size="lg"
                   variant="outline"
-                  className="border-white/25 bg-white/5 h-13 gap-2 px-5 text-sm text-white hover:bg-white/10 hover:text-white sm:text-base"
+                  className="border-white/25 bg-white/5 gap-2 px-5 text-sm text-white hover:bg-white/10 hover:text-white sm:text-base"
                 >
-                  <Link to="/admin/login">
-                    <UsersRound className="h-4 w-4" /> Academy Owner Login
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="border-white/25 bg-white/5 h-13 gap-2 px-5 text-sm text-white hover:bg-white/10 hover:text-white sm:text-base"
-                >
-                  <Link to="/manager/login">
-                    <UserCog className="h-4 w-4" /> Academy Manager Login
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="border-primary/50 bg-primary/10 text-primary h-13 gap-2 px-5 text-sm hover:bg-primary/20 sm:text-base"
-                >
-                  <Link to="/coach/login">
-                    <ClipboardCheck className="h-4 w-4" /> Coach Login
-                  </Link>
+                  <a href="#packages">
+                    Explore packages <ArrowUpRight className="h-4 w-4" />
+                  </a>
                 </Button>
               </div>
-              <p className="text-muted-foreground mt-4 text-sm">
-                New academy to Touchline?{" "}
-                <Link className="text-primary hover:underline" to="/onboard">
-                  Start a free trial
-                </Link>
+              <p className="text-muted-foreground mt-4 flex items-center gap-2 text-xs sm:text-sm">
+                <ShieldCheck className="text-accent h-4 w-4 shrink-0" /> No payment details required
+                to create your trial workspace.
               </p>
-              <div className="text-muted-foreground mt-8 flex flex-wrap gap-x-6 gap-y-2 text-xs sm:text-sm">
+              <div className="text-muted-foreground mt-7 flex flex-wrap gap-x-6 gap-y-2 text-xs sm:text-sm">
                 <span className="flex items-center gap-2">
                   <Check className="text-primary h-4 w-4" /> Player profiles
                 </span>
@@ -261,7 +265,7 @@ function Landing() {
             </div>
             <div className="relative hidden lg:block">
               <div className="absolute -inset-8 rounded-[2rem] bg-primary/10 blur-3xl" />
-              <Card className="bg-background/90 border-white/15 shadow-elevated relative rotate-1 backdrop-blur-xl">
+              <Card className="tl-preview-card relative border-white/15 backdrop-blur-xl">
                 <CardContent className="p-7">
                   <div className="flex items-start justify-between">
                     <div>
@@ -340,6 +344,39 @@ function Landing() {
           </div>
         </section>
 
+        <section id="sign-in" className="scroll-mt-20 border-y border-border/60 bg-card/35">
+          <div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 py-8 sm:px-8 lg:flex-row lg:items-center lg:gap-10">
+            <div className="max-w-sm shrink-0">
+              <p className="text-primary text-[10px] font-bold tracking-[0.2em] uppercase">
+                Already on Touchline?
+              </p>
+              <h2 className="font-display mt-2 text-2xl tracking-wide uppercase">
+                Choose your portal.
+              </h2>
+            </div>
+            <div className="grid flex-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {roleLinks.map((portal) => (
+                <Link
+                  key={portal.to}
+                  to={portal.to}
+                  className="tl-signin-card group flex min-w-0 items-center gap-3 rounded-2xl p-4"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
+                    <portal.icon className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold">{portal.label}</span>
+                    <span className="text-muted-foreground mt-0.5 block truncate text-xs">
+                      {portal.detail}
+                    </span>
+                  </span>
+                  <ArrowUpRight className="text-muted-foreground h-4 w-4 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="platform" className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-28">
           <div className="max-w-2xl">
             <p className="text-primary text-xs font-semibold tracking-[0.2em] uppercase">
@@ -357,7 +394,7 @@ function Landing() {
             {features.map((feature, index) => (
               <Card
                 key={feature.title}
-                className="bg-gradient-panel border-border/70 transition-transform duration-300 hover:-translate-y-1"
+                className="tl-feature-card bg-gradient-panel border-border/70 transition-transform duration-300 hover:-translate-y-1"
               >
                 <CardContent className="p-7">
                   <span className="bg-primary/15 text-primary flex h-12 w-12 items-center justify-center rounded-xl">
@@ -393,7 +430,7 @@ function Landing() {
               {packages.map((plan) => (
                 <Card
                   key={plan.name}
-                  className={`relative flex flex-col border-border/70 bg-gradient-panel ${
+                  className={`tl-plan-card relative flex flex-col border-border/70 bg-gradient-panel ${
                     plan.featured ? "ring-primary/60 shadow-glow ring-2" : ""
                   }`}
                 >
@@ -448,7 +485,7 @@ function Landing() {
               ].map(([number, heading, text]) => (
                 <div
                   key={number}
-                  className="border-border/70 bg-background/70 flex gap-4 rounded-2xl border p-5"
+                  className="tl-step-card border-border/70 bg-background/70 flex gap-4 rounded-2xl border p-5"
                 >
                   <span className="font-display text-primary text-xl">{number}</span>
                   <div>
@@ -500,7 +537,7 @@ function Landing() {
               ].map(([number, heading, text]) => (
                 <div
                   key={number}
-                  className="border-border/70 bg-background/70 flex gap-5 rounded-2xl border p-5 sm:p-6"
+                  className="tl-step-card border-border/70 bg-background/70 flex gap-5 rounded-2xl border p-5 sm:p-6"
                 >
                   <span className="font-display text-primary text-2xl">{number}</span>
                   <div>
@@ -514,7 +551,7 @@ function Landing() {
         </section>
 
         <section id="built-for" className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-28">
-          <div className="bg-gradient-panel border-border/70 shadow-elevated relative overflow-hidden rounded-3xl border p-8 sm:p-12 lg:p-16">
+          <div className="tl-cta-panel shadow-elevated relative overflow-hidden rounded-3xl border p-8 sm:p-12 lg:p-16">
             <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
             <div className="relative max-w-3xl">
               <span className="bg-primary/15 text-primary inline-flex rounded-lg p-3">

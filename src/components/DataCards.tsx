@@ -12,7 +12,7 @@ interface StatCardProps {
 
 export function StatCard({ label, value, hint, icon: Icon, tone = "primary" }: StatCardProps) {
   return (
-    <Card className="bg-gradient-panel border-border/70 shadow-elevated overflow-hidden">
+    <Card className="tl-stat-card bg-gradient-panel border-border/70 shadow-elevated overflow-hidden">
       <CardContent className="flex items-start justify-between gap-3 p-5">
         <div className="min-w-0">
           <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
