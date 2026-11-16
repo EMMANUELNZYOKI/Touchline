@@ -7,20 +7,22 @@ export type DashboardMetrics = {
   evaluations: number;
 };
 
-export async function loadDashboardMetrics(): Promise<DashboardMetrics> {
+export async function loadDashboardMetrics(academyId: string): Promise<DashboardMetrics> {
   const [players, coaches, managers, evaluations] = await Promise.all([
-    supabase.from("players").select("id", { count: "exact", head: true }),
+    supabase.from("players").select("id", { count: "exact", head: true }).eq("academy_id", academyId),
     supabase
       .from("academy_memberships")
       .select("id", { count: "exact", head: true })
+      .eq("academy_id", academyId)
       .eq("role", "coach")
       .eq("status", "active"),
     supabase
       .from("academy_memberships")
       .select("id", { count: "exact", head: true })
+      .eq("academy_id", academyId)
       .eq("role", "academy_manager")
       .eq("status", "active"),
-    supabase.from("player_evaluations").select("id", { count: "exact", head: true }),
+    supabase.from("player_evaluations").select("id", { count: "exact", head: true }).eq("academy_id", academyId),
   ]);
 
   const firstError = [players.error, coaches.error, managers.error, evaluations.error].find(Boolean);

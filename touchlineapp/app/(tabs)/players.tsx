@@ -23,7 +23,7 @@ export default function PlayersScreen() {
 
   const playersQuery = useQuery({
     queryKey: ["mobile-players", context?.academy?.id],
-    queryFn: fetchMobilePlayers,
+    queryFn: () => fetchMobilePlayers(context!.academy!.id),
     enabled: Boolean(context?.academy),
   });
   const createMutation = useMutation({
@@ -50,7 +50,7 @@ export default function PlayersScreen() {
       return;
     }
     setFormMessage(null);
-    createMutation.mutate({ first_name: firstName, last_name: lastName, team_category: teamCategory, season, position });
+    createMutation.mutate({ academy_id: context.academy!.id, first_name: firstName, last_name: lastName, team_category: teamCategory, season, position });
   };
 
   return (

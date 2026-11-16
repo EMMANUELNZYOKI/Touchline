@@ -34,12 +34,12 @@ export function setMobileManagerActive(managerId: string, isActive: boolean) {
   return adminRequest<{ ok: true }>(`/api/admin/managers/${encodeURIComponent(managerId)}`, "PATCH", { managerId, isActive });
 }
 
-export async function fetchMobileCoaches(): Promise<MobileCoach[]> {
+export async function fetchMobileCoaches(academyId: string): Promise<MobileCoach[]> {
   const [{ data: memberships, error: membershipError }, { data: profiles, error: profileError }, { data: players, error: playersError }, { data: evaluations, error: evaluationsError }] = await Promise.all([
-    supabase.from("academy_memberships").select("user_id, status, created_at").eq("role", "coach"),
+    supabase.from("academy_memberships").select("user_id, status, created_at").eq("academy_id", academyId).eq("role", "coach"),
     supabase.from("profiles").select("id, full_name, email, phone"),
-    supabase.from("players").select("coach_id"),
-    supabase.from("player_evaluations").select("coach_id"),
+    supabase.from("players").select("coach_id").eq("academy_id", academyId),
+    supabase.from("player_evaluations").select("coach_id").eq("academy_id", academyId),
   ]);
   const firstError = [membershipError, profileError, playersError, evaluationsError].find(Boolean);
   if (firstError) throw firstError;

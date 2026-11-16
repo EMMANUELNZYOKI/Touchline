@@ -14,7 +14,7 @@ export default function CoachesScreen() {
   const { context } = useTouchlineAuth();
   const client = useQueryClient();
   const [open, setOpen] = useState(false); const [fullName, setFullName] = useState(""); const [email, setEmail] = useState(""); const [phone, setPhone] = useState(""); const [password, setPassword] = useState(""); const [message, setMessage] = useState<string | null>(null);
-  const query = useQuery({ queryKey: ["mobile-coaches", context?.academy?.id], queryFn: fetchMobileCoaches, enabled: context?.role === "academy_admin" || context?.role === "academy_manager" });
+  const query = useQuery({ queryKey: ["mobile-coaches", context?.academy?.id], queryFn: () => fetchMobileCoaches(context!.academy!.id), enabled: (context?.role === "academy_admin" || context?.role === "academy_manager") && Boolean(context?.academy) });
   const create = useMutation({ mutationFn: () => createMobileCoach({ full_name: fullName.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), password }), onSuccess: () => { void client.invalidateQueries({ queryKey: ["mobile-coaches"] }); setOpen(false); setFullName(""); setEmail(""); setPhone(""); setPassword(""); }, onError: (error) => setMessage(error instanceof Error ? error.message : "Coach could not be created.") });
   const toggle = useMutation({ mutationFn: (coach: MobileCoach) => setMobileCoachActive(coach.id, coach.status !== "active"), onSuccess: () => void client.invalidateQueries({ queryKey: ["mobile-coaches"] }), onError: (error) => setMessage(error instanceof Error ? error.message : "Coach access could not be updated.") });
   if (!context || (context.role !== "academy_admin" && context.role !== "academy_manager")) return null;

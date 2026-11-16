@@ -134,6 +134,7 @@ function SuperAdminDashboard({ userName, refresh }: { userName: string; refresh:
       <Text className="mb-3 text-sm leading-5 text-[#aab7c7]">The new package will update the shared web and mobile subscription record.</Text>
       <View className="mb-3 flex-row gap-2">{(["starter", "standard", "pro"] as const).map((key) => <Pressable key={key} onPress={() => setPackageKey(key)} className={`flex-1 rounded-xl border px-2 py-3 ${packageKey === key ? "border-[#78d4aa] bg-[#173f4a]" : "border-[#2b5268] bg-[#0b1c2d]"}`}><Text className="text-center text-xs font-bold uppercase text-white">{key}</Text></Pressable>)}</View>
       <Field label="Reason" value={packageReason} onChangeText={setPackageReason} placeholder="Customer upgrade request" />
+      {actionError && <Text className="mb-3 rounded-xl bg-[#4b2530] px-3 py-2 text-sm text-[#ffd7de]">{actionError}</Text>}
       <Pressable onPress={() => { void submitPackage(); }} className="rounded-xl bg-[#78d4aa] px-4 py-4"><Text className="text-center text-sm font-black text-[#071521]">Save package change</Text></Pressable>
     </PlatformModal>
     <PlatformModal visible={createOpen} title="Add academy" onClose={() => setCreateOpen(false)}>
@@ -143,6 +144,7 @@ function SuperAdminDashboard({ userName, refresh }: { userName: string; refresh:
       <Field label="Owner full name" value={adminName} onChangeText={setAdminName} placeholder="Academy Owner" />
       <Field label="Owner email" value={adminEmail} onChangeText={setAdminEmail} placeholder="owner@academy.co.ke" keyboardType="email-address" />
       <Field label="Owner phone" value={adminPhone} onChangeText={setAdminPhone} placeholder="0712345678" keyboardType="phone-pad" />
+      {actionError && <Text className="mb-3 rounded-xl bg-[#4b2530] px-3 py-2 text-sm text-[#ffd7de]">{actionError}</Text>}
       <Pressable disabled={creating} onPress={() => { void submitCreate(); }} className="rounded-xl bg-[#78d4aa] px-4 py-4"><Text className="text-center text-sm font-black text-[#071521]">{creating ? "Creating…" : "Create academy"}</Text></Pressable>
     </PlatformModal>
   </ScreenContainer>;
@@ -151,7 +153,7 @@ function SuperAdminDashboard({ userName, refresh }: { userName: string; refresh:
 export default function DashboardScreen() {
   const { context, refresh } = useTouchlineAuth();
   const [refreshing, setRefreshing] = useState(false);
-  const metricsQuery = useQuery<DashboardMetrics>({ queryKey: ["dashboard-metrics", context?.academy?.id], queryFn: loadDashboardMetrics, enabled: Boolean(context?.academy), retry: 1 });
+  const metricsQuery = useQuery<DashboardMetrics>({ queryKey: ["dashboard-metrics", context?.academy?.id], queryFn: () => loadDashboardMetrics(context!.academy!.id), enabled: Boolean(context?.academy), retry: 1 });
   if (!context) return null;
   if (context.role === "super_admin") return <SuperAdminDashboard userName={context.profile.full_name} refresh={refresh} />;
   const onRefresh = async () => { setRefreshing(true); await Promise.all([refresh(), metricsQuery.refetch()]); setRefreshing(false); };

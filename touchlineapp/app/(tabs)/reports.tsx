@@ -9,8 +9,8 @@ import { fetchMobileEvaluations } from "@/lib/touchline/data";
 
 export default function ReportsScreen() {
   const { context } = useTouchlineAuth();
-  const metrics = useQuery({ queryKey: ["mobile-report-metrics", context?.academy?.id], queryFn: loadDashboardMetrics, enabled: Boolean(context?.academy) });
-  const evaluations = useQuery({ queryKey: ["mobile-report-evaluations", context?.academy?.id], queryFn: fetchMobileEvaluations, enabled: Boolean(context?.academy) });
+  const metrics = useQuery({ queryKey: ["mobile-report-metrics", context?.academy?.id], queryFn: () => loadDashboardMetrics(context!.academy!.id), enabled: Boolean(context?.academy) });
+  const evaluations = useQuery({ queryKey: ["mobile-report-evaluations", context?.academy?.id], queryFn: () => fetchMobileEvaluations(context!.academy!.id), enabled: Boolean(context?.academy) });
   if (!context) return null;
   const list = evaluations.data ?? [];
   const average = list.length ? list.reduce((sum, item) => sum + (item.overall_rating ?? 0), 0) / list.length : 0;
