@@ -1,3 +1,4 @@
+
 import {
   Document,
   Image,
@@ -29,122 +30,103 @@ const styles = StyleSheet.create({
     color: BLACK,
   },
 
-  /* =========================
-     HEADER
-  ========================= */
+  /* HEADER */
 
   header: {
-    position: "relative",
-    height: 205,
+    marginBottom: 8,
+  },
+
+  logo: {
+    width: 95,
+    height: 105,
+    objectFit: "contain",
+    marginBottom: 5,
+  },
+
+  brandingBlock: {
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: BLUE,
+    paddingBottom: 9,
+    marginBottom: 9,
+  },
+
+  profileRow: {
+    minHeight: 112,
+    flexDirection: "row",
+    alignItems: "center",
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
-    marginBottom: 7,
+    paddingBottom: 9,
   },
 
-  /*
-   * DIOS LOGO
-   * Completely independent from the
-   * academy text and centered at the top.
-   */
-  logo: {
-    position: "absolute",
-    top: 0,
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: 65,
-    height: 65,
-    objectFit: "contain",
+  playerPhotoColumn: {
+    width: "30%",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
-  /*
-   * PLAYER PROFILE PHOTO
-   * Fixed to the LEFT side of the header.
-   */
   playerPhoto: {
-    position: "absolute",
-    left: 0,
-    bottom: 5,
-    width: 78,
-    height: 78,
+    width: 105,
+    height: 105,
     objectFit: "cover",
   },
 
-  /*
-   * CENTER CONTENT
-   * Starts below the logo.
-   */
   academyHeader: {
-    position: "absolute",
-    top: 67,
-    left: 0,
-    right: 0,
+    width: "100%",
     alignItems: "center",
-  },
-
-  academyDivider: {
-    position: "absolute",
-    top: 125,
-    left: 0,
-    right: 0,
-    borderBottomWidth: 1,
-    borderBottomColor: "#8a969d",
   },
 
   academyName: {
     color: BLUE,
-    fontSize: 12,
+    fontSize: 21,
     fontWeight: "bold",
-    letterSpacing: 0.3,
+    letterSpacing: 0.5,
+    textAlign: "center",
+    lineHeight: 25,
   },
 
   tagline: {
     color: "#555555",
-    fontSize: 9,
+    fontSize: 10,
     fontStyle: "italic",
-    marginTop: 2,
-  },
-
-  academySlug: {
-    color: "#555555",
-    fontSize: 7.5,
-    marginTop: 1,
+    marginTop: 3,
   },
 
   contact: {
-    fontSize: 7.5,
-    marginTop: 1,
+    fontSize: 9,
+    marginTop: 3,
+  },
+
+  academySlug: {
+    display: "none",
   },
 
   reportBlock: {
-    position: "absolute",
-    left: 90,
-    right: 0,
-    bottom: 5,
-    height: 70,
+    width: "70%",
+    paddingHorizontal: 12,
     alignItems: "center",
     justifyContent: "center",
   },
 
   reportTitle: {
     color: BLUE,
-    fontSize: 11,
+    fontSize: 15,
     fontWeight: "bold",
     textAlign: "center",
-    lineHeight: 13,
-    maxWidth: 360,
+    lineHeight: 19,
   },
 
   season: {
     color: BLUE,
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: "bold",
-    lineHeight: 11,
-    marginTop: 1,
+    textAlign: "center",
+    lineHeight: 14,
+    marginTop: 5,
   },
 
-  /* =========================
-     PLAYER INFORMATION
-  ========================= */
+  /* PLAYER INFORMATION */
 
   playerInfo: {
     borderWidth: 1,
@@ -191,9 +173,7 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
   },
 
-  /* =========================
-     SECTIONS
-  ========================= */
+  /* SECTIONS */
 
   section: {
     marginBottom: 5,
@@ -206,9 +186,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
 
-  /* =========================
-     TABLE
-  ========================= */
+  /* SKILL TABLE */
 
   table: {
     borderWidth: 1,
@@ -296,6 +274,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
+  /* BOTTOM SECTION */
+
   checkText: {
     color: LIGHT_BLUE,
     fontSize: 7,
@@ -303,10 +283,6 @@ const styles = StyleSheet.create({
     lineHeight: 6,
     marginTop: -1,
   },
-
-  /* =========================
-     BOTTOM SECTION
-  ========================= */
 
   commentTitle: {
     color: BLUE,
@@ -376,6 +352,8 @@ const styles = StyleSheet.create({
   },
 });
 
+/* RATING HELPERS */
+
 function getSkillRating(score: number | null | undefined) {
   const value = Number(score);
 
@@ -400,19 +378,13 @@ function getOverallRating(score: number | null | undefined) {
   return "Needs Improvement";
 }
 
-function Checkbox({
-  checked,
-}: {
-  checked: boolean;
-}) {
+/* CHECKBOX */
+
+function Checkbox({ checked }: { checked: boolean }) {
   return (
     <View style={styles.checkbox}>
       {checked && (
-        <Svg
-          width={6}
-          height={6}
-          viewBox="0 0 10 10"
-        >
+        <Svg width={6} height={6} viewBox="0 0 10 10">
           <Path
             d="M1 5.2 L3.8 8 L9 1.5"
             stroke="#18a9d8"
@@ -427,35 +399,19 @@ function Checkbox({
   );
 }
 
-function SkillTable({
-  skills,
-}: {
-  skills: Record<string, number>;
-}) {
+/* SKILL TABLE */
+
+function SkillTable({ skills }: { skills: Record<string, number> }) {
   const entries = Object.entries(skills);
 
   return (
     <View style={styles.table}>
       <View style={styles.tableHeader}>
-        <Text style={styles.skillHeader}>
-          Skill
-        </Text>
-
-        <Text style={styles.ratingHeader}>
-          Needs{"\n"}Improvement
-        </Text>
-
-        <Text style={styles.ratingHeader}>
-          On Target
-        </Text>
-
-        <Text style={styles.ratingHeader}>
-          Above Target
-        </Text>
-
-        <Text style={styles.ratingHeaderLast}>
-          Exceptional
-        </Text>
+        <Text style={styles.skillHeader}>Skill</Text>
+        <Text style={styles.ratingHeader}>Needs{"\n"}Improvement</Text>
+        <Text style={styles.ratingHeader}>On Target</Text>
+        <Text style={styles.ratingHeader}>Above Target</Text>
+        <Text style={styles.ratingHeaderLast}>Exceptional</Text>
       </View>
 
       {entries.map(([skill, rawScore], index) => {
@@ -466,37 +422,24 @@ function SkillTable({
         return (
           <View
             key={skill}
-            style={[
-              styles.tableRow,
-              isLast ? styles.lastRow : {},
-            ]}
+            style={[styles.tableRow, isLast ? styles.lastRow : {}]}
           >
-            <Text style={styles.skillCell}>
-              {skill}
-            </Text>
+            <Text style={styles.skillCell}>{skill}</Text>
 
             <View style={styles.ratingCell}>
-              <Checkbox
-                checked={rating === "Needs Improvement"}
-              />
+              <Checkbox checked={rating === "Needs Improvement"} />
             </View>
 
             <View style={styles.ratingCell}>
-              <Checkbox
-                checked={rating === "On Target"}
-              />
+              <Checkbox checked={rating === "On Target"} />
             </View>
 
             <View style={styles.ratingCell}>
-              <Checkbox
-                checked={rating === "Above Target"}
-              />
+              <Checkbox checked={rating === "Above Target"} />
             </View>
 
             <View style={styles.ratingCellLast}>
-              <Checkbox
-                checked={rating === "Exceptional"}
-              />
+              <Checkbox checked={rating === "Exceptional"} />
             </View>
           </View>
         );
@@ -505,31 +448,34 @@ function SkillTable({
   );
 }
 
+/* SKILL SECTION */
+
 function SkillSection({
   title,
   skills,
+  breakBefore = false,
 }: {
   title: string;
   skills: Record<string, number> | null | undefined;
+  breakBefore?: boolean;
 }) {
-  if (!skills) return null;
+  if (!skills || Object.keys(skills).length === 0) return null;
 
   return (
-    <View style={styles.section} wrap={false}>
-      <Text style={styles.sectionTitle}>
-        {title}
-      </Text>
-
+    <View style={styles.section} wrap={false} break={breakBefore}>
+      <Text style={styles.sectionTitle}>{title}</Text>
       <SkillTable skills={skills} />
     </View>
   );
 }
 
+/* PDF PROPS */
+
 interface PlayerEvaluationPDFProps {
   player: Player;
   evaluation: Evaluation | null;
   coachName: string;
-  academyName?: string;
+  academyName: string;
   academySlug?: string;
   academyTagline?: string;
   academyEmail?: string;
@@ -539,24 +485,41 @@ interface PlayerEvaluationPDFProps {
   season?: string;
 }
 
+/* MAIN PDF COMPONENT */
+
 export function PlayerEvaluationPDF({
   player,
   evaluation,
   coachName,
-  academyName = "DIOS SOCCER ACADEMY",
+  academyName,
   academySlug = "",
   academyTagline = "Transforming Lives Through Football",
   academyEmail = "",
   academyPhone = "",
   playerPhotoUrl,
-  logoUrl = "/dios-logo.png",
+  logoUrl = null,
   season = "Season 8: May-August 2026",
 }: PlayerEvaluationPDFProps) {
   const age = calculateAge(player.date_of_birth);
-  const overallRating = getOverallRating(evaluation?.overall_rating);
 
-  // Active season Priority: player object > season prop
-  const activeSeason = player.season || season;
+  const overallRating = getOverallRating(
+    evaluation?.overall_rating
+  );
+
+  /* AUTOMATIC SEASON AND YEAR */
+
+  const seasonLabel =
+    evaluation?.season ||
+    player.season ||
+    season ||
+    "—";
+
+  const extractedYear = String(seasonLabel).match(/\b20\d{2}\b/)?.[0];
+
+  const yearLabel =
+    evaluation?.season_year ||
+    extractedYear ||
+    "—";
 
   return (
     <Document
@@ -564,91 +527,89 @@ export function PlayerEvaluationPDF({
       author={academyName}
       subject="Player Evaluation & Development Profile"
     >
-      <Page
-        size="A4"
-        orientation="portrait"
-        style={styles.page}
-      >
-        {/* HEADER */}
-        <View style={styles.header} wrap={false}>
-          {logoUrl && (
-            <Image
-              src={logoUrl}
-              style={styles.logo}
-            />
-          )}
+      <Page size="A4" orientation="portrait" style={styles.page}>
 
-          {playerPhotoUrl && (
-            <Image
-              src={playerPhotoUrl}
-              style={styles.playerPhoto}
-            />
-          )}
+        {/* PROFESSIONAL ACADEMY HEADER */}
 
-          <View style={styles.academyHeader}>
-            <Text style={styles.academyName}>
-              {academyName.toUpperCase()}
-            </Text>
+        <View style={styles.header}>
 
-            {academyTagline && (
-              <Text style={styles.tagline}>
-                {academyTagline}
-              </Text>
+          {/* ACADEMY BRANDING */}
+
+          <View style={styles.brandingBlock}>
+            {logoUrl && (
+              <Image
+                src={logoUrl}
+                style={styles.logo}
+              />
             )}
 
-            {academySlug && (
-              <Text style={styles.academySlug}>
-                {academySlug}
+            <View style={styles.academyHeader}>
+              <Text style={styles.academyName}>
+                {academyName.toUpperCase()}
               </Text>
-            )}
 
-            {academyEmail && (
-              <Text style={styles.contact}>
-                Email: {academyEmail}
-              </Text>
-            )}
+              {academyTagline && (
+                <Text style={styles.tagline}>
+                  {academyTagline}
+                </Text>
+              )}
 
-            {academyPhone && (
-              <Text style={styles.contact}>
-                Phone: {academyPhone}
-              </Text>
-            )}
+              {academyEmail && (
+                <Text style={styles.contact}>
+                  Email: {academyEmail}
+                </Text>
+              )}
+
+              {academyPhone && (
+                <Text style={styles.contact}>
+                  Phone: {academyPhone}
+                </Text>
+              )}
+            </View>
           </View>
 
-          <View style={styles.academyDivider} />
+          {/* PLAYER PHOTO AND REPORT TITLE */}
 
-          <View style={styles.reportBlock}>
-            <Text style={styles.reportTitle}>
-              PLAYER EVALUATION &amp; DEVELOPMENT
-              {"\n"}
-              PROFILE
-            </Text>
+          <View style={styles.profileRow}>
+            <View style={styles.playerPhotoColumn}>
+              {playerPhotoUrl && (
+                <Image
+                  src={playerPhotoUrl}
+                  style={styles.playerPhoto}
+                />
+              )}
+            </View>
 
-            <Text style={styles.season}>
-              SEASON: {activeSeason}
-            </Text>
+            <View style={styles.reportBlock}>
+              <Text style={styles.reportTitle}>
+                PLAYER EVALUATION &amp; DEVELOPMENT PROFILE
+              </Text>
 
-            <Text style={styles.season}>
-              YEAR: {evaluation?.season_year || "—"}
-            </Text>
+              <Text style={styles.season}>
+                Season: {seasonLabel}
+              </Text>
+
+              <Text style={styles.season}>
+                Year: {yearLabel}
+              </Text>
+            </View>
           </View>
         </View>
 
         {/* PLAYER INFORMATION */}
+
         <View style={styles.playerInfo}>
+
           {/* ROW 1 */}
+
           <View style={styles.infoRow}>
-            <Text style={styles.infoCellLabel}>
-              Player Name
-            </Text>
+            <Text style={styles.infoCellLabel}>Player Name</Text>
 
             <Text style={styles.infoCellValue}>
               {player.first_name} {player.last_name}
             </Text>
 
-            <Text style={styles.infoCellLabel}>
-              Age
-            </Text>
+            <Text style={styles.infoCellLabel}>Age</Text>
 
             <Text style={styles.infoCellValueLast}>
               {age ?? "-"}
@@ -656,18 +617,15 @@ export function PlayerEvaluationPDF({
           </View>
 
           {/* ROW 2 */}
+
           <View style={styles.infoRow}>
-            <Text style={styles.infoCellLabel}>
-              Jersey No.
-            </Text>
+            <Text style={styles.infoCellLabel}>Jersey No.</Text>
 
             <Text style={styles.infoCellValue}>
               {player.jersey_number ?? "-"}
             </Text>
 
-            <Text style={styles.infoCellLabel}>
-              Position
-            </Text>
+            <Text style={styles.infoCellLabel}>Position</Text>
 
             <Text style={styles.infoCellValueLast}>
               {player.position ?? "-"}
@@ -675,18 +633,15 @@ export function PlayerEvaluationPDF({
           </View>
 
           {/* ROW 3 */}
+
           <View style={styles.infoRow}>
-            <Text style={styles.infoCellLabel}>
-              Category/Team
-            </Text>
+            <Text style={styles.infoCellLabel}>Category/Team</Text>
 
             <Text style={styles.infoCellValue}>
               {player.team_category ?? "—"}
             </Text>
 
-            <Text style={styles.infoCellLabel}>
-              Strong foot
-            </Text>
+            <Text style={styles.infoCellLabel}>Strong foot</Text>
 
             <Text style={styles.infoCellValueLast}>
               {player.preferred_foot ?? "-"}
@@ -694,22 +649,17 @@ export function PlayerEvaluationPDF({
           </View>
 
           {/* ROW 4 */}
+
           <View style={styles.infoRowLast}>
-            <Text style={styles.infoCellLabel}>
-              DOB
-            </Text>
+            <Text style={styles.infoCellLabel}>DOB</Text>
 
             <Text style={styles.infoCellValue}>
               {player.date_of_birth
-                ? new Date(
-                    player.date_of_birth,
-                  ).toLocaleDateString("en-GB")
+                ? new Date(player.date_of_birth).toLocaleDateString("en-GB")
                 : "-"}
             </Text>
 
-            <Text style={styles.infoCellLabel}>
-              Coach
-            </Text>
+            <Text style={styles.infoCellLabel}>Coach</Text>
 
             <Text style={styles.infoCellValueLast}>
               {coachName}
@@ -718,30 +668,36 @@ export function PlayerEvaluationPDF({
         </View>
 
         {/* TECHNICAL */}
+
         <SkillSection
           title="Technical Ability"
           skills={evaluation?.technical_skills}
         />
 
         {/* TACTICAL */}
+
         <SkillSection
           title="Tactical Awareness"
           skills={evaluation?.tactical_skills}
         />
 
         {/* PHYSICAL */}
+
         <SkillSection
           title="Physical Attributes"
           skills={evaluation?.physical_skills}
+          breakBefore
         />
 
         {/* PERSONALITY */}
+
         <SkillSection
           title="Personality Traits"
           skills={evaluation?.personality_skills}
         />
 
         {/* COACH COMMENT */}
+
         <View style={styles.section} wrap={false}>
           <Text style={styles.commentTitle}>
             Coach's Overall Comment
@@ -757,6 +713,7 @@ export function PlayerEvaluationPDF({
         </View>
 
         {/* OVERALL RATING + COACH */}
+
         <View style={styles.bottomTable} wrap={false}>
           <View style={styles.overallColumn}>
             <Text style={styles.bottomHeader}>
@@ -769,17 +726,10 @@ export function PlayerEvaluationPDF({
               "Good",
               "Excellent",
             ].map((rating) => (
-              <View
-                key={rating}
-                style={styles.overallItem}
-              >
+              <View key={rating} style={styles.overallItem}>
                 <View style={styles.overallBox}>
                   {overallRating === rating && (
-                    <Svg
-                      width={7}
-                      height={7}
-                      viewBox="0 0 10 10"
-                    >
+                    <Svg width={7} height={7} viewBox="0 0 10 10">
                       <Path
                         d="M1 5.2 L3.8 8 L9 1.5"
                         stroke="#18a9d8"
@@ -809,9 +759,11 @@ export function PlayerEvaluationPDF({
         </View>
 
         {/* FOOTER */}
+
         <Text style={styles.footer}>
           Powered by Touchline
         </Text>
+
       </Page>
     </Document>
   );
