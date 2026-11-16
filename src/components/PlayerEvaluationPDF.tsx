@@ -25,10 +25,7 @@ const styles = StyleSheet.create({
   ========================= */
 
   header: {
-    position: "relative",
     height: 166,
-    borderBottomWidth: 1.5,
-    borderBottomColor: BLUE,
     marginBottom: 7,
   },
 
@@ -38,50 +35,46 @@ const styles = StyleSheet.create({
    * academy text and centered at the top.
    */
   logo: {
-    width: 58,
-    height: 58,
+    width: 50,
+    height: 50,
     objectFit: "contain",
   },
 
-  logoRow: {
-    height: 62,
+  brandingBlock: {
+    height: 77,
     alignItems: "center",
-    justifyContent: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: BLUE,
   },
 
-  headerColumns: {
-    width: "100%",
-    height: 96,
+  profileRow: {
+    height: 89,
     flexDirection: "row",
+    borderBottomWidth: 1.5,
+    borderBottomColor: BLUE,
+    paddingBottom: 5,
   },
 
-  /*
-   * PLAYER PROFILE PHOTO
-   * Fixed to the LEFT side of the header.
-   */
+  playerPhotoColumn: {
+    width: "28%",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+
   playerPhoto: {
-    position: "absolute",
-    left: 0,
-    bottom: 7,
-    width: 82,
-    height: 82,
+    width: 76,
+    height: 76,
     objectFit: "cover",
   },
 
-  /*
-   * CENTER CONTENT
-   * Starts below the logo.
-   */
   academyHeader: {
-    width: "50%",
-    paddingLeft: 84,
-    paddingRight: 8,
+    width: "100%",
     alignItems: "center",
   },
 
   academyName: {
     color: BLUE,
-    fontSize: 11.5,
+    fontSize: 13,
     fontWeight: "bold",
     letterSpacing: 0.3,
     textAlign: "center",
@@ -90,15 +83,15 @@ const styles = StyleSheet.create({
 
   tagline: {
     color: "#555555",
-    fontSize: 7.5,
+    fontSize: 8,
     fontStyle: "italic",
     marginTop: 1,
     lineHeight: 8,
   },
 
   contact: {
-    fontSize: 7,
-    marginTop: 2,
+    fontSize: 7.5,
+    marginTop: 1,
     lineHeight: 8,
   },
 
@@ -110,25 +103,25 @@ const styles = StyleSheet.create({
   },
 
   reportBlock: {
-    width: "50%",
-    paddingLeft: 8,
-    paddingRight: 4,
+    width: "72%",
+    paddingLeft: 10,
+    paddingRight: 8,
     alignItems: "center",
     justifyContent: "center",
   },
 
   reportTitle: {
     color: BLUE,
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: "bold",
     textAlign: "center",
-    lineHeight: 11.5,
-    maxWidth: 230,
+    lineHeight: 12,
+    maxWidth: 330,
   },
 
   season: {
     color: BLUE,
-    fontSize: 8,
+    fontSize: 8.5,
     fontWeight: "bold",
     lineHeight: 9,
     marginTop: 2,
@@ -520,20 +513,19 @@ export function PlayerEvaluationPDF({
       <Page size="A4" orientation="portrait" style={styles.page}>
         {/* HEADER */}
         <View style={styles.header}>
-          <View style={styles.logoRow}>
+          <View style={styles.brandingBlock}>
             {logoUrl && <Image src={logoUrl} style={styles.logo} />}
-          </View>
-
-          {playerPhotoUrl && <Image src={playerPhotoUrl} style={styles.playerPhoto} />}
-
-          <View style={styles.headerColumns}>
             <View style={styles.academyHeader}>
               <Text style={styles.academyName}>{academyName.toUpperCase()}</Text>
-
               {academyTagline && <Text style={styles.tagline}>{academyTagline}</Text>}
-              {academySlug && <Text style={styles.academySlug}>Slug: {academySlug}</Text>}
               {academyEmail && <Text style={styles.contact}>Email: {academyEmail}</Text>}
               {academyPhone && <Text style={styles.contact}>Phone: {academyPhone}</Text>}
+            </View>
+          </View>
+
+          <View style={styles.profileRow}>
+            <View style={styles.playerPhotoColumn}>
+              {playerPhotoUrl && <Image src={playerPhotoUrl} style={styles.playerPhoto} />}
             </View>
 
             <View style={styles.reportBlock}>
@@ -542,7 +534,6 @@ export function PlayerEvaluationPDF({
                 {"\n"}
                 PROFILE
               </Text>
-
               <Text style={styles.season}>
                 Season: {evaluation?.season || player.season || "—"}
               </Text>
