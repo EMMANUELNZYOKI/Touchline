@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   ========================= */
 
   header: {
-    height: 276,
+    height: 300,
     marginBottom: 7,
   },
 
@@ -35,13 +35,13 @@ const styles = StyleSheet.create({
    * academy text and centered at the top.
    */
   logo: {
-    width: 120,
-    height: 120,
+    width: 140,
+    height: 140,
     objectFit: "contain",
   },
 
   brandingBlock: {
-    height: 180,
+    height: 204,
     alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: BLUE,
@@ -83,23 +83,23 @@ const styles = StyleSheet.create({
 
   tagline: {
     color: "#555555",
-    fontSize: 10,
+    fontSize: 9.5,
     fontStyle: "italic",
-    marginTop: 1,
-    lineHeight: 10,
+    marginTop: 0,
+    lineHeight: 9,
   },
 
   contact: {
-    fontSize: 9,
-    marginTop: 2,
-    lineHeight: 10,
+    fontSize: 8.5,
+    marginTop: 1,
+    lineHeight: 9,
   },
 
   academySlug: {
     color: "#555555",
-    fontSize: 9,
-    marginTop: 2,
-    lineHeight: 10,
+    fontSize: 8.5,
+    marginTop: 1,
+    lineHeight: 9,
   },
 
   reportBlock: {
