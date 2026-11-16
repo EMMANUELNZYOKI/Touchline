@@ -8,7 +8,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { LoadingBlock } from "@/components/DataCards";
 import { PlayerProfileView } from "@/components/PlayerProfileView";
 import { PlayerEvaluationPDF } from "@/components/PlayerEvaluationPDF";
-import { academyLogoUrl, fetchPlayer, photoUrl } from "@/lib/api";
+import { academyLogoDataUrl, fetchPlayer, photoUrl } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/_shell/players/$playerId")({
   head: () => ({
@@ -41,7 +41,7 @@ function AdminPlayerProfile() {
 
   const { data: academyLogoUrlResult } = useQuery({
     queryKey: ["academy-logo", data?.academyLogoPath],
-    queryFn: () => academyLogoUrl(data?.academyLogoPath ?? null),
+    queryFn: () => academyLogoDataUrl(data?.academyLogoPath ?? null),
     enabled: Boolean(data?.academyLogoPath),
   });
 

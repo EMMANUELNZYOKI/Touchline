@@ -121,6 +121,35 @@ export async function academyLogoUrl(path: string | null): Promise<string | null
   return data.signedUrl ?? null;
 }
 
+/**
+ * React-PDF can be inconsistent when it receives a remote signed storage URL.
+ * Embed the already-authorized image bytes as a data URL before constructing a
+ * report so the academy logo is deterministic in downloaded PDFs.
+ */
+export async function academyLogoDataUrl(path: string | null): Promise<string | null> {
+  const signedUrl = await academyLogoUrl(path);
+  if (!signedUrl || typeof window === "undefined") return signedUrl;
+
+  try {
+    const response = await fetch(signedUrl);
+    if (!response.ok) return signedUrl;
+    const blob = await response.blob();
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") resolve(reader.result);
+        else reject(new Error("Invalid logo data"));
+      };
+      reader.onerror = () => reject(reader.error ?? new Error("Could not read logo"));
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    // Keep the signed URL as a fallback; the report can still render if the
+    // storage origin allows React-PDF to load it directly.
+    return signedUrl;
+  }
+}
+
 export type AcademyEntitlements = {
   planKey: string;
   status: "trialing" | "active" | "past_due" | "canceled" | "paused";
@@ -299,14 +328,21 @@ export async function fetchPlayers(options?: { coachId?: string }) {
 
   return ((playersRes.data ?? []) as unknown as Player[]).map<PlayerRow>((player) => ({
     ...player,
+    // A profile edit must not make an existing evaluation disappear. Prefer the
+    // current player period when it exists, otherwise keep the latest snapshot
+    // attached to the player so the roster still reports "Evaluated".
     evaluation:
       evals.find(
         (e) =>
           e.player_id === player.id &&
           e.season === (player.season ?? "UNSPECIFIED") &&
           e.season_year === new Date().getFullYear(),
-      ) ?? null,
-    hasEvaluation: evaluatedPlayerIds.has(player.id),
+      ) ??
+      evals.find((e) => e.player_id === player.id) ??
+      null,
+    hasEvaluation:
+      evaluatedPlayerIds.has(player.id) ||
+      evals.some((evaluation) => evaluation.player_id === player.id),
     coachName: player.coach_id
       ? (profiles.find((p) => p.id === player.coach_id)?.full_name ?? "Unknown coach")
       : "Not assigned",
@@ -336,7 +372,9 @@ export async function fetchPlayer(playerId: string) {
       (e) =>
         e.season === (player.season ?? "UNSPECIFIED") && e.season_year === new Date().getFullYear(),
     ) ?? null;
-  const evaluationCoachId = activeEvaluation?.coach_id ?? evaluations[0]?.coach_id;
+  const latestEvaluation = evaluations[0] ?? null;
+  const retainedEvaluation = activeEvaluation ?? latestEvaluation;
+  const evaluationCoachId = retainedEvaluation?.coach_id ?? player.coach_id;
   const coachId = evaluationCoachId ?? player.coach_id;
   const [{ data: coach }, { data: academy }] = await Promise.all([
     coachId
@@ -354,9 +392,13 @@ export async function fetchPlayer(playerId: string) {
   return {
     player,
     evaluations,
-    evaluation: activeEvaluation,
-    latestEvaluation: evaluations[0] ?? null,
-    hasEvaluation: (evaluatedIdsRes.data ?? []).some((row) => row.player_id === playerId),
+    // Keep the player's evaluation visible after owner/manager profile edits,
+    // even when the edit changed a profile field used by the old period match.
+    evaluation: retainedEvaluation,
+    latestEvaluation,
+    hasEvaluation:
+      (evaluatedIdsRes.data ?? []).some((row) => row.player_id === playerId) ||
+      evaluations.length > 0,
     coachName: coachId ? (coach?.full_name ?? "Unknown coach") : "Not assigned",
     coachEmail: coach?.email ?? "",
     academyName: academy?.name ?? "Academy",
