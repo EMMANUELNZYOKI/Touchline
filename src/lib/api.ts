@@ -131,7 +131,7 @@ export async function updateAcademyReportBranding(input: {
     .update({
       name: input.name.trim(),
       slug,
-      report_tagline: input.reportTagline.trim() || "Transforming Lives Through Football",
+      report_tagline: input.reportTagline.trim() || "",
       contact_email: input.contactEmail.trim() || null,
       contact_phone: input.contactPhone.trim() || null,
     })
@@ -445,9 +445,9 @@ export async function fetchPlayer(playerId: string) {
       evaluations.length > 0,
     coachName: coachId ? (coach?.full_name ?? "Unknown coach") : "Not assigned",
     coachEmail: coach?.email ?? "",
-    academyName: academy?.name ?? "Academy",
+    academyName: academy?.name ?? "",
     academySlug: academy?.slug ?? "",
-    academyTagline: academy?.report_tagline ?? "Transforming Lives Through Football",
+    academyTagline: academy?.report_tagline ?? "",
     academyEmail: academy?.contact_email ?? academyOwner?.email ?? "",
     academyPhone: academy?.contact_phone ?? academyOwner?.phone ?? "",
     academyLogoPath: academy?.logo_path ?? null,
