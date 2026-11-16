@@ -25,8 +25,6 @@ const styles = StyleSheet.create({
   ========================= */
 
   header: {
-    // Combined height of the academy branding and player-profile rows.
-    height: 400,
     marginBottom: 7,
   },
 
@@ -36,18 +34,19 @@ const styles = StyleSheet.create({
    * academy text and centered at the top.
    */
   logo: {
-    width: 128,
-    height: 145,
+    width: 125,
+    height: 135,
     objectFit: "contain",
-    marginBottom: 8,
+    marginBottom: 4,
   },
 
   brandingBlock: {
-    height: 288,
-    paddingTop: 48,
+    minHeight: 270,
+    paddingTop: 5,
     alignItems: "center",
+    justifyContent: "flex-start",
     borderBottomWidth: 1,
-    borderBottomColor: BLUE,
+    borderBottomColor: "#7a8b96",
   },
 
   profileRow: {
@@ -61,6 +60,7 @@ const styles = StyleSheet.create({
 
   playerPhotoColumn: {
     width: "28%",
+    height: "100%",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
 
   reportBlock: {
     width: "72%",
+    height: "100%",
     paddingLeft: 10,
     paddingRight: 8,
     alignItems: "center",
@@ -521,7 +522,7 @@ export function PlayerEvaluationPDF({
             <View style={styles.academyHeader}>
               <Text style={styles.academyName}>{academyName.toUpperCase()}</Text>
               {academyTagline && <Text style={styles.tagline}>{academyTagline}</Text>}
-              {/* The internal academy slug is intentionally omitted from the printed report. */}
+              {academySlug && <Text style={styles.academySlug}>{academySlug}</Text>}
               {academyEmail && <Text style={styles.contact}>Email: {academyEmail}</Text>}
               {academyPhone && <Text style={styles.contact}>Phone: {academyPhone}</Text>}
             </View>
@@ -541,7 +542,6 @@ export function PlayerEvaluationPDF({
               <Text style={styles.season}>
                 Season: {evaluation?.season || player.season || season || "—"}
               </Text>
-              <Text style={styles.season}>Year: {evaluation?.season_year || "—"}</Text>
             </View>
           </View>
         </View>
