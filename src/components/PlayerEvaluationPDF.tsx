@@ -25,7 +25,8 @@ const styles = StyleSheet.create({
   ========================= */
 
   header: {
-    height: 300,
+    // Combined height of the academy branding and player-profile rows.
+    height: 400,
     marginBottom: 7,
   },
 
@@ -35,21 +36,24 @@ const styles = StyleSheet.create({
    * academy text and centered at the top.
    */
   logo: {
-    width: 140,
-    height: 140,
+    width: 128,
+    height: 145,
     objectFit: "contain",
+    marginBottom: 8,
   },
 
   brandingBlock: {
-    height: 204,
+    height: 288,
+    paddingTop: 48,
     alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: BLUE,
   },
 
   profileRow: {
-    height: 96,
+    height: 112,
     flexDirection: "row",
+    alignItems: "center",
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
     paddingBottom: 5,
@@ -58,12 +62,12 @@ const styles = StyleSheet.create({
   playerPhotoColumn: {
     width: "28%",
     alignItems: "center",
-    justifyContent: "flex-end",
+    justifyContent: "center",
   },
 
   playerPhoto: {
-    width: 86,
-    height: 86,
+    width: 108,
+    height: 108,
     objectFit: "cover",
   },
 
@@ -74,25 +78,25 @@ const styles = StyleSheet.create({
 
   academyName: {
     color: BLUE,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
-    letterSpacing: 0.3,
+    letterSpacing: 0.35,
     textAlign: "center",
-    lineHeight: 16,
+    lineHeight: 20,
   },
 
   tagline: {
     color: "#555555",
     fontSize: 9.5,
     fontStyle: "italic",
-    marginTop: 0,
-    lineHeight: 9,
+    marginTop: 2,
+    lineHeight: 11,
   },
 
   contact: {
-    fontSize: 8.5,
+    fontSize: 9.5,
     marginTop: 1,
-    lineHeight: 9,
+    lineHeight: 11,
   },
 
   academySlug: {
@@ -112,10 +116,10 @@ const styles = StyleSheet.create({
 
   reportTitle: {
     color: BLUE,
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",
-    lineHeight: 14,
+    lineHeight: 16,
     maxWidth: 330,
   },
 
@@ -123,8 +127,9 @@ const styles = StyleSheet.create({
     color: BLUE,
     fontSize: 10,
     fontWeight: "bold",
-    lineHeight: 11,
+    lineHeight: 12,
     marginTop: 4,
+    textAlign: "center",
   },
 
   /* =========================
@@ -516,7 +521,7 @@ export function PlayerEvaluationPDF({
             <View style={styles.academyHeader}>
               <Text style={styles.academyName}>{academyName.toUpperCase()}</Text>
               {academyTagline && <Text style={styles.tagline}>{academyTagline}</Text>}
-              {academySlug && <Text style={styles.academySlug}>Slug: {academySlug}</Text>}
+              {/* The internal academy slug is intentionally omitted from the printed report. */}
               {academyEmail && <Text style={styles.contact}>Email: {academyEmail}</Text>}
               {academyPhone && <Text style={styles.contact}>Phone: {academyPhone}</Text>}
             </View>
