@@ -107,14 +107,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "bold",
     textAlign: "center",
-    lineHeight: 19,
+    lineHeight: 16,
+    marginBottom: 0,
   },
 
   season: {
     color: BLUE,
     fontSize: 9,
     fontWeight: "bold",
-    marginTop: 1,
+    marginTop: 0,
     textAlign: "center",
   },
 
