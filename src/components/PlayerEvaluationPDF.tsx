@@ -11,10 +11,10 @@ const BORDER = "#111111";
 const styles = StyleSheet.create({
   page: {
     width: "100%",
-    paddingTop: 18,
+    paddingTop: 20,
     paddingBottom: 16,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 50,
+    paddingRight: 50,
     fontFamily: "Helvetica",
     fontSize: 7.5,
     color: BLACK,
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   ========================= */
 
   header: {
-    marginBottom: 0.5,
+    marginBottom: 3,
   },
 
   /*
@@ -34,15 +34,15 @@ const styles = StyleSheet.create({
    * academy text and centered at the top.
    */
   logo: {
-    width: 125,
-    height: 135,
+    width: 120,
+    height: 130,
     objectFit: "contain",
-    marginBottom: 0.5,
+    marginBottom: 0,
   },
 
   brandingBlock: {
-    height: 270,
-    paddingTop: 0.5,
+    paddingTop: 0,
+    paddingBottom: 2,
     alignItems: "center",
     justifyContent: "flex-start",
     borderBottomWidth: 1,
@@ -50,24 +50,23 @@ const styles = StyleSheet.create({
   },
 
   profileRow: {
-    height: 120,
+    height: 108,
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
-    paddingBottom: 0.5,
+    paddingBottom: 0,
   },
 
   playerPhotoColumn: {
     width: "28%",
-    height: "100%",
     alignItems: "center",
     justifyContent: "center",
   },
 
   playerPhoto: {
-    width: 108,
-    height: 108,
+    width: 104,
+    height: 104,
     objectFit: "cover",
   },
 
@@ -78,7 +77,7 @@ const styles = StyleSheet.create({
 
   academyName: {
     color: BLUE,
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "bold",
     letterSpacing: 0.35,
     textAlign: "center",
@@ -89,26 +88,24 @@ const styles = StyleSheet.create({
     color: "#555555",
     fontSize: 9.5,
     fontStyle: "italic",
-    marginTop: 0.5,
-    lineHeight: 11,
+    marginTop: 0,
+    lineHeight: 10,
   },
 
   contact: {
     fontSize: 9.5,
-    marginTop: 0.5,
-    lineHeight: 11,
+    marginTop: 0,
+    lineHeight: 10,
   },
 
   academySlug: {
     color: "#555555",
     fontSize: 8.5,
-    marginTop: 0.5,
     lineHeight: 9,
   },
 
   reportBlock: {
     width: "72%",
-    height: "100%",
     paddingLeft: 10,
     paddingRight: 8,
     alignItems: "center",
@@ -117,7 +114,7 @@ const styles = StyleSheet.create({
 
   reportTitle: {
     color: BLUE,
-    fontSize: 14,
+    fontSize: 13.5,
     fontWeight: "bold",
     textAlign: "center",
     lineHeight: 16,
@@ -129,7 +126,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
     lineHeight: 12,
-    marginTop: 0.5,
+    marginTop: 0,
     textAlign: "center",
   },
 
@@ -140,7 +137,7 @@ const styles = StyleSheet.create({
   playerInfo: {
     borderWidth: 1,
     borderColor: BORDER,
-    marginTop: 10,
+    marginTop: 5,
     marginBottom: 7,
   },
 
@@ -518,7 +515,7 @@ export function PlayerEvaluationPDF({
     >
       <Page size="A4" orientation="portrait" style={styles.page}>
         {/* HEADER */}
-        <View style={styles.header}>
+        <View style={styles.header} wrap={false}>
           <View style={styles.brandingBlock} wrap={false}>
             {logoUrl && <Image src={logoUrl} style={styles.logo} />}
             <View style={styles.academyHeader}>
