@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     fontFamily: "Helvetica",
     fontSize: 7.5,
-    lineHeight: 1.15,
     color: BLACK,
   },
 
@@ -27,7 +26,7 @@ const styles = StyleSheet.create({
 
   header: {
     position: "relative",
-    height: 164,
+    height: 166,
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
     marginBottom: 7,
@@ -40,11 +39,11 @@ const styles = StyleSheet.create({
    */
   logo: {
     position: "absolute",
-    top: 2,
+    top: 0,
     left: "50%",
     transform: "translateX(-50%)",
-    width: 68,
-    height: 68,
+    width: 54,
+    height: 54,
     objectFit: "contain",
   },
 
@@ -56,8 +55,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     bottom: 7,
-    width: 92,
-    height: 92,
+    width: 82,
+    height: 82,
     objectFit: "cover",
   },
 
@@ -67,7 +66,7 @@ const styles = StyleSheet.create({
    */
   academyHeader: {
     position: "absolute",
-    top: 72,
+    top: 55,
     left: 0,
     right: 0,
     alignItems: "center",
@@ -75,57 +74,51 @@ const styles = StyleSheet.create({
 
   academyName: {
     color: BLUE,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "bold",
     letterSpacing: 0.3,
-    lineHeight: 16,
   },
 
   tagline: {
     color: "#555555",
-    fontSize: 8.5,
+    fontSize: 9,
     fontStyle: "italic",
-    marginTop: 1,
-    lineHeight: 10,
+    marginTop: 2,
   },
 
   contact: {
-    fontSize: 8,
-    marginTop: 2,
-    lineHeight: 9,
+    fontSize: 7.5,
+    marginTop: 3,
   },
 
   academySlug: {
     color: "#555555",
     fontSize: 7.5,
-    marginTop: 1,
-    lineHeight: 9,
+    marginTop: 2,
   },
 
   reportBlock: {
     position: "absolute",
-    left: 104,
+    left: 94,
     right: 0,
-    bottom: 9,
+    bottom: 8,
     alignItems: "center",
-    paddingLeft: 5,
   },
 
   reportTitle: {
     color: BLUE,
-    fontSize: 11.5,
+    fontSize: 11,
     fontWeight: "bold",
     textAlign: "center",
-    lineHeight: 13,
-    maxWidth: 350,
+    marginTop: 10,
+    maxWidth: 360,
   },
 
   season: {
     color: BLUE,
-    fontSize: 8.5,
+    fontSize: 9,
     fontWeight: "bold",
-    lineHeight: 10,
-    marginTop: 2,
+    marginTop: 3,
   },
 
   /* =========================
@@ -141,14 +134,14 @@ const styles = StyleSheet.create({
 
   infoRow: {
     flexDirection: "row",
-    minHeight: 17,
+    minHeight: 16,
     borderBottomWidth: 1,
     borderBottomColor: BORDER,
   },
 
   infoRowLast: {
     flexDirection: "row",
-    minHeight: 17,
+    minHeight: 16,
   },
 
   infoCellLabel: {
@@ -157,7 +150,6 @@ const styles = StyleSheet.create({
     paddingTop: 2,
     paddingBottom: 2,
     fontWeight: "bold",
-    lineHeight: 8,
     borderRightWidth: 1,
     borderRightColor: BORDER,
   },
@@ -167,7 +159,6 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
     paddingTop: 2,
     paddingBottom: 2,
-    lineHeight: 8,
     borderRightWidth: 1,
     borderRightColor: BORDER,
   },
@@ -177,7 +168,6 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
     paddingTop: 2,
     paddingBottom: 2,
-    lineHeight: 8,
   },
 
   /* =========================
@@ -193,7 +183,6 @@ const styles = StyleSheet.create({
     fontSize: 9.5,
     fontWeight: "bold",
     marginBottom: 2,
-    lineHeight: 11,
   },
 
   /* =========================
@@ -207,7 +196,7 @@ const styles = StyleSheet.create({
 
   tableHeader: {
     flexDirection: "row",
-    minHeight: 30,
+    minHeight: 25,
     backgroundColor: "#ffffff",
     borderBottomWidth: 1,
     borderBottomColor: BORDER,
@@ -215,7 +204,7 @@ const styles = StyleSheet.create({
 
   tableRow: {
     flexDirection: "row",
-    minHeight: 19,
+    minHeight: 14.5,
     borderBottomWidth: 1,
     borderBottomColor: BORDER,
   },
@@ -229,7 +218,6 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
     paddingTop: 3,
     fontWeight: "bold",
-    lineHeight: 8,
     borderRightWidth: 1,
     borderRightColor: BORDER,
   },
@@ -237,10 +225,8 @@ const styles = StyleSheet.create({
   skillCell: {
     width: "22%",
     paddingLeft: 4,
-    paddingTop: 3,
-    paddingBottom: 3,
-    fontSize: 7,
-    lineHeight: 8,
+    paddingTop: 2,
+    paddingBottom: 2,
     borderRightWidth: 1,
     borderRightColor: BORDER,
     justifyContent: "center",
@@ -253,7 +239,6 @@ const styles = StyleSheet.create({
     paddingRight: 2,
     textAlign: "center",
     fontWeight: "bold",
-    lineHeight: 8,
     borderRightWidth: 1,
     borderRightColor: BORDER,
   },
@@ -265,7 +250,6 @@ const styles = StyleSheet.create({
     paddingRight: 2,
     textAlign: "center",
     fontWeight: "bold",
-    lineHeight: 8,
   },
 
   ratingCell: {
@@ -511,8 +495,8 @@ export function PlayerEvaluationPDF({
   const overallRating = getOverallRating(evaluation?.overall_rating);
 
   const activeSeason = evaluation
-    ? `${evaluation.season} ${evaluation.season_year}`
-    : season || player.season || "—";
+    ? `${evaluation.season} / ${evaluation.season_year}`
+    : player.season || season;
 
   return (
     <Document
@@ -543,7 +527,8 @@ export function PlayerEvaluationPDF({
               PROFILE
             </Text>
 
-            <Text style={styles.season}>Season: {activeSeason}</Text>
+            <Text style={styles.season}>Season: {evaluation?.season || player.season || "—"}</Text>
+            <Text style={styles.season}>Year: {evaluation?.season_year || "—"}</Text>
           </View>
         </View>
 
