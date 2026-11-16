@@ -191,9 +191,11 @@ function Landing() {
             <Button asChild variant="ghost" className="lg:hidden">
               <a href="#sign-in">Sign in</a>
             </Button>
-            <Button asChild className="gap-2">
+            <Button asChild className="gap-2 px-3 text-xs sm:px-4 sm:text-sm">
               <Link to="/onboard">
-                Start an academy <ArrowRight className="h-4 w-4" />
+                <span className="sm:hidden">Start</span>
+                <span className="hidden sm:inline">Start an academy</span>
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </div>
