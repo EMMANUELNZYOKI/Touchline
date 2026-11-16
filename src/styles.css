@@ -432,3 +432,32 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  .tl-print-hide,
+  aside,
+  header {
+    display: none !important;
+  }
+
+  .tl-print-page {
+    display: block !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .tl-print-page .rounded-2xl,
+  .tl-print-page .rounded-xl {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+}

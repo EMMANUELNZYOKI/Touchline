@@ -2,7 +2,7 @@
 
 import { createFileRoute, Link } from "@/lib/next-router-compat";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Download } from "lucide-react";
+import { ArrowLeft, Download, Printer } from "lucide-react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 
 import { LoadingBlock } from "@/components/DataCards";
@@ -58,12 +58,12 @@ function AdminPlayerProfile() {
   const fileName = `${playerName.replace(/[^a-z0-9]/gi, "-").toLowerCase()}-evaluation-report.pdf`;
 
   return (
-    <div className="grid gap-5">
+    <div className="tl-print-page grid gap-5">
       {/* ================================================
           ACTION BAR
       ================================================= */}
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="tl-print-hide flex items-center justify-between gap-4">
         {/* BACK */}
         <Link
           to="/admin/players"
@@ -74,36 +74,47 @@ function AdminPlayerProfile() {
         </Link>
 
         {/* DOWNLOAD */}
-        <PDFDownloadLink
-          document={
-            <PlayerEvaluationPDF
-              player={data.player}
-              evaluation={data.latestEvaluation}
-              coachName={data.coachName}
-              academyName={data.academyName}
-              playerPhotoUrl={playerPhotoUrl ?? null}
-              logoUrl={academyLogoUrlResult ?? null}
-              season={
-                data.latestEvaluation
-                  ? `${data.latestEvaluation.season} ${data.latestEvaluation.season_year}`
-                  : "No evaluation yet"
-              }
-            />
-          }
-          fileName={fileName}
-        >
-          {({ loading }) => (
-            <button
-              type="button"
-              disabled={loading}
-              className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Download className="h-4 w-4" />
-
-              {loading ? "Preparing report..." : "Download Report"}
-            </button>
-          )}
-        </PDFDownloadLink>
+        <div className="flex items-center gap-2">
+          <PDFDownloadLink
+            document={
+              <PlayerEvaluationPDF
+                player={data.player}
+                evaluation={data.latestEvaluation}
+                coachName={data.coachName}
+                academyName={data.academyName}
+                academySlug={data.academySlug}
+                academyEmail={data.academyEmail}
+                academyPhone={data.academyPhone}
+                playerPhotoUrl={playerPhotoUrl ?? null}
+                logoUrl={academyLogoUrlResult ?? null}
+                season={
+                  data.latestEvaluation
+                    ? `${data.latestEvaluation.season} ${data.latestEvaluation.season_year}`
+                    : "No evaluation yet"
+                }
+              />
+            }
+            fileName={fileName}
+          >
+            {({ loading }) => (
+              <button
+                type="button"
+                disabled={loading}
+                className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Download className="h-4 w-4" />
+                {loading ? "Preparing report..." : "Download PDF"}
+              </button>
+            )}
+          </PDFDownloadLink>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-medium shadow-sm transition hover:bg-accent"
+          >
+            <Printer className="h-4 w-4" /> Print / Save PDF
+          </button>
+        </div>
       </div>
 
       {/* ================================================

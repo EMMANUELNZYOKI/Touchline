@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
 
   header: {
     position: "relative",
-    height: 150,
+    height: 166,
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
     marginBottom: 7,
@@ -42,8 +42,8 @@ const styles = StyleSheet.create({
     top: 0,
     left: "50%",
     transform: "translateX(-50%)",
-    width: 65,
-    height: 65,
+    width: 54,
+    height: 54,
     objectFit: "contain",
   },
 
@@ -54,9 +54,9 @@ const styles = StyleSheet.create({
   playerPhoto: {
     position: "absolute",
     left: 0,
-    bottom: 5,
-    width: 78,
-    height: 78,
+    bottom: 7,
+    width: 82,
+    height: 82,
     objectFit: "cover",
   },
 
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
    */
   academyHeader: {
     position: "absolute",
-    top: 67,
+    top: 55,
     left: 0,
     right: 0,
     alignItems: "center",
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
 
   academyName: {
     color: BLUE,
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "bold",
     letterSpacing: 0.3,
   },
@@ -89,6 +89,20 @@ const styles = StyleSheet.create({
   contact: {
     fontSize: 7.5,
     marginTop: 3,
+  },
+
+  academySlug: {
+    color: "#555555",
+    fontSize: 7.5,
+    marginTop: 2,
+  },
+
+  reportBlock: {
+    position: "absolute",
+    left: 94,
+    right: 0,
+    bottom: 8,
+    alignItems: "center",
   },
 
   reportTitle: {
@@ -455,6 +469,9 @@ interface PlayerEvaluationPDFProps {
   evaluation: Evaluation | null;
   coachName: string;
   academyName: string;
+  academySlug?: string;
+  academyEmail?: string;
+  academyPhone?: string;
   playerPhotoUrl?: string | null;
   logoUrl?: string | null;
   season?: string;
@@ -465,6 +482,9 @@ export function PlayerEvaluationPDF({
   evaluation,
   coachName,
   academyName,
+  academySlug = "",
+  academyEmail = "",
+  academyPhone = "",
   playerPhotoUrl,
   logoUrl = null,
   season = "Season 8: May-August 2026",
@@ -492,19 +512,20 @@ export function PlayerEvaluationPDF({
           <View style={styles.academyHeader}>
             <Text style={styles.academyName}>{academyName.toUpperCase()}</Text>
 
-            <Text style={styles.tagline}>Transforming Lives Through Football</Text>
+            {academySlug && <Text style={styles.academySlug}>Slug: {academySlug}</Text>}
+            {academyEmail && <Text style={styles.contact}>Email: {academyEmail}</Text>}
+            {academyPhone && <Text style={styles.contact}>Phone: {academyPhone}</Text>}
+          </View>
 
-            <Text style={styles.contact}></Text>
-
-            <Text style={styles.contact}>Player development report</Text>
-
+          <View style={styles.reportBlock}>
             <Text style={styles.reportTitle}>
-              PLAYER EVALUATION & DEVELOPMENT
+              PLAYER EVALUATION &amp; DEVELOPMENT
               {"\n"}
               PROFILE
             </Text>
 
-            <Text style={styles.season}>Season / Year: {activeSeason}</Text>
+            <Text style={styles.season}>Season: {evaluation?.season || player.season || "—"}</Text>
+            <Text style={styles.season}>Year: {evaluation?.season_year || "—"}</Text>
           </View>
         </View>
 

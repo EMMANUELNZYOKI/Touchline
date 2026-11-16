@@ -376,7 +376,7 @@ export async function fetchPlayer(playerId: string) {
   const retainedEvaluation = activeEvaluation ?? latestEvaluation;
   const evaluationCoachId = retainedEvaluation?.coach_id ?? player.coach_id;
   const coachId = evaluationCoachId ?? player.coach_id;
-  const [{ data: coach }, { data: academy }] = await Promise.all([
+  const [{ data: coach }, { data: academy }, { data: academyOwnerMembership }] = await Promise.all([
     coachId
       ? await supabase
           .from("profiles")
@@ -385,9 +385,25 @@ export async function fetchPlayer(playerId: string) {
           .maybeSingle()
       : Promise.resolve({ data: null }),
     academyId
-      ? supabase.from("academies").select("name, logo_path").eq("id", academyId).maybeSingle()
+      ? supabase.from("academies").select("name, slug, logo_path").eq("id", academyId).maybeSingle()
+      : Promise.resolve({ data: null }),
+    academyId
+      ? supabase
+          .from("academy_memberships")
+          .select("user_id")
+          .eq("academy_id", academyId)
+          .eq("role", "academy_admin")
+          .eq("status", "active")
+          .maybeSingle()
       : Promise.resolve({ data: null }),
   ]);
+  const { data: academyOwner } = academyOwnerMembership?.user_id
+    ? await supabase
+        .from("profiles")
+        .select("email, phone")
+        .eq("id", academyOwnerMembership.user_id)
+        .maybeSingle()
+    : { data: null };
 
   return {
     player,
@@ -402,6 +418,9 @@ export async function fetchPlayer(playerId: string) {
     coachName: coachId ? (coach?.full_name ?? "Unknown coach") : "Not assigned",
     coachEmail: coach?.email ?? "",
     academyName: academy?.name ?? "Academy",
+    academySlug: academy?.slug ?? "",
+    academyEmail: academyOwner?.email ?? "",
+    academyPhone: academyOwner?.phone ?? "",
     academyLogoPath: academy?.logo_path ?? null,
   };
 }
