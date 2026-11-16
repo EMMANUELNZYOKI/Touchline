@@ -4,11 +4,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ActivityIndicator, Platform, View } from "react-native";
 
 import { HapticTab } from "@/components/haptic-tab";
-import { useColors } from "@/hooks/use-colors";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
 
 export default function TabLayout() {
-  const colors = useColors();
   const { loading, context } = useTouchlineAuth();
   const insets = useSafeAreaInsets();
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
@@ -25,16 +23,21 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: colors.tint,
+        tabBarActiveTintColor: "#78d4aa",
+        tabBarInactiveTintColor: "#aab7c7",
+        tabBarShowLabel: true,
+        tabBarLabelPosition: "below-icon",
+        tabBarLabelStyle: { fontSize: 11, fontWeight: "700", marginTop: 1 },
+        tabBarItemStyle: { paddingVertical: 2 },
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          paddingTop: 8,
+          paddingTop: 6,
           paddingBottom: bottomPadding,
-          height: tabBarHeight,
-          backgroundColor: colors.background,
-          borderTopColor: colors.border,
-          borderTopWidth: 0.5,
+          height: Math.max(tabBarHeight, 72),
+          backgroundColor: "#0b1c2d",
+          borderTopColor: "#2b5268",
+          borderTopWidth: 1,
         },
       }}
     >
