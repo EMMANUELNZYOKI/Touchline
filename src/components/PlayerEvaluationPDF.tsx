@@ -16,94 +16,97 @@ import { calculateAge } from "@/lib/skills";
 const BLUE = "#1f4e79";
 const LIGHT_BLUE = "#18a9d8";
 const BLACK = "#111111";
-const BORDER = "#111111";
+const BORDER = "#333333";
 
 const styles = StyleSheet.create({
   page: {
-    width: "100%",
-    paddingTop: 18,
-    paddingBottom: 16,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingTop: 25,
+    paddingBottom: 28,
+    paddingHorizontal: 32,
     fontFamily: "Helvetica",
-    fontSize: 7.5,
+    fontSize: 8,
     color: BLACK,
   },
 
-  /* HEADER */
+  /* =========================
+     ACADEMY HEADER
+  ========================= */
 
   header: {
-    marginBottom: 8,
-  },
-
-  logo: {
-    width: 95,
-    height: 105,
-    objectFit: "contain",
-    marginBottom: 5,
+    marginBottom: 14,
   },
 
   brandingBlock: {
     alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: BLUE,
-    paddingBottom: 9,
-    marginBottom: 9,
+    marginBottom: 12,
   },
 
+  logo: {
+    width: 75,
+    height: 75,
+    objectFit: "contain",
+    marginBottom: 5,
+  },
+
+  academyHeader: {
+    alignItems: "center",
+    width: "100%",
+  },
+
+  academyName: {
+    color: BLUE,
+    fontSize: 19,
+    fontWeight: "bold",
+    textAlign: "center",
+    letterSpacing: 0.5,
+  },
+
+  tagline: {
+    color: "#555555",
+    fontSize: 9,
+    fontStyle: "italic",
+    marginTop: 3,
+    textAlign: "center",
+  },
+
+  contact: {
+    fontSize: 8,
+    color: "#444444",
+    marginTop: 3,
+    textAlign: "center",
+  },
+
+  /* =========================
+     PLAYER PROFILE HEADER
+  ========================= */
+
   profileRow: {
-    minHeight: 112,
     flexDirection: "row",
     alignItems: "center",
+    minHeight: 112,
+    paddingBottom: 10,
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
-    paddingBottom: 9,
   },
 
   playerPhotoColumn: {
-    width: "30%",
+    width: "28%",
     alignItems: "center",
     justifyContent: "center",
   },
 
   playerPhoto: {
-    width: 105,
+    width: 96,
     height: 105,
     objectFit: "cover",
   },
 
-  academyHeader: {
-    width: "100%",
-    alignItems: "center",
-  },
-
-  academyName: {
-    color: BLUE,
-    fontSize: 21,
-    fontWeight: "bold",
-    letterSpacing: 0.5,
-    textAlign: "center",
-    lineHeight: 25,
-  },
-
-  tagline: {
-    color: "#555555",
-    fontSize: 10,
-    fontStyle: "italic",
-    marginTop: 3,
-  },
-
-  contact: {
-    fontSize: 9,
-    marginTop: 3,
-  },
-
-  academySlug: {
-    display: "none",
-  },
-
   reportBlock: {
-    width: "70%",
+    width: "72%",
     paddingHorizontal: 12,
     alignItems: "center",
     justifyContent: "center",
@@ -119,74 +122,79 @@ const styles = StyleSheet.create({
 
   season: {
     color: BLUE,
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: "bold",
-    textAlign: "center",
-    lineHeight: 14,
     marginTop: 5,
+    textAlign: "center",
   },
 
-  /* PLAYER INFORMATION */
+  /* =========================
+     PLAYER INFORMATION
+  ========================= */
 
   playerInfo: {
     borderWidth: 1,
     borderColor: BORDER,
-    marginTop: 10,
-    marginBottom: 7,
+    marginBottom: 13,
   },
 
   infoRow: {
     flexDirection: "row",
-    minHeight: 16,
+    minHeight: 23,
     borderBottomWidth: 1,
     borderBottomColor: BORDER,
   },
 
   infoRowLast: {
     flexDirection: "row",
-    minHeight: 16,
+    minHeight: 23,
   },
 
   infoCellLabel: {
     width: "17%",
-    paddingLeft: 4,
-    paddingTop: 2,
-    paddingBottom: 2,
+    paddingHorizontal: 5,
+    paddingVertical: 5,
     fontWeight: "bold",
+    backgroundColor: "#f2f5f8",
     borderRightWidth: 1,
     borderRightColor: BORDER,
   },
 
   infoCellValue: {
     width: "33%",
-    paddingLeft: 4,
-    paddingTop: 2,
-    paddingBottom: 2,
+    paddingHorizontal: 5,
+    paddingVertical: 5,
     borderRightWidth: 1,
     borderRightColor: BORDER,
   },
 
   infoCellValueLast: {
     width: "33%",
-    paddingLeft: 4,
-    paddingTop: 2,
-    paddingBottom: 2,
+    paddingHorizontal: 5,
+    paddingVertical: 5,
   },
 
-  /* SECTIONS */
+  /* =========================
+     EVALUATION SECTIONS
+  ========================= */
 
   section: {
-    marginBottom: 5,
+    marginBottom: 12,
   },
 
   sectionTitle: {
     color: BLUE,
-    fontSize: 9.5,
+    fontSize: 10,
     fontWeight: "bold",
-    marginBottom: 2,
+    marginBottom: 5,
+    paddingBottom: 3,
+    borderBottomWidth: 1,
+    borderBottomColor: BLUE,
   },
 
-  /* SKILL TABLE */
+  /* =========================
+     SKILL TABLE
+  ========================= */
 
   table: {
     borderWidth: 1,
@@ -195,17 +203,18 @@ const styles = StyleSheet.create({
 
   tableHeader: {
     flexDirection: "row",
-    minHeight: 25,
-    backgroundColor: "#ffffff",
+    minHeight: 29,
+    backgroundColor: "#edf2f7",
     borderBottomWidth: 1,
     borderBottomColor: BORDER,
+    alignItems: "center",
   },
 
   tableRow: {
     flexDirection: "row",
-    minHeight: 14.5,
+    minHeight: 19,
     borderBottomWidth: 1,
-    borderBottomColor: BORDER,
+    borderBottomColor: "#cccccc",
   },
 
   lastRow: {
@@ -214,8 +223,8 @@ const styles = StyleSheet.create({
 
   skillHeader: {
     width: "22%",
-    paddingLeft: 4,
-    paddingTop: 3,
+    paddingHorizontal: 5,
+    paddingVertical: 5,
     fontWeight: "bold",
     borderRightWidth: 1,
     borderRightColor: BORDER,
@@ -223,9 +232,8 @@ const styles = StyleSheet.create({
 
   skillCell: {
     width: "22%",
-    paddingLeft: 4,
-    paddingTop: 2,
-    paddingBottom: 2,
+    paddingHorizontal: 5,
+    paddingVertical: 4,
     borderRightWidth: 1,
     borderRightColor: BORDER,
     justifyContent: "center",
@@ -233,22 +241,22 @@ const styles = StyleSheet.create({
 
   ratingHeader: {
     width: "19.5%",
-    paddingTop: 3,
-    paddingLeft: 2,
-    paddingRight: 2,
+    paddingHorizontal: 2,
+    paddingVertical: 4,
     textAlign: "center",
     fontWeight: "bold",
     borderRightWidth: 1,
     borderRightColor: BORDER,
+    fontSize: 7,
   },
 
   ratingHeaderLast: {
     width: "19.5%",
-    paddingTop: 3,
-    paddingLeft: 2,
-    paddingRight: 2,
+    paddingHorizontal: 2,
+    paddingVertical: 4,
     textAlign: "center",
     fontWeight: "bold",
+    fontSize: 7,
   },
 
   ratingCell: {
@@ -266,44 +274,48 @@ const styles = StyleSheet.create({
   },
 
   checkbox: {
-    width: 8,
-    height: 8,
+    width: 9,
+    height: 9,
     borderWidth: 0.8,
     borderColor: LIGHT_BLUE,
     alignItems: "center",
     justifyContent: "center",
   },
 
-  /* BOTTOM SECTION */
+  /* =========================
+     COACH COMMENT
+  ========================= */
 
-  checkText: {
-    color: LIGHT_BLUE,
-    fontSize: 7,
-    fontWeight: "bold",
-    lineHeight: 6,
-    marginTop: -1,
+  commentSection: {
+    marginTop: 3,
+    marginBottom: 12,
   },
 
   commentTitle: {
     color: BLUE,
-    fontSize: 9.5,
+    fontSize: 10,
     fontWeight: "bold",
-    marginBottom: 3,
+    marginBottom: 5,
   },
 
   commentBox: {
-    minHeight: 48,
+    minHeight: 55,
     borderWidth: 1,
     borderColor: BORDER,
-    padding: 7,
+    padding: 8,
+    justifyContent: "center",
   },
+
+  /* =========================
+     OVERALL RATING
+  ========================= */
 
   bottomTable: {
     flexDirection: "row",
     borderWidth: 1,
     borderColor: BORDER,
-    marginTop: 8,
-    minHeight: 65,
+    marginTop: 4,
+    minHeight: 95,
   },
 
   overallColumn: {
@@ -318,7 +330,9 @@ const styles = StyleSheet.create({
 
   bottomHeader: {
     fontWeight: "bold",
-    padding: 4,
+    fontSize: 9,
+    padding: 7,
+    backgroundColor: "#edf2f7",
     borderBottomWidth: 1,
     borderBottomColor: BORDER,
   },
@@ -326,41 +340,44 @@ const styles = StyleSheet.create({
   overallItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 6,
-    marginTop: 4,
+    paddingLeft: 9,
+    marginTop: 7,
   },
 
   overallBox: {
-    width: 7,
-    height: 7,
+    width: 8,
+    height: 8,
     borderWidth: 0.8,
     borderColor: LIGHT_BLUE,
-    marginRight: 5,
+    marginRight: 6,
     alignItems: "center",
     justifyContent: "center",
   },
 
   coachName: {
-    padding: 6,
+    padding: 9,
+    fontSize: 9,
   },
 
   footer: {
+    position: "absolute",
+    bottom: 13,
+    left: 32,
+    right: 32,
     textAlign: "center",
     color: "#777777",
-    fontSize: 6.5,
-    marginTop: 5,
+    fontSize: 7,
   },
 });
 
-/* RATING HELPERS */
+/* =========================
+   RATING HELPERS
+========================= */
 
 function getSkillRating(score: number | null | undefined) {
   const value = Number(score);
 
-  if (!Number.isFinite(value)) {
-    return "Needs Improvement";
-  }
-
+  if (!Number.isFinite(value)) return "Needs Improvement";
   if (value >= 9) return "Exceptional";
   if (value >= 7.5) return "Above Target";
   if (value >= 5) return "On Target";
@@ -378,16 +395,18 @@ function getOverallRating(score: number | null | undefined) {
   return "Needs Improvement";
 }
 
-/* CHECKBOX */
+/* =========================
+   CHECKBOX
+========================= */
 
 function Checkbox({ checked }: { checked: boolean }) {
   return (
     <View style={styles.checkbox}>
       {checked && (
-        <Svg width={6} height={6} viewBox="0 0 10 10">
+        <Svg width={7} height={7} viewBox="0 0 10 10">
           <Path
             d="M1 5.2 L3.8 8 L9 1.5"
-            stroke="#18a9d8"
+            stroke={LIGHT_BLUE}
             strokeWidth={1.5}
             fill="none"
             strokeLinecap="round"
@@ -399,7 +418,9 @@ function Checkbox({ checked }: { checked: boolean }) {
   );
 }
 
-/* SKILL TABLE */
+/* =========================
+   SKILL TABLE
+========================= */
 
 function SkillTable({ skills }: { skills: Record<string, number> }) {
   const entries = Object.entries(skills);
@@ -415,14 +436,15 @@ function SkillTable({ skills }: { skills: Record<string, number> }) {
       </View>
 
       {entries.map(([skill, rawScore], index) => {
-        const score = Number(rawScore);
-        const rating = getSkillRating(score);
-        const isLast = index === entries.length - 1;
+        const rating = getSkillRating(rawScore);
 
         return (
           <View
             key={skill}
-            style={[styles.tableRow, isLast ? styles.lastRow : {}]}
+            style={[
+              styles.tableRow,
+              index === entries.length - 1 ? styles.lastRow : {},
+            ]}
           >
             <Text style={styles.skillCell}>{skill}</Text>
 
@@ -448,57 +470,68 @@ function SkillTable({ skills }: { skills: Record<string, number> }) {
   );
 }
 
-/* SKILL SECTION */
+/* =========================
+   SKILL SECTION
+========================= */
 
 function SkillSection({
   title,
   skills,
-  breakBefore = false,
 }: {
   title: string;
   skills: Record<string, number> | null | undefined;
-  breakBefore?: boolean;
 }) {
   if (!skills || Object.keys(skills).length === 0) return null;
 
   return (
-    <View style={styles.section} wrap={false} break={breakBefore}>
+    <View style={styles.section} wrap={false}>
       <Text style={styles.sectionTitle}>{title}</Text>
       <SkillTable skills={skills} />
     </View>
   );
 }
 
-/* PDF PROPS */
+/* =========================
+   PDF PROPS
+========================= */
 
 interface PlayerEvaluationPDFProps {
   player: Player;
   evaluation: Evaluation | null;
+
   coachName: string;
-  academyName: string;
-  academySlug?: string;
+
+  academyName?: string;
   academyTagline?: string;
   academyEmail?: string;
   academyPhone?: string;
+
   playerPhotoUrl?: string | null;
   logoUrl?: string | null;
+
   season?: string;
+  seasonYear?: string | number;
 }
 
-/* MAIN PDF COMPONENT */
+/* =========================
+   MAIN PDF COMPONENT
+========================= */
 
 export function PlayerEvaluationPDF({
   player,
   evaluation,
   coachName,
-  academyName,
-  academySlug = "",
-  academyTagline = "Transforming Lives Through Football",
+
+  academyName = "",
+  academyTagline = "",
   academyEmail = "",
   academyPhone = "",
+
   playerPhotoUrl,
   logoUrl = null,
-  season = "Season 8: May-August 2026",
+
+  season = "",
+  seasonYear,
 }: PlayerEvaluationPDFProps) {
   const age = calculateAge(player.date_of_birth);
 
@@ -506,20 +539,23 @@ export function PlayerEvaluationPDF({
     evaluation?.overall_rating
   );
 
-  /* AUTOMATIC SEASON AND YEAR */
+  // Academy season information is supplied by the parent component.
+  // No hardcoded season or year is used.
 
   const seasonLabel =
     evaluation?.season ||
-    player.season ||
     season ||
-    "—";
+    "";
 
   const extractedYear = String(seasonLabel).match(/\b20\d{2}\b/)?.[0];
 
   const yearLabel =
     evaluation?.season_year ||
+    seasonYear ||
     extractedYear ||
-    "—";
+    "";
+
+  const hasEvaluation = evaluation !== null;
 
   return (
     <Document
@@ -529,24 +565,23 @@ export function PlayerEvaluationPDF({
     >
       <Page size="A4" orientation="portrait" style={styles.page}>
 
-        {/* PROFESSIONAL ACADEMY HEADER */}
+        {/* ACADEMY BRANDING */}
 
         <View style={styles.header}>
 
-          {/* ACADEMY BRANDING */}
-
           <View style={styles.brandingBlock}>
+
             {logoUrl && (
-              <Image
-                src={logoUrl}
-                style={styles.logo}
-              />
+              <Image src={logoUrl} style={styles.logo} />
             )}
 
             <View style={styles.academyHeader}>
-              <Text style={styles.academyName}>
-                {academyName.toUpperCase()}
-              </Text>
+
+              {academyName && (
+                <Text style={styles.academyName}>
+                  {academyName.toUpperCase()}
+                </Text>
+              )}
 
               {academyTagline && (
                 <Text style={styles.tagline}>
@@ -565,12 +600,14 @@ export function PlayerEvaluationPDF({
                   Phone: {academyPhone}
                 </Text>
               )}
+
             </View>
           </View>
 
           {/* PLAYER PHOTO AND REPORT TITLE */}
 
           <View style={styles.profileRow}>
+
             <View style={styles.playerPhotoColumn}>
               {playerPhotoUrl && (
                 <Image
@@ -581,186 +618,181 @@ export function PlayerEvaluationPDF({
             </View>
 
             <View style={styles.reportBlock}>
+
               <Text style={styles.reportTitle}>
                 PLAYER EVALUATION &amp; DEVELOPMENT PROFILE
               </Text>
 
-              <Text style={styles.season}>
-                Season: {seasonLabel}
-              </Text>
+              {seasonLabel && (
+                <Text style={styles.season}>
+                  Season: {seasonLabel}
+                </Text>
+              )}
 
-              <Text style={styles.season}>
-                Year: {yearLabel}
-              </Text>
+              {yearLabel && (
+                <Text style={styles.season}>
+                  Year: {yearLabel}
+                </Text>
+              )}
+
             </View>
           </View>
         </View>
 
         {/* PLAYER INFORMATION */}
 
-        <View style={styles.playerInfo}>
-
-          {/* ROW 1 */}
+        <View style={styles.playerInfo} wrap={false}>
 
           <View style={styles.infoRow}>
             <Text style={styles.infoCellLabel}>Player Name</Text>
-
             <Text style={styles.infoCellValue}>
               {player.first_name} {player.last_name}
             </Text>
-
             <Text style={styles.infoCellLabel}>Age</Text>
-
             <Text style={styles.infoCellValueLast}>
               {age ?? "-"}
             </Text>
           </View>
 
-          {/* ROW 2 */}
-
           <View style={styles.infoRow}>
             <Text style={styles.infoCellLabel}>Jersey No.</Text>
-
             <Text style={styles.infoCellValue}>
               {player.jersey_number ?? "-"}
             </Text>
-
             <Text style={styles.infoCellLabel}>Position</Text>
-
             <Text style={styles.infoCellValueLast}>
               {player.position ?? "-"}
             </Text>
           </View>
 
-          {/* ROW 3 */}
-
           <View style={styles.infoRow}>
             <Text style={styles.infoCellLabel}>Category/Team</Text>
-
             <Text style={styles.infoCellValue}>
               {player.team_category ?? "—"}
             </Text>
-
             <Text style={styles.infoCellLabel}>Strong foot</Text>
-
             <Text style={styles.infoCellValueLast}>
               {player.preferred_foot ?? "-"}
             </Text>
           </View>
 
-          {/* ROW 4 */}
-
           <View style={styles.infoRowLast}>
             <Text style={styles.infoCellLabel}>DOB</Text>
-
             <Text style={styles.infoCellValue}>
               {player.date_of_birth
                 ? new Date(player.date_of_birth).toLocaleDateString("en-GB")
                 : "-"}
             </Text>
-
             <Text style={styles.infoCellLabel}>Coach</Text>
-
             <Text style={styles.infoCellValueLast}>
               {coachName}
             </Text>
           </View>
+
         </View>
 
-        {/* TECHNICAL */}
+        {/* SAVED EVALUATION SECTIONS */}
 
-        <SkillSection
-          title="Technical Ability"
-          skills={evaluation?.technical_skills}
-        />
+        {hasEvaluation ? (
+          <>
+            <SkillSection
+              title="Technical Ability"
+              skills={evaluation.technical_skills}
+            />
 
-        {/* TACTICAL */}
+            <SkillSection
+              title="Tactical Awareness"
+              skills={evaluation.tactical_skills}
+            />
 
-        <SkillSection
-          title="Tactical Awareness"
-          skills={evaluation?.tactical_skills}
-        />
+            <SkillSection
+              title="Physical Attributes"
+              skills={evaluation.physical_skills}
+            />
 
-        {/* PHYSICAL */}
+            <SkillSection
+              title="Personality Traits"
+              skills={evaluation.personality_skills}
+            />
 
-        <SkillSection
-          title="Physical Attributes"
-          skills={evaluation?.physical_skills}
-          breakBefore
-        />
+            {/* COACH COMMENT */}
 
-        {/* PERSONALITY */}
+            <View style={styles.commentSection} wrap={false}>
+              <Text style={styles.commentTitle}>
+                Coach's Overall Comment
+              </Text>
 
-        <SkillSection
-          title="Personality Traits"
-          skills={evaluation?.personality_skills}
-        />
-
-        {/* COACH COMMENT */}
-
-        <View style={styles.section} wrap={false}>
-          <Text style={styles.commentTitle}>
-            Coach's Overall Comment
-          </Text>
-
-          <View style={styles.commentBox}>
-            <Text>
-              {evaluation?.coach_notes ||
-                evaluation?.coach_verdict ||
-                "No comment recorded."}
-            </Text>
-          </View>
-        </View>
-
-        {/* OVERALL RATING + COACH */}
-
-        <View style={styles.bottomTable} wrap={false}>
-          <View style={styles.overallColumn}>
-            <Text style={styles.bottomHeader}>
-              Overall Rating
-            </Text>
-
-            {[
-              "Needs Improvement",
-              "Developing",
-              "Good",
-              "Excellent",
-            ].map((rating) => (
-              <View key={rating} style={styles.overallItem}>
-                <View style={styles.overallBox}>
-                  {overallRating === rating && (
-                    <Svg width={7} height={7} viewBox="0 0 10 10">
-                      <Path
-                        d="M1 5.2 L3.8 8 L9 1.5"
-                        stroke="#18a9d8"
-                        strokeWidth={1.5}
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </Svg>
-                  )}
-                </View>
-
-                <Text>{rating}</Text>
+              <View style={styles.commentBox}>
+                <Text>
+                  {evaluation.coach_notes ||
+                    evaluation.coach_verdict ||
+                    "No comment recorded."}
+                </Text>
               </View>
-            ))}
-          </View>
+            </View>
 
-          <View style={styles.coachColumn}>
-            <Text style={styles.bottomHeader}>
-              Coach's Name
-            </Text>
+            {/* OVERALL RATING AND COACH */}
 
-            <Text style={styles.coachName}>
-              {coachName}
+            <View style={styles.bottomTable} wrap={false}>
+
+              <View style={styles.overallColumn}>
+                <Text style={styles.bottomHeader}>
+                  Overall Rating
+                </Text>
+
+                {[
+                  "Needs Improvement",
+                  "Developing",
+                  "Good",
+                  "Excellent",
+                ].map((rating) => (
+                  <View key={rating} style={styles.overallItem}>
+                    <View style={styles.overallBox}>
+                      {overallRating === rating && (
+                        <Svg width={7} height={7} viewBox="0 0 10 10">
+                          <Path
+                            d="M1 5.2 L3.8 8 L9 1.5"
+                            stroke={LIGHT_BLUE}
+                            strokeWidth={1.5}
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </Svg>
+                      )}
+                    </View>
+
+                    <Text>{rating}</Text>
+                  </View>
+                ))}
+              </View>
+
+              <View style={styles.coachColumn}>
+                <Text style={styles.bottomHeader}>
+                  Coach's Name
+                </Text>
+
+                <Text style={styles.coachName}>
+                  {coachName}
+                </Text>
+              </View>
+
+            </View>
+          </>
+        ) : (
+          <View style={styles.commentBox} wrap={false}>
+            <Text>
+              No saved evaluation is available for this player.
             </Text>
           </View>
-        </View>
+        )}
 
         {/* FOOTER */}
 
-        <Text style={styles.footer}>
+        <Text
+          style={styles.footer}
+          fixed
+        >
           Powered by Touchline
         </Text>
 
