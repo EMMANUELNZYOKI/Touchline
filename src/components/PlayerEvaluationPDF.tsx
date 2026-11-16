@@ -612,6 +612,7 @@ export function PlayerEvaluationPDF({
         {hasEvaluation && evaluation ? (
           <>
             <SkillSection title="Technical Ability" skills={evaluation.technical_skills} />
+            <SkillSection title="Tactical Awareness" skills={evaluation.tactical_skills} />
           </>
         ) : (
           <View style={styles.commentBox} wrap={false}>
@@ -624,7 +625,6 @@ export function PlayerEvaluationPDF({
         {/* SECOND-PAGE EVALUATION SECTIONS */}
         {hasEvaluation && evaluation ? (
           <>
-            <SkillSection title="Tactical Awareness" skills={evaluation.tactical_skills} />
             <SkillSection title="Physical Attributes" skills={evaluation.physical_skills} />
             <SkillSection title="Personality Traits" skills={evaluation.personality_skills} />
 
