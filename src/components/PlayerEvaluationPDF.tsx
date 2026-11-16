@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   ========================= */
 
   header: {
-    marginBottom: 7,
+    marginBottom: 0.5,
   },
 
   /*
@@ -37,12 +37,12 @@ const styles = StyleSheet.create({
     width: 125,
     height: 135,
     objectFit: "contain",
-    marginBottom: 4,
+    marginBottom: 0.5,
   },
 
   brandingBlock: {
-    minHeight: 270,
-    paddingTop: 5,
+    height: 270,
+    paddingTop: 0.5,
     alignItems: "center",
     justifyContent: "flex-start",
     borderBottomWidth: 1,
@@ -50,12 +50,12 @@ const styles = StyleSheet.create({
   },
 
   profileRow: {
-    height: 112,
+    height: 120,
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
-    paddingBottom: 5,
+    paddingBottom: 0.5,
   },
 
   playerPhotoColumn: {
@@ -89,20 +89,20 @@ const styles = StyleSheet.create({
     color: "#555555",
     fontSize: 9.5,
     fontStyle: "italic",
-    marginTop: 2,
+    marginTop: 0.5,
     lineHeight: 11,
   },
 
   contact: {
     fontSize: 9.5,
-    marginTop: 1,
+    marginTop: 0.5,
     lineHeight: 11,
   },
 
   academySlug: {
     color: "#555555",
     fontSize: 8.5,
-    marginTop: 1,
+    marginTop: 0.5,
     lineHeight: 9,
   },
 
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
     lineHeight: 12,
-    marginTop: 4,
+    marginTop: 0.5,
     textAlign: "center",
   },
 
@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
     paddingTop: 2,
     paddingBottom: 2,
+    fontWeight: "bold",
     borderRightWidth: 1,
     borderRightColor: BORDER,
   },
@@ -180,6 +181,7 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
     paddingTop: 2,
     paddingBottom: 2,
+    fontWeight: "bold",
   },
 
   /* =========================
@@ -517,7 +519,7 @@ export function PlayerEvaluationPDF({
       <Page size="A4" orientation="portrait" style={styles.page}>
         {/* HEADER */}
         <View style={styles.header}>
-          <View style={styles.brandingBlock}>
+          <View style={styles.brandingBlock} wrap={false}>
             {logoUrl && <Image src={logoUrl} style={styles.logo} />}
             <View style={styles.academyHeader}>
               <Text style={styles.academyName}>{academyName.toUpperCase()}</Text>
@@ -528,7 +530,7 @@ export function PlayerEvaluationPDF({
             </View>
           </View>
 
-          <View style={styles.profileRow}>
+          <View style={styles.profileRow} wrap={false}>
             <View style={styles.playerPhotoColumn}>
               {playerPhotoUrl && <Image src={playerPhotoUrl} style={styles.playerPhoto} />}
             </View>
@@ -541,6 +543,9 @@ export function PlayerEvaluationPDF({
               </Text>
               <Text style={styles.season}>
                 Season: {evaluation?.season || player.season || season || "—"}
+              </Text>
+              <Text style={styles.season}>
+                Year: {evaluation?.season_year || "—"}
               </Text>
             </View>
           </View>
