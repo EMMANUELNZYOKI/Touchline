@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
 
   header: {
     position: "relative",
-    height: 150,
+    height: 205,
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
     marginBottom: 7,
@@ -81,6 +81,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  academyDivider: {
+    position: "absolute",
+    top: 125,
+    left: 0,
+    right: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: "#8a969d",
+  },
+
   academyName: {
     color: BLUE,
     fontSize: 12,
@@ -111,7 +120,7 @@ const styles = StyleSheet.create({
     left: 90,
     right: 0,
     bottom: 5,
-    height: 78,
+    height: 70,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -121,6 +130,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "bold",
     textAlign: "center",
+    lineHeight: 13,
     maxWidth: 360,
   },
 
@@ -128,7 +138,8 @@ const styles = StyleSheet.create({
     color: BLUE,
     fontSize: 9,
     fontWeight: "bold",
-    marginTop: 3,
+    lineHeight: 11,
+    marginTop: 1,
   },
 
   /* =========================
@@ -603,6 +614,8 @@ export function PlayerEvaluationPDF({
               </Text>
             )}
           </View>
+
+          <View style={styles.academyDivider} />
 
           <View style={styles.reportBlock}>
             <Text style={styles.reportTitle}>
