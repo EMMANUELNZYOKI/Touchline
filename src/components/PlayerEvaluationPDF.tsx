@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   ========================= */
 
   header: {
-    height: 166,
+    height: 184,
     marginBottom: 7,
   },
 
@@ -35,20 +35,20 @@ const styles = StyleSheet.create({
    * academy text and centered at the top.
    */
   logo: {
-    width: 54,
-    height: 54,
+    width: 70,
+    height: 70,
     objectFit: "contain",
   },
 
   brandingBlock: {
-    height: 76,
+    height: 101,
     alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: BLUE,
   },
 
   profileRow: {
-    height: 84,
+    height: 83,
     flexDirection: "row",
     borderBottomWidth: 1.5,
     borderBottomColor: BLUE,
