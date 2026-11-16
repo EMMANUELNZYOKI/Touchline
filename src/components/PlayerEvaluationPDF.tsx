@@ -66,59 +66,69 @@ const styles = StyleSheet.create({
    */
   academyHeader: {
     position: "absolute",
-    top: 55,
+    top: 62,
     left: 0,
-    right: 0,
+    width: "50%",
+    paddingLeft: 84,
+    paddingRight: 8,
     alignItems: "center",
   },
 
   academyName: {
     color: BLUE,
-    fontSize: 13,
+    fontSize: 11.5,
     fontWeight: "bold",
     letterSpacing: 0.3,
+    textAlign: "center",
+    lineHeight: 13,
   },
 
   tagline: {
     color: "#555555",
-    fontSize: 9,
+    fontSize: 7.5,
     fontStyle: "italic",
-    marginTop: 2,
+    marginTop: 1,
+    lineHeight: 8,
   },
 
   contact: {
-    fontSize: 7.5,
-    marginTop: 3,
+    fontSize: 7,
+    marginTop: 2,
+    lineHeight: 8,
   },
 
   academySlug: {
     color: "#555555",
-    fontSize: 7.5,
-    marginTop: 2,
+    fontSize: 7,
+    marginTop: 1,
+    lineHeight: 8,
   },
 
   reportBlock: {
     position: "absolute",
-    left: 94,
+    top: 68,
+    left: "50%",
     right: 0,
-    bottom: 8,
+    paddingLeft: 8,
+    paddingRight: 4,
     alignItems: "center",
   },
 
   reportTitle: {
     color: BLUE,
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "bold",
     textAlign: "center",
-    marginTop: 10,
-    maxWidth: 360,
+    lineHeight: 11.5,
+    maxWidth: 230,
   },
 
   season: {
     color: BLUE,
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: "bold",
-    marginTop: 3,
+    lineHeight: 9,
+    marginTop: 2,
   },
 
   /* =========================
