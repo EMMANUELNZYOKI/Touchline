@@ -96,7 +96,8 @@ export function useAuth(options?: UseAuthOptions) {
       if (Platform.OS === "web") {
         // Web: fetch user from API directly (user will login manually if needed)
         console.log("[useAuth] Web: fetching user from API...");
-        fetchUser();
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- fetchUser synchronizes with the auth API.
+        void fetchUser();
       } else {
         // Native: check for cached user info first for faster initial load
         Auth.getUserInfo().then((cachedUser) => {

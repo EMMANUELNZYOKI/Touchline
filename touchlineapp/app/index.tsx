@@ -121,9 +121,13 @@ export default function EntryScreen() {
       setMessage("Enter your account email first, then tap Forgot password again.");
       return;
     }
+    const redirectTo =
+      Platform.OS === "web"
+        ? `${onboardingUrl.replace(/\/onboard$/, "")}/reset-password`
+        : Linking.createURL("reset-password");
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(
       email.trim().toLowerCase(),
-      { redirectTo: "https://touchlineelite.vercel.app/reset-password" },
+      { redirectTo },
     );
     setMessage(
       resetError ? resetError.message : "Check your email for a secure password reset link.",

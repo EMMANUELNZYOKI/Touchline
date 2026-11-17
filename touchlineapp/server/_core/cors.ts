@@ -7,7 +7,10 @@ LOOPBACK_IPS.addAddress("::1", "ipv6");
 LOOPBACK_IPS.addSubnet("::ffff:127.0.0.0", 104, "ipv6");
 
 function configuredOrigin(name: "EXPO_PACKAGER_PROXY_URL" | "EXPO_WEB_PREVIEW_URL"): string | null {
-  const value = process.env[name];
+  const value =
+    name === "EXPO_PACKAGER_PROXY_URL"
+      ? process.env.EXPO_PACKAGER_PROXY_URL
+      : process.env.EXPO_WEB_PREVIEW_URL;
   if (!value) return null;
   try {
     const url = new URL(value);

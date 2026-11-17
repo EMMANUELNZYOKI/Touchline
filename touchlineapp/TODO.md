@@ -10,7 +10,7 @@
 - [x] The entry flow presents roles in this order: Super Admin, Academy Owner, Academy Manager, and Coach.
 - [x] Tapping a role opens its login form in a modal rather than placing every login form below the role sections.
 - [x] A new academy owner can tap “Create your academy workspace” and continue through the existing Touchline onboarding flow, using the same credentials for mobile and web without creating duplicate accounts.
-- [ ] Users without an active membership, users with the wrong selected role, suspended workspaces, and expired subscriptions receive clear mobile-safe messages.
+- [x] Users without an active membership, users with the wrong selected role, suspended workspaces, and expired subscriptions receive clear mobile-safe messages.
 
 ## Touchline mobile identity and dashboard
 
@@ -32,7 +32,7 @@
 - [x] Mobile provides role-protected Managers, Coaches, Reports, Activity History, and Settings workspaces reachable from More, using the same Touchline account and API records as the web app.
 - [ ] Players, coaches, managers, evaluations, reports, academy logo, subscription state, and activity history use the same records as the web application.
 - [x] Mobile reads use Supabase RLS and privileged mutations continue through secure Touchline server APIs; no service-role or Paystack secret is bundled into the app.
-- [ ] The mobile app supports password recovery and authentication deep links without breaking the existing web recovery flow.
+- [x] The mobile app supports password recovery and authentication deep links without breaking the existing web recovery flow.
 - [x] The app remains touch-first and responsive in portrait mode on Android, iOS, and Expo Web Preview.
 
 ## Billing and release readiness
