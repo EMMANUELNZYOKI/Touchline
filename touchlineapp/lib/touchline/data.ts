@@ -188,6 +188,20 @@ export async function fetchMobileEvaluations(academyId: string): Promise<MobileE
   })) as MobileEvaluation[];
 }
 
+export async function fetchMobilePlayerDetail(academyId: string, playerId: string) {
+  const [players, evaluations] = await Promise.all([
+    fetchMobilePlayers(academyId),
+    fetchMobileEvaluations(academyId),
+  ]);
+  const player = players.find((item) => item.id === playerId);
+  if (!player) throw new Error("This player could not be found in your academy.");
+  return {
+    player,
+    evaluations: evaluations.filter((item) => item.player_id === playerId),
+    latestEvaluation: evaluations.find((item) => item.player_id === playerId),
+  };
+}
+
 export async function createMobilePlayer(input: { academyId: string; player: MobilePlayerInput }) {
   const payload = playerPayload(input.player);
   if (!payload.first_name || !payload.last_name) {

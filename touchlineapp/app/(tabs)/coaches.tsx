@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -127,7 +128,12 @@ export default function CoachesScreen() {
             key={coach.id}
             className="mb-3 rounded-2xl border border-[#1e3a52] bg-[#10263a] p-4"
           >
-            <View className="flex-row items-center">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`View ${coach.full_name}`}
+              onPress={() => router.push({ pathname: "/coach/[id]", params: { id: coach.id } })}
+              className="flex-row items-center"
+            >
               <View className="mr-3 h-11 w-11 items-center justify-center rounded-full bg-[#173f4a]">
                 <Text className="font-black text-[#78d4aa]">{coach.full_name.slice(0, 1)}</Text>
               </View>
@@ -141,7 +147,7 @@ export default function CoachesScreen() {
               >
                 {coach.status}
               </Text>
-            </View>
+            </Pressable>
             <View className="mt-3 flex-row border-t border-[#1e3a52] pt-3">
               <Text className="flex-1 text-xs text-[#aab7c7]">
                 Players assigned: <Text className="font-bold text-white">{coach.playerCount}</Text>

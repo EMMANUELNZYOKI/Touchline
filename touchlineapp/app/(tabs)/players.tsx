@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -159,6 +160,7 @@ function ChoiceField({
 export default function PlayersScreen() {
   const { context } = useTouchlineAuth();
   const queryClient = useQueryClient();
+  const { editId } = useLocalSearchParams<{ editId?: string }>();
   const [formOpen, setFormOpen] = useState(false);
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
   const [player, setPlayer] = useState<MobilePlayerInput>(emptyPlayer);
@@ -207,12 +209,11 @@ export default function PlayersScreen() {
       setFormMessage(error instanceof Error ? error.message : "Player could not be updated."),
   });
 
-  if (!context) return null;
-  const isOwner = context.role === "academy_admin";
+  const isOwner = context?.role === "academy_admin";
   const isSaving = createMutation.isPending || updateMutation.isPending;
   const subscriptionWritable =
-    context.subscription?.status === "active" || context.subscription?.status === "trialing";
-  const canWrite = context.academy?.status === "active" && subscriptionWritable;
+    context?.subscription?.status === "active" || context?.subscription?.status === "trialing";
+  const canWrite = context?.academy?.status === "active" && subscriptionWritable;
 
   const openCreate = () => {
     setEditingPlayerId(null);
@@ -227,6 +228,13 @@ export default function PlayersScreen() {
     setFormMessage(null);
     setFormOpen(true);
   };
+  useEffect(() => {
+    if (!editId || !playersQuery.data) return;
+    const selected = playersQuery.data.find((item) => item.id === editId);
+    if (!selected || !isOwner) return;
+    const timer = setTimeout(() => openEdit(selected), 0);
+    return () => clearTimeout(timer);
+  }, [editId, playersQuery.data, isOwner]);
   const setText = (key: keyof MobilePlayerInput, value: string) => {
     const numericKeys: (keyof MobilePlayerInput)[] = ["jersey_number", "height", "weight"];
     setPlayer((previous) => ({
@@ -243,6 +251,8 @@ export default function PlayersScreen() {
     if (editingPlayerId) updateMutation.mutate();
     else createMutation.mutate();
   };
+
+  if (!context) return null;
 
   return (
     <ScreenContainer containerClassName="bg-[#071521]" safeAreaClassName="bg-[#071521]">
@@ -360,9 +370,9 @@ export default function PlayersScreen() {
         {playersQuery.data?.map((item) => (
           <Pressable
             key={item.id}
-            accessibilityRole={isOwner ? "button" : undefined}
-            accessibilityLabel={isOwner ? `Edit ${item.first_name} ${item.last_name}` : undefined}
-            onPress={isOwner ? () => openEdit(item) : undefined}
+            accessibilityRole="button"
+            accessibilityLabel={`View ${item.first_name} ${item.last_name}`}
+            onPress={() => router.push({ pathname: "/player/[id]", params: { id: item.id } })}
             style={{
               marginBottom: 12,
               borderRadius: 17,
@@ -401,7 +411,7 @@ export default function PlayersScreen() {
                   size={18}
                   color={item.hasEvaluation ? COLORS.green : "#71839a"}
                 />
-                {isOwner && <Text className="mt-1 text-[10px] text-[#78d4aa]">Tap to edit</Text>}
+                <Text className="mt-1 text-[10px] text-[#78d4aa]">Tap to view</Text>
               </View>
             </View>
             <View className="mt-3 flex-row items-center border-t border-[#1e3a52] pt-3">
