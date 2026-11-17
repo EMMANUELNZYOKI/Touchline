@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Alert, Image, Modal, Pressable, Text, View } from "react-native";
+import { Image, Modal, Pressable, Text, View } from "react-native";
 import { useState } from "react";
 
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
@@ -22,25 +22,18 @@ export function TouchlineMark({ size = 54 }: { size?: number }) {
 
 function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const { context, signOut } = useTouchlineAuth();
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
   if (!context) return null;
-  const signOutNow = () => {
-    const perform = () => {
-      onClose();
-      void signOut().catch(() => undefined);
-    };
-    if (typeof window !== "undefined" && window.confirm) {
-      if (window.confirm("Sign out of this Touchline account?")) perform();
-      return;
-    }
-    Alert.alert("Sign out", "Sign out of this Touchline account?", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Sign out", style: "destructive", onPress: perform },
-    ]);
+  const signOutNow = () => setConfirmSignOut(true);
+  const performSignOut = () => {
+    setConfirmSignOut(false);
+    onClose();
+    void signOut().catch(() => undefined);
   };
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View className="flex-1 flex-row justify-end bg-black/60">
-        <Pressable className="flex-1" onPress={onClose} />
+        <Pressable className="flex-1" onPress={onClose} style={{ flex: 1 }} />
         <View className="h-full w-[86%] max-w-[380px] border-l border-[#2b5268] bg-[#071521] px-5 pb-8 pt-14">
           <View className="mb-8 flex-row items-center justify-between">
             <Text className="text-xs font-black uppercase tracking-[3px] text-[#78d4aa]">
@@ -49,6 +42,8 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
             <Pressable
               onPress={onClose}
               className="h-10 w-10 items-center justify-center rounded-full bg-[#10263a]"
+              style={{ width: 40, height: 40, alignItems: "center", justifyContent: "center" }}
+              hitSlop={8}
             >
               <Ionicons name="close" size={21} color="#d5f5e5" />
             </Pressable>
@@ -79,6 +74,7 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
           <Pressable
             onPress={signOutNow}
             className="mt-6 flex-row items-center justify-center rounded-2xl border border-[#683344] bg-[#3b2430] px-4 py-4 active:opacity-80"
+            style={{ minHeight: 54, alignItems: "center", justifyContent: "center" }}
           >
             <Ionicons name="log-out-outline" size={20} color="#ffd7de" />
             <Text className="ml-2 font-black text-[#ffd7de]">Log out</Text>
@@ -87,6 +83,40 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
             To sign in as another Touchline user, log out first, then choose the correct role.
           </Text>
         </View>
+        {confirmSignOut && (
+          <View
+            className="absolute inset-0 items-center justify-center bg-black/70 px-6"
+            style={{
+              position: "absolute",
+              inset: 0,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <View className="w-full max-w-[340px] rounded-3xl border border-[#2b5268] bg-[#10263a] p-5">
+              <Text className="text-xl font-black text-white">Sign out?</Text>
+              <Text className="mt-2 text-sm leading-5 text-[#aab7c7]">
+                You can sign in again with any Touchline role from the welcome screen.
+              </Text>
+              <View className="mt-5 flex-row gap-3">
+                <Pressable
+                  onPress={() => setConfirmSignOut(false)}
+                  className="flex-1 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"
+                  style={{ flex: 1, minHeight: 48, alignItems: "center", justifyContent: "center" }}
+                >
+                  <Text className="font-bold text-[#d5f5e5]">Cancel</Text>
+                </Pressable>
+                <Pressable
+                  onPress={performSignOut}
+                  className="flex-1 rounded-xl bg-[#c65b70] px-4 py-3"
+                  style={{ flex: 1, minHeight: 48, alignItems: "center", justifyContent: "center" }}
+                >
+                  <Text className="font-black text-white">Sign out</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        )}
       </View>
     </Modal>
   );

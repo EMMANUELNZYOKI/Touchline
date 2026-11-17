@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { useState } from "react";
+import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 
 import { AcademyIdentity } from "@/components/touchline-ui";
 import { ScreenContainer } from "@/components/screen-container";
@@ -7,26 +8,20 @@ import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
 
 export default function ProfileScreen() {
   const { context, signOut } = useTouchlineAuth();
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
+
   if (!context) return null;
+
   const subscriptionLabel =
     context.subscription?.status === "trialing"
       ? "14-day trial"
       : (context.subscription?.status?.replace("_", " ") ?? "Not available");
-  const signOutNow = () => {
-    if (typeof window !== "undefined" && window.confirm) {
-      if (window.confirm("Sign out of this Touchline account?"))
-        void signOut().catch(() => undefined);
-      return;
-    }
-    Alert.alert("Sign out", "Sign out of this Touchline account?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Sign out",
-        style: "destructive",
-        onPress: () => void signOut().catch(() => undefined),
-      },
-    ]);
+
+  const performSignOut = () => {
+    setConfirmSignOut(false);
+    void signOut().catch(() => undefined);
   };
+
   return (
     <ScreenContainer containerClassName="bg-[#071521]" safeAreaClassName="bg-[#071521]">
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 32 }}>
@@ -63,8 +58,9 @@ export default function ProfileScreen() {
           )}
         </View>
         <Pressable
-          onPress={signOutNow}
+          onPress={() => setConfirmSignOut(true)}
           className="mt-5 flex-row items-center justify-center rounded-2xl border border-[#683344] bg-[#3b2430] px-4 py-4 active:opacity-80"
+          style={{ minHeight: 56, alignItems: "center", justifyContent: "center" }}
         >
           <Ionicons name="log-out-outline" size={19} color="#ffd7de" />
           <Text className="ml-2 font-bold text-[#ffd7de]">Sign out</Text>
@@ -73,6 +69,37 @@ export default function ProfileScreen() {
           Powered by Touchline • Shared securely with your web workspace
         </Text>
       </ScrollView>
+      <Modal
+        visible={confirmSignOut}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setConfirmSignOut(false)}
+      >
+        <View className="flex-1 items-center justify-center bg-black/70 px-6">
+          <View className="w-full max-w-[340px] rounded-3xl border border-[#2b5268] bg-[#10263a] p-5">
+            <Text className="text-xl font-black text-white">Sign out?</Text>
+            <Text className="mt-2 text-sm leading-5 text-[#aab7c7]">
+              You can sign in again with any Touchline role from the welcome screen.
+            </Text>
+            <View className="mt-5 flex-row gap-3">
+              <Pressable
+                onPress={() => setConfirmSignOut(false)}
+                className="flex-1 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"
+                style={{ flex: 1, minHeight: 48, alignItems: "center", justifyContent: "center" }}
+              >
+                <Text className="font-bold text-[#d5f5e5]">Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={performSignOut}
+                className="flex-1 rounded-xl bg-[#c65b70] px-4 py-3"
+                style={{ flex: 1, minHeight: 48, alignItems: "center", justifyContent: "center" }}
+              >
+                <Text className="font-black text-white">Sign out</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScreenContainer>
   );
 }

@@ -2,16 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useState } from "react";
-import {
-  Alert,
-  Modal,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Modal, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
 
 import { ActionCard, AcademyIdentity, MetricCard } from "@/components/touchline-ui";
 import { ScreenContainer } from "@/components/screen-container";
@@ -60,6 +51,14 @@ function ControlButton({
       disabled={disabled}
       onPress={onPress}
       className={`mr-2 mt-2 flex-row items-center rounded-xl border px-3 py-2 ${danger ? "border-[#7d3b49] bg-[#4b2530]" : "border-[#2b5268] bg-[#173f4a]"} ${disabled ? "opacity-50" : "active:opacity-70"}`}
+      style={{
+        minHeight: 44,
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        opacity: disabled ? 0.5 : 1,
+      }}
     >
       <Ionicons name={icon} size={14} color={danger ? "#ffd7de" : "#78d4aa"} />
       <Text className={`ml-1 text-xs font-bold ${danger ? "text-[#ffd7de]" : "text-[#d5f5e5]"}`}>
@@ -148,6 +147,14 @@ function PlatformAcademyCard({
         <Pressable
           onPress={onManage}
           className="flex-1 flex-row items-center py-2 active:opacity-70"
+          style={{
+            flex: 1,
+            minHeight: 44,
+            flexDirection: "row",
+            alignItems: "center",
+            paddingVertical: 8,
+          }}
+          hitSlop={6}
         >
           <Ionicons name={expanded ? "chevron-up" : "settings-outline"} size={16} color="#78d4aa" />
           <Text className="ml-2 text-sm font-bold text-[#d5f5e5]">
@@ -236,6 +243,8 @@ function PlatformModal({
             <Pressable
               onPress={onClose}
               className="h-9 w-9 items-center justify-center rounded-full bg-[#173f4a]"
+              style={{ width: 36, height: 36, alignItems: "center", justifyContent: "center" }}
+              hitSlop={8}
             >
               <Ionicons name="close" size={20} color="#d5f5e5" />
             </Pressable>
@@ -246,6 +255,14 @@ function PlatformModal({
     </Modal>
   );
 }
+
+type ConfirmAction = {
+  title: string;
+  message: string;
+  confirmLabel: string;
+  danger?: boolean;
+  onConfirm: () => void;
+};
 
 function SuperAdminDashboard({
   userName,
@@ -258,6 +275,7 @@ function SuperAdminDashboard({
   const [managedAcademyId, setManagedAcademyId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [packageAcademy, setPackageAcademy] = useState<PlatformAcademy | null>(null);
   const [packageKey, setPackageKey] = useState<"starter" | "standard" | "pro">("starter");
   const [packageReason, setPackageReason] = useState("");
@@ -268,6 +286,7 @@ function SuperAdminDashboard({
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPhone, setAdminPhone] = useState("");
   const [creating, setCreating] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
   const query = useQuery({
     queryKey: ["platform-academies"],
     queryFn: fetchPlatformAcademies,
@@ -301,6 +320,7 @@ function SuperAdminDashboard({
   const runAction = async (academyId: string, action: () => Promise<unknown>) => {
     setBusyId(academyId);
     setActionError(null);
+    setActionMessage(null);
     try {
       await action();
       await reload();
@@ -316,41 +336,33 @@ function SuperAdminDashboard({
   };
   const toggleAcademy = (academy: PlatformAcademy) => {
     const nextStatus = academy.academy_status === "active" ? "suspended" : "active";
-    Alert.alert(
-      `${nextStatus === "suspended" ? "Suspend" : "Reactivate"} academy?`,
-      `${academy.academy_name} will be ${nextStatus === "suspended" ? "unavailable to academy users" : "available again"}.`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: nextStatus === "suspended" ? "Suspend" : "Reactivate",
-          onPress: () => {
-            void runAction(academy.academy_id, () =>
-              updatePlatformAcademy({
-                academyId: academy.academy_id,
-                academyStatus: nextStatus,
-                subscriptionStatus: academy.subscription_status,
-              }),
-            );
-          },
-        },
-      ],
-    );
+    setConfirmAction({
+      title: `${nextStatus === "suspended" ? "Suspend" : "Reactivate"} academy?`,
+      message: `${academy.academy_name} will be ${nextStatus === "suspended" ? "unavailable to academy users" : "available again"}.`,
+      confirmLabel: nextStatus === "suspended" ? "Suspend" : "Reactivate",
+      onConfirm: () => {
+        setConfirmAction(null);
+        void runAction(academy.academy_id, () =>
+          updatePlatformAcademy({
+            academyId: academy.academy_id,
+            academyStatus: nextStatus,
+            subscriptionStatus: academy.subscription_status,
+          }),
+        );
+      },
+    });
   };
   const deleteAcademy = (academy: PlatformAcademy) => {
-    Alert.alert(
-      "Delete academy permanently?",
-      `This removes ${academy.academy_name}, its players, evaluations, subscriptions, and academy user accounts.`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => {
-            void runAction(academy.academy_id, () => deletePlatformAcademy(academy.academy_id));
-          },
-        },
-      ],
-    );
+    setConfirmAction({
+      title: "Delete academy permanently?",
+      message: `This removes ${academy.academy_name}, its players, evaluations, subscriptions, and academy user accounts.`,
+      confirmLabel: "Delete",
+      danger: true,
+      onConfirm: () => {
+        setConfirmAction(null);
+        void runAction(academy.academy_id, () => deletePlatformAcademy(academy.academy_id));
+      },
+    });
   };
   const openPackage = (academy: PlatformAcademy) => {
     setPackageAcademy(academy);
@@ -375,10 +387,7 @@ function SuperAdminDashboard({
     );
     if (completed) {
       setPackageAcademy(null);
-      Alert.alert(
-        "Package updated",
-        `${packageAcademy.academy_name} is now on the ${packageKey} package.`,
-      );
+      setActionMessage(`${packageAcademy.academy_name} is now on the ${packageKey} package.`);
     }
   };
   const submitCreate = async () => {
@@ -388,6 +397,7 @@ function SuperAdminDashboard({
     }
     setCreating(true);
     setActionError(null);
+    setActionMessage(null);
     try {
       const result = await createPlatformAcademy({
         name: academyName.trim(),
@@ -403,9 +413,8 @@ function SuperAdminDashboard({
       setAdminEmail("");
       setAdminPhone("");
       await reload();
-      Alert.alert(
-        "Academy created",
-        `Send these credentials to ${result.administrator.fullName}:\n\nEmail: ${result.administrator.email}\nTemporary password: ${result.administrator.temporaryPassword}`,
+      setActionMessage(
+        `Academy created. Credentials for ${result.administrator.fullName}: ${result.administrator.email} / ${result.administrator.temporaryPassword}`,
       );
     } catch (error) {
       setActionError(error instanceof Error ? error.message : "The academy could not be created.");
@@ -454,6 +463,14 @@ function SuperAdminDashboard({
             setCreateOpen(true);
           }}
           className="mb-5 flex-row items-center justify-center rounded-2xl bg-[#78d4aa] px-4 py-4 active:opacity-80"
+          style={{
+            minHeight: 58,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+          }}
         >
           <Ionicons name="add-circle-outline" size={20} color="#071521" />
           <Text className="ml-2 text-sm font-black text-[#071521]">Add academy</Text>
@@ -461,6 +478,11 @@ function SuperAdminDashboard({
         {actionError && (
           <View className="mb-4 rounded-2xl border border-[#7d3b49] bg-[#4b2530] px-4 py-3">
             <Text className="text-sm leading-5 text-[#ffd7de]">{actionError}</Text>
+          </View>
+        )}
+        {actionMessage && (
+          <View className="mb-4 rounded-2xl border border-[#2b6e66] bg-[#102f38] px-4 py-3">
+            <Text className="text-sm leading-5 text-[#d5f5e5]">{actionMessage}</Text>
           </View>
         )}
         {query.isLoading && (
@@ -543,6 +565,39 @@ function SuperAdminDashboard({
           />
         ))}
       </ScrollView>
+      <Modal
+        visible={Boolean(confirmAction)}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setConfirmAction(null)}
+      >
+        <View className="flex-1 items-center justify-center bg-black/70 px-6">
+          <View className="w-full max-w-[360px] rounded-3xl border border-[#2b5268] bg-[#10263a] p-5">
+            <Text className="text-xl font-black text-white">{confirmAction?.title}</Text>
+            <Text className="mt-2 text-sm leading-5 text-[#aab7c7]">{confirmAction?.message}</Text>
+            <View className="mt-5 flex-row gap-3">
+              <Pressable
+                onPress={() => setConfirmAction(null)}
+                className="flex-1 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"
+                style={{ flex: 1, minHeight: 50, alignItems: "center", justifyContent: "center" }}
+              >
+                <Text className="font-bold text-[#d5f5e5]">Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => confirmAction?.onConfirm()}
+                className={`flex-1 rounded-xl px-4 py-3 ${confirmAction?.danger ? "bg-[#c65b70]" : "bg-[#78d4aa]"}`}
+                style={{ flex: 1, minHeight: 50, alignItems: "center", justifyContent: "center" }}
+              >
+                <Text
+                  className={`font-black ${confirmAction?.danger ? "text-white" : "text-[#071521]"}`}
+                >
+                  {confirmAction?.confirmLabel}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
       <PlatformModal
         visible={Boolean(packageAcademy)}
         title={`Change package${packageAcademy ? ` — ${packageAcademy.academy_name}` : ""}`}
@@ -557,6 +612,14 @@ function SuperAdminDashboard({
               key={key}
               onPress={() => setPackageKey(key)}
               className={`flex-1 rounded-xl border px-2 py-3 ${packageKey === key ? "border-[#78d4aa] bg-[#173f4a]" : "border-[#2b5268] bg-[#0b1c2d]"}`}
+              style={{
+                flex: 1,
+                minHeight: 48,
+                alignItems: "center",
+                justifyContent: "center",
+                paddingHorizontal: 8,
+                paddingVertical: 12,
+              }}
             >
               <Text className="text-center text-xs font-bold uppercase text-white">{key}</Text>
             </Pressable>
@@ -578,6 +641,13 @@ function SuperAdminDashboard({
             void submitPackage();
           }}
           className="rounded-xl bg-[#78d4aa] px-4 py-4"
+          style={{
+            minHeight: 54,
+            alignItems: "center",
+            justifyContent: "center",
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+          }}
         >
           <Text className="text-center text-sm font-black text-[#071521]">Save package change</Text>
         </Pressable>
@@ -640,6 +710,14 @@ function SuperAdminDashboard({
             void submitCreate();
           }}
           className="rounded-xl bg-[#78d4aa] px-4 py-4"
+          style={{
+            minHeight: 54,
+            alignItems: "center",
+            justifyContent: "center",
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            opacity: creating ? 0.6 : 1,
+          }}
         >
           <Text className="text-center text-sm font-black text-[#071521]">
             {creating ? "Creating…" : "Create academy"}
