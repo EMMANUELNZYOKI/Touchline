@@ -424,8 +424,11 @@ function SuperAdminDashboard({
   };
   const onRefresh = async () => {
     setRefreshing(true);
-    await Promise.all([refresh(), reload()]);
-    setRefreshing(false);
+    try {
+      await Promise.all([refresh(), reload()]);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   return (
