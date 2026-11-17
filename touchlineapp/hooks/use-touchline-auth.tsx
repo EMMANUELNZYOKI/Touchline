@@ -1,5 +1,13 @@
 import type { Session } from "@supabase/supabase-js";
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   loadTouchlineContext,
@@ -21,7 +29,13 @@ type TouchlineAuthState = {
 };
 
 function messageForRole(role: MobileRole) {
-  return role === "academy_admin" ? "Academy Owner" : role === "academy_manager" ? "Academy Manager" : role === "coach" ? "Coach" : "Super Admin";
+  return role === "academy_admin"
+    ? "Academy Owner"
+    : role === "academy_manager"
+      ? "Academy Manager"
+      : role === "coach"
+        ? "Coach"
+        : "Super Admin";
 }
 
 export function TouchlineAuthProvider({ children }: { children: React.ReactNode }) {
@@ -47,7 +61,8 @@ export function TouchlineAuthProvider({ children }: { children: React.ReactNode 
       setContext((current) => (version === requestVersion.current ? nextContext : current));
     } catch (cause) {
       if (version !== requestVersion.current) return;
-      const message = cause instanceof Error ? cause.message : "Could not load your Touchline account.";
+      const message =
+        cause instanceof Error ? cause.message : "Could not load your Touchline account.";
       setContext(null);
       setError(message);
     } finally {
@@ -74,37 +89,53 @@ export function TouchlineAuthProvider({ children }: { children: React.ReactNode 
     };
   }, [loadSession]);
 
-  const signIn = useCallback(async (email: string, password: string, expectedRole: RoleExpectation) => {
-    setLoading(true);
-    setError(null);
-    const { data, error: signInError } = await supabase.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
-      password,
-    });
-    if (signInError || !data.session) {
-      setLoading(false);
-      throw new Error(signInError?.message ?? "Sign in failed.");
-    }
-
-    try {
-      const nextContext = await loadTouchlineContext(data.session);
-      if (expectedRole !== "any" && nextContext.role !== expectedRole) {
-        await supabase.auth.signOut();
-        throw new Error(`This account is not a ${messageForRole(expectedRole)} account. Use the correct role login.`);
+  const signIn = useCallback(
+    async (email: string, password: string, expectedRole: RoleExpectation) => {
+      setLoading(true);
+      setError(null);
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+      if (signInError || !data.session) {
+        setLoading(false);
+        throw new Error(signInError?.message ?? "Sign in failed.");
       }
-      setContext(nextContext);
-    } catch (cause) {
-      await supabase.auth.signOut();
-      throw cause instanceof Error ? cause : new Error("Could not load your Touchline account.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+
+      try {
+        const nextContext = await loadTouchlineContext(data.session);
+        if (expectedRole !== "any" && nextContext.role !== expectedRole) {
+          await supabase.auth.signOut();
+          throw new Error(
+            `This account is not a ${messageForRole(expectedRole)} account. Use the correct role login.`,
+          );
+        }
+        setContext(nextContext);
+      } catch (cause) {
+        await supabase.auth.signOut();
+        throw cause instanceof Error ? cause : new Error("Could not load your Touchline account.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
-    setContext(null);
-    setError(null);
+    let signOutError: Error | null = null;
+    try {
+      // Clear the device session immediately; a failed network revocation
+      // should never leave the user trapped inside the authenticated tabs.
+      const { error: authError } = await supabase.auth.signOut({ scope: "local" });
+      if (authError) signOutError = authError;
+    } catch (cause) {
+      signOutError = cause instanceof Error ? cause : new Error("Sign out failed.");
+    } finally {
+      setContext(null);
+      setError(null);
+      setLoading(false);
+    }
+    if (signOutError) throw signOutError;
   }, []);
 
   const refresh = useCallback(async () => {
