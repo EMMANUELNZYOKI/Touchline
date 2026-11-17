@@ -66,6 +66,20 @@ function optionalNumber(value: number | null): number | null {
   return value == null || !Number.isFinite(value) ? null : value;
 }
 
+export async function updateMobileProfile(input: {
+  id: string;
+  full_name: string;
+  phone: string | null;
+}) {
+  const fullName = input.full_name.trim();
+  if (fullName.length < 2) throw new Error("Full name must contain at least 2 characters.");
+  const { error } = await supabase
+    .from("profiles")
+    .update({ full_name: fullName, phone: optionalText(input.phone) })
+    .eq("id", input.id);
+  if (error) throw error;
+}
+
 function playerPayload(input: MobilePlayerInput) {
   return {
     first_name: input.first_name.trim(),

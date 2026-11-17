@@ -6,6 +6,7 @@ import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 
 import { AcademyIdentity } from "@/components/touchline-ui";
 import { ScreenContainer } from "@/components/screen-container";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
+import { updateMobileProfile } from "@/lib/touchline/data";
 import { supabase } from "@/lib/touchline/supabase";
 
 const input =
@@ -31,7 +32,7 @@ async function fetchAcademyProfile(academyId: string) {
 }
 
 export default function SettingsScreen() {
-  const { context } = useTouchlineAuth();
+  const { context, refresh } = useTouchlineAuth();
   const owner = context?.role === "academy_admin";
   const profileQuery = useQuery({
     queryKey: ["mobile-academy-profile", context?.academy?.id],
@@ -45,6 +46,9 @@ export default function SettingsScreen() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [profileName, setProfileName] = useState("");
+  const [profilePhone, setProfilePhone] = useState("");
+  const [profileSaving, setProfileSaving] = useState(false);
   const [saving, setSaving] = useState(false);
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [loadedId, setLoadedId] = useState<string | null>(null);
@@ -52,6 +56,14 @@ export default function SettingsScreen() {
     null,
   );
   const academy = profileQuery.data;
+  useEffect(() => {
+    if (!context) return;
+    const timer = setTimeout(() => {
+      setProfileName(context.profile.full_name);
+      setProfilePhone(context.profile.phone ?? "");
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [context]);
   useEffect(() => {
     if (!academy || loadedId === academy.id) return;
     const timer = setTimeout(() => {
@@ -131,6 +143,27 @@ export default function SettingsScreen() {
       setPasswordSaving(false);
     }
   };
+  const saveProfile = async () => {
+    if (!context) return;
+    setProfileSaving(true);
+    setFeedback(null);
+    try {
+      await updateMobileProfile({
+        id: context.profile.id,
+        full_name: profileName,
+        phone: profilePhone,
+      });
+      await refresh();
+      setFeedback({ tone: "success", text: "Your profile details were updated." });
+    } catch (error) {
+      setFeedback({
+        tone: "error",
+        text: error instanceof Error ? error.message : "Could not update your profile.",
+      });
+    } finally {
+      setProfileSaving(false);
+    }
+  };
   return (
     <ScreenContainer containerClassName="bg-[#071521]" safeAreaClassName="bg-[#071521]">
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
@@ -160,6 +193,52 @@ export default function SettingsScreen() {
             {feedback.text}
           </Text>
         )}
+        <View className="mb-5 rounded-3xl border border-[#1e3a52] bg-[#10263a] p-5">
+          <Text className="mb-3 text-base font-black text-white">Your profile</Text>
+          <TextInput
+            value={profileName}
+            onChangeText={setProfileName}
+            placeholder="Full name"
+            placeholderTextColor="#71839a"
+            className={input}
+          />
+          <TextInput
+            value={context.profile.email}
+            editable={false}
+            placeholder="Email"
+            placeholderTextColor="#71839a"
+            className={`${input} opacity-60`}
+          />
+          <TextInput
+            value={profilePhone}
+            onChangeText={setProfilePhone}
+            keyboardType="phone-pad"
+            placeholder="Phone"
+            placeholderTextColor="#71839a"
+            className={input}
+          />
+          <Pressable
+            disabled={profileSaving}
+            onPress={() => void saveProfile()}
+            className="rounded-2xl border border-[#2b5268] bg-[#173f4a] px-4 py-4"
+            style={{
+              minHeight: 54,
+              alignItems: "center",
+              justifyContent: "center",
+              borderWidth: 1,
+              borderColor: "#2b5268",
+              borderRadius: 16,
+              backgroundColor: "#173f4a",
+              paddingHorizontal: 16,
+              paddingVertical: 14,
+              opacity: profileSaving ? 0.6 : 1,
+            }}
+          >
+            <Text className="text-center font-black text-[#d5f5e5]">
+              {profileSaving ? "Saving…" : "Save profile details"}
+            </Text>
+          </Pressable>
+        </View>
         {owner ? (
           <>
             <View className="mb-5 rounded-3xl border border-[#1e3a52] bg-[#10263a] p-5">
