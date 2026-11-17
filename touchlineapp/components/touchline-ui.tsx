@@ -74,7 +74,17 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
           <Pressable
             onPress={signOutNow}
             className="mt-6 flex-row items-center justify-center rounded-2xl border border-[#683344] bg-[#3b2430] px-4 py-4 active:opacity-80"
-            style={{ minHeight: 54, alignItems: "center", justifyContent: "center" }}
+            style={{
+              minHeight: 54,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              borderWidth: 1,
+              borderColor: "#683344",
+              borderRadius: 16,
+              backgroundColor: "#3b2430",
+              paddingHorizontal: 16,
+            }}
           >
             <Ionicons name="log-out-outline" size={20} color="#ffd7de" />
             <Text className="ml-2 font-black text-[#ffd7de]">Log out</Text>
@@ -102,14 +112,32 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
                 <Pressable
                   onPress={() => setConfirmSignOut(false)}
                   className="flex-1 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"
-                  style={{ flex: 1, minHeight: 48, alignItems: "center", justifyContent: "center" }}
+                  style={{
+                    flex: 1,
+                    minHeight: 48,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderWidth: 1,
+                    borderColor: "#2b5268",
+                    borderRadius: 12,
+                    backgroundColor: "#173f4a",
+                    paddingHorizontal: 16,
+                  }}
                 >
                   <Text className="font-bold text-[#d5f5e5]">Cancel</Text>
                 </Pressable>
                 <Pressable
                   onPress={performSignOut}
                   className="flex-1 rounded-xl bg-[#c65b70] px-4 py-3"
-                  style={{ flex: 1, minHeight: 48, alignItems: "center", justifyContent: "center" }}
+                  style={{
+                    flex: 1,
+                    minHeight: 48,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 12,
+                    backgroundColor: "#c65b70",
+                    paddingHorizontal: 16,
+                  }}
                 >
                   <Text className="font-black text-white">Sign out</Text>
                 </Pressable>
@@ -150,6 +178,17 @@ export function AcademyIdentity({
         <Pressable
           onPress={() => setPanelOpen(true)}
           className="h-12 w-12 items-center justify-center rounded-2xl border border-[#2b5268] bg-[#17304a] active:opacity-70"
+          style={{
+            width: 48,
+            height: 48,
+            alignItems: "center",
+            justifyContent: "center",
+            borderWidth: 1,
+            borderColor: "#2b5268",
+            borderRadius: 16,
+            backgroundColor: "#17304a",
+          }}
+          hitSlop={4}
         >
           <Ionicons name="person-outline" size={21} color="#d5f5e5" />
         </Pressable>
@@ -198,6 +237,17 @@ export function ActionCard({
     <Pressable
       onPress={onPress}
       className="mb-3 flex-row items-center rounded-2xl border border-[#1e3a52] bg-[#10263a] p-4 active:opacity-80"
+      style={{
+        minHeight: 84,
+        marginBottom: 12,
+        flexDirection: "row",
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: "#1e3a52",
+        borderRadius: 16,
+        backgroundColor: "#10263a",
+        padding: 16,
+      }}
     >
       <View className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-[#173f4a]">
         <Ionicons name={icon} size={21} color="#78d4aa" />
