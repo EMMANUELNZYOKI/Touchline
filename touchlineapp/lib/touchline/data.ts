@@ -38,6 +38,7 @@ export type MobileEvaluation = {
   player_id: string;
   coach_id: string;
   season: string;
+  season_id: string;
   season_year: number;
   technical_score: number | null;
   tactical_score: number | null;
@@ -57,6 +58,94 @@ export type MobileEvaluation = {
   playerName: string;
   coachName: string;
 };
+
+export type MobileAcademySeason = {
+  id: string;
+  academy_id: string;
+  name: string;
+  starts_on: string;
+  ends_on: string;
+  status: "active" | "completed" | "archived";
+  is_current: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function fetchMobileSeasons(academyId: string): Promise<MobileAcademySeason[]> {
+  const { data, error } = await supabase
+    .from("academy_seasons")
+    .select("*")
+    .eq("academy_id", academyId)
+    .order("starts_on", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as MobileAcademySeason[];
+}
+
+export async function fetchMobileCurrentSeason(
+  academyId: string,
+): Promise<MobileAcademySeason | null> {
+  const { data, error } = await supabase
+    .from("academy_seasons")
+    .select("*")
+    .eq("academy_id", academyId)
+    .eq("is_current", true)
+    .maybeSingle();
+  if (error) throw error;
+  const current = (data as MobileAcademySeason | null) ?? null;
+  const today = new Date().toISOString().slice(0, 10);
+  if (current && current.ends_on >= today && current.status !== "archived") return current;
+  const { data: dated, error: datedError } = await supabase
+    .from("academy_seasons")
+    .select("*")
+    .eq("academy_id", academyId)
+    .neq("status", "archived")
+    .lte("starts_on", today)
+    .gte("ends_on", today)
+    .order("starts_on", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (datedError) throw datedError;
+  return (dated as MobileAcademySeason | null) ?? null;
+}
+
+export async function createMobileSeason(input: {
+  academyId: string;
+  name: string;
+  startsOn: string;
+  endsOn: string;
+}) {
+  const name = input.name.trim();
+  if (!name || !input.startsOn || !input.endsOn || input.endsOn < input.startsOn) {
+    throw new Error("Enter a season name and a valid date range.");
+  }
+  const { data, error } = await supabase
+    .from("academy_seasons")
+    .insert({
+      academy_id: input.academyId,
+      name,
+      starts_on: input.startsOn,
+      ends_on: input.endsOn,
+      status: "active",
+      is_current: false,
+    })
+    .select("*")
+    .single();
+  if (error) throw error;
+  return data as MobileAcademySeason;
+}
+
+export async function setMobileCurrentSeason(seasonId: string) {
+  const { error } = await supabase.rpc("set_current_academy_season", { p_season_id: seasonId });
+  if (error) throw error;
+}
+
+export async function archiveMobileSeason(seasonId: string) {
+  const { error } = await supabase
+    .from("academy_seasons")
+    .update({ status: "archived", is_current: false, updated_at: new Date().toISOString() })
+    .eq("id", seasonId);
+  if (error) throw error;
+}
 
 export type MobileAdminActivity = {
   id: string;
@@ -149,10 +238,17 @@ export async function fetchMobilePlayers(
     .eq("academy_id", academyId)
     .order("created_at", { ascending: false });
   if (options?.coachId) playerQuery = playerQuery.eq("coach_id", options.coachId);
+  const currentSeason = await fetchMobileCurrentSeason(academyId);
   const [playersResult, profilesResult, evaluationsResult] = await Promise.all([
     playerQuery,
     supabase.from("profiles").select("id, full_name"),
-    supabase.from("player_evaluations").select("player_id").eq("academy_id", academyId),
+    currentSeason
+      ? supabase
+          .from("player_evaluations")
+          .select("player_id")
+          .eq("academy_id", academyId)
+          .eq("season_id", currentSeason.id)
+      : supabase.from("player_evaluations").select("player_id").eq("academy_id", academyId),
   ]);
   if (playersResult.error) throw playersResult.error;
   if (profilesResult.error) throw profilesResult.error;
@@ -170,7 +266,10 @@ export async function fetchMobilePlayers(
   })) as MobilePlayer[];
 }
 
-export async function fetchMobileEvaluations(academyId: string, options?: { coachId?: string }): Promise<MobileEvaluation[]> {
+export async function fetchMobileEvaluations(
+  academyId: string,
+  options?: { coachId?: string },
+): Promise<MobileEvaluation[]> {
   let evaluationQuery = supabase
     .from("player_evaluations")
     .select("*")
@@ -239,7 +338,8 @@ function uploadToken() {
 
 export async function uploadMobilePlayerPhoto(academyId: string, asset: ImagePickerAsset) {
   const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError || !userData.user) throw new Error("Sign in again before uploading a player photo.");
+  if (userError || !userData.user)
+    throw new Error("Sign in again before uploading a player photo.");
   const path = `${academyId}/${userData.user.id}/${uploadToken()}.${extensionForAsset(asset)}`;
   const { error } = await supabase.storage.from("players").upload(path, await assetBytes(asset), {
     upsert: false,
@@ -251,10 +351,12 @@ export async function uploadMobilePlayerPhoto(academyId: string, asset: ImagePic
 
 export async function uploadMobileAcademyLogo(academyId: string, asset: ImagePickerAsset) {
   const path = `${academyId}/logo.${extensionForAsset(asset)}`;
-  const { error } = await supabase.storage.from("academy-assets").upload(path, await assetBytes(asset), {
-    upsert: true,
-    contentType: asset.mimeType ?? "image/png",
-  });
+  const { error } = await supabase.storage
+    .from("academy-assets")
+    .upload(path, await assetBytes(asset), {
+      upsert: true,
+      contentType: asset.mimeType ?? "image/png",
+    });
   if (error) throw error;
   const { error: updateError } = await supabase
     .from("academies")
@@ -271,7 +373,11 @@ export async function fetchMobileSignedLogoUrl(path: string | null): Promise<str
   return data.signedUrl ?? null;
 }
 
-export async function fetchMobilePlayerDetail(academyId: string, playerId: string, options?: { coachId?: string }) {
+export async function fetchMobilePlayerDetail(
+  academyId: string,
+  playerId: string,
+  options?: { coachId?: string },
+) {
   const [players, evaluations] = await Promise.all([
     fetchMobilePlayers(academyId, options),
     fetchMobileEvaluations(academyId, options),
@@ -382,11 +488,15 @@ export async function createMobileEvaluation(input: {
   }
 
   const season = player.season?.trim() || "UNSPECIFIED";
+  const currentSeason = await fetchMobileCurrentSeason(input.academy_id);
+  if (!currentSeason)
+    throw new Error("Create and activate an academy season before recording evaluations.");
   const { data, error } = await supabase
     .from("player_evaluations")
     .insert({
       ...payload,
       season,
+      season_id: currentSeason.id,
       season_year: new Date().getFullYear(),
     })
     .select("id")

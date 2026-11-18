@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/PasswordInput";
+import { SeasonManagement } from "@/components/SeasonManagement";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -69,28 +70,37 @@ function AdminSettingsPage() {
   }, [role]);
 
   useEffect(() => {
-    if (role !== "academy_admin") return;
+    if (role !== "academy_admin" && role !== "academy_manager") return;
     void fetchMyAcademyProfile()
       .then(async (result) => {
         setAcademy(result);
-        setAcademyLogo(await academyLogoUrl(result.logo_path));
+        setAcademyLogo(role === "academy_admin" ? await academyLogoUrl(result.logo_path) : null);
       })
       .catch((error: Error) => toast.error(error.message));
   }, [role]);
 
   if (role === "academy_manager") {
     return (
-      <Card className="border-border/70">
-        <CardHeader>
-          <CardTitle className="font-display text-base tracking-wide uppercase">
-            Owner settings
-          </CardTitle>
-          <CardDescription>
-            Billing, academy branding, and subscription settings are available only to the academy
-            owner.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <div className="mx-auto grid max-w-5xl gap-6">
+        <div>
+          <h1 className="font-display text-2xl tracking-wide uppercase">Academy settings</h1>
+          <p className="text-muted-foreground text-sm">
+            Manage operational seasons shared with the academy owner.
+          </p>
+        </div>
+        <SeasonManagement academyId={academy?.id ?? null} />
+        <Card className="border-border/70">
+          <CardHeader>
+            <CardTitle className="font-display text-base tracking-wide uppercase">
+              Owner settings
+            </CardTitle>
+            <CardDescription>
+              Billing, academy branding, and subscription settings remain available only to the
+              academy owner.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
     );
   }
 
@@ -206,6 +216,7 @@ function AdminSettingsPage() {
           Manage your academy account, package, and subscription.
         </p>
       </div>
+      <SeasonManagement academyId={academy?.id ?? null} />
       <Card className="border-border/70">
         <CardHeader>
           <CardTitle className="font-display text-base tracking-wide uppercase">

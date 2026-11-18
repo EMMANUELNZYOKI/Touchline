@@ -3,13 +3,25 @@ import { useQuery } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 import { AcademyIdentity } from "@/components/touchline-ui";
 import { ScreenContainer } from "@/components/screen-container";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
 import {
+  archiveMobileSeason,
+  createMobileSeason,
+  fetchMobileSeasons,
   fetchMobileSignedLogoUrl,
+  setMobileCurrentSeason,
   updateMobileProfile,
   uploadMobileAcademyLogo,
 } from "@/lib/touchline/data";
@@ -40,6 +52,12 @@ async function fetchAcademyProfile(academyId: string) {
 export default function SettingsScreen() {
   const { context, refresh } = useTouchlineAuth();
   const owner = context?.role === "academy_admin";
+  const canManageSeasons = context?.role === "academy_admin" || context?.role === "academy_manager";
+  const seasonsQuery = useQuery({
+    queryKey: ["mobile-academy-seasons", context?.academy?.id],
+    queryFn: () => fetchMobileSeasons(context!.academy!.id),
+    enabled: canManageSeasons && Boolean(context?.academy),
+  });
   const profileQuery = useQuery({
     queryKey: ["mobile-academy-profile", context?.academy?.id],
     queryFn: () => fetchAcademyProfile(context!.academy!.id),
@@ -60,6 +78,11 @@ export default function SettingsScreen() {
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [seasonName, setSeasonName] = useState("");
+  const [seasonStart, setSeasonStart] = useState("");
+  const [seasonEnd, setSeasonEnd] = useState("");
+  const [seasonSaving, setSeasonSaving] = useState(false);
+  const [seasonWorkingId, setSeasonWorkingId] = useState<string | null>(null);
   const [loadedId, setLoadedId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ tone: "success" | "error"; text: string } | null>(
     null,
@@ -146,9 +169,15 @@ export default function SettingsScreen() {
     try {
       await uploadMobileAcademyLogo(context.academy.id, result.assets[0]);
       await Promise.all([refresh(), profileQuery.refetch(), logoQuery.refetch()]);
-      setFeedback({ tone: "success", text: "Academy logo uploaded and shared with the web workspace." });
+      setFeedback({
+        tone: "success",
+        text: "Academy logo uploaded and shared with the web workspace.",
+      });
     } catch (error) {
-      setFeedback({ tone: "error", text: error instanceof Error ? error.message : "Could not upload the academy logo." });
+      setFeedback({
+        tone: "error",
+        text: error instanceof Error ? error.message : "Could not upload the academy logo.",
+      });
     } finally {
       setLogoUploading(false);
     }
@@ -185,6 +214,73 @@ export default function SettingsScreen() {
       setPasswordSaving(false);
     }
   };
+  const createSeason = async () => {
+    if (!context.academy) return;
+    setSeasonSaving(true);
+    setFeedback(null);
+    try {
+      await createMobileSeason({
+        academyId: context.academy.id,
+        name: seasonName,
+        startsOn: seasonStart,
+        endsOn: seasonEnd,
+      });
+      setSeasonName("");
+      setSeasonStart("");
+      setSeasonEnd("");
+      await seasonsQuery.refetch();
+      setFeedback({
+        tone: "success",
+        text: "Season created. Activate it when the new season begins.",
+      });
+    } catch (error) {
+      setFeedback({
+        tone: "error",
+        text: error instanceof Error ? error.message : "Could not create the season.",
+      });
+    } finally {
+      setSeasonSaving(false);
+    }
+  };
+  const activateSeason = async (seasonId: string) => {
+    setSeasonWorkingId(seasonId);
+    setFeedback(null);
+    try {
+      await setMobileCurrentSeason(seasonId);
+      await seasonsQuery.refetch();
+      setFeedback({
+        tone: "success",
+        text: "Current season updated. New evaluations will use this season.",
+      });
+    } catch (error) {
+      setFeedback({
+        tone: "error",
+        text: error instanceof Error ? error.message : "Could not activate the season.",
+      });
+    } finally {
+      setSeasonWorkingId(null);
+    }
+  };
+  const archiveSeason = async (seasonId: string) => {
+    setSeasonWorkingId(seasonId);
+    setFeedback(null);
+    try {
+      await archiveMobileSeason(seasonId);
+      await seasonsQuery.refetch();
+      setFeedback({
+        tone: "success",
+        text: "Season archived. Its evaluations remain available in history.",
+      });
+    } catch (error) {
+      setFeedback({
+        tone: "error",
+        text: error instanceof Error ? error.message : "Could not archive the season.",
+      });
+    } finally {
+      setSeasonWorkingId(null);
+    }
+  };
+
   const saveProfile = async () => {
     if (!context) return;
     setProfileSaving(true);
@@ -195,8 +291,13 @@ export default function SettingsScreen() {
         full_name: profileName,
         phone: profilePhone,
       });
-      if (profileEmail.trim() && profileEmail.trim().toLowerCase() !== context.profile.email.toLowerCase()) {
-        const { error } = await supabase.auth.updateUser({ email: profileEmail.trim().toLowerCase() });
+      if (
+        profileEmail.trim() &&
+        profileEmail.trim().toLowerCase() !== context.profile.email.toLowerCase()
+      ) {
+        const { error } = await supabase.auth.updateUser({
+          email: profileEmail.trim().toLowerCase(),
+        });
         if (error) throw error;
       }
       await refresh();
@@ -218,9 +319,13 @@ export default function SettingsScreen() {
           role={context.role}
           userName={context.profile.full_name}
         />
-        <Text className="text-2xl font-black text-white">{owner ? "Academy settings" : "Profile settings"}</Text>
+        <Text className="text-2xl font-black text-white">
+          {owner ? "Academy settings" : "Profile settings"}
+        </Text>
         <Text className="mb-6 mt-2 text-sm leading-5 text-[#aab7c7]">
-          {owner ? "Manage the shared Touchline account and workspace settings." : "Update your profile details and password."}
+          {owner
+            ? "Manage the shared Touchline account and workspace settings."
+            : "Update your profile details and password."}
         </Text>
         {feedback && (
           <Text
@@ -287,6 +392,109 @@ export default function SettingsScreen() {
             </Text>
           </Pressable>
         </View>
+        {canManageSeasons ? (
+          <View className="mb-5 rounded-3xl border border-[#1e3a52] bg-[#10263a] p-5">
+            <Text className="mb-2 text-base font-black text-white">Academy seasons</Text>
+            <Text className="mb-4 text-sm leading-5 text-[#aab7c7]">
+              Create and activate seasons shared by the web and mobile workspaces. Previous
+              evaluations stay available in reports.
+            </Text>
+            <TextInput
+              value={seasonName}
+              onChangeText={setSeasonName}
+              placeholder="Season name"
+              placeholderTextColor="#71839a"
+              className={input}
+            />
+            <TextInput
+              value={seasonStart}
+              onChangeText={setSeasonStart}
+              placeholder="Start date (YYYY-MM-DD)"
+              placeholderTextColor="#71839a"
+              className={input}
+            />
+            <TextInput
+              value={seasonEnd}
+              onChangeText={setSeasonEnd}
+              placeholder="End date (YYYY-MM-DD)"
+              placeholderTextColor="#71839a"
+              className={input}
+            />
+            <Pressable
+              disabled={seasonSaving || !context.academy}
+              onPress={() => void createSeason()}
+              className="mb-4 rounded-2xl bg-[#78d4aa] px-4 py-4"
+              style={{
+                minHeight: 54,
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 16,
+                backgroundColor: "#78d4aa",
+                paddingHorizontal: 16,
+                paddingVertical: 14,
+                opacity: seasonSaving ? 0.6 : 1,
+              }}
+            >
+              <Text className="text-center font-black text-[#071521]">
+                {seasonSaving ? "Creating…" : "Create season"}
+              </Text>
+            </Pressable>
+            {seasonsQuery.isLoading ? (
+              <ActivityIndicator color="#78d4aa" />
+            ) : (
+              (seasonsQuery.data ?? []).map((season) => {
+                const completed =
+                  season.status !== "archived" &&
+                  new Date(`${season.ends_on}T23:59:59`) < new Date();
+                const status =
+                  season.status === "archived"
+                    ? "Archived"
+                    : season.is_current
+                      ? "Active"
+                      : completed
+                        ? "Completed"
+                        : "Scheduled";
+                const busy = seasonWorkingId === season.id;
+                return (
+                  <View
+                    key={season.id}
+                    className="mb-3 rounded-2xl border border-[#2b4862] bg-[#0b1c2d] p-4"
+                  >
+                    <View className="flex-row items-center justify-between">
+                      <Text className="flex-1 font-black text-white">{season.name}</Text>
+                      <Text className="text-xs font-bold text-[#78d4aa]">{status}</Text>
+                    </View>
+                    <Text className="mt-1 text-xs text-[#aab7c7]">
+                      {season.starts_on} – {season.ends_on}
+                    </Text>
+                    <View className="mt-3 flex-row gap-2">
+                      {!season.is_current && season.status !== "archived" && (
+                        <Pressable
+                          disabled={busy}
+                          onPress={() => void activateSeason(season.id)}
+                          className="rounded-xl border border-[#2b6e66] bg-[#102f38] px-3 py-2"
+                          style={{ opacity: busy ? 0.6 : 1 }}
+                        >
+                          <Text className="text-xs font-black text-[#d5f5e5]">Set as current</Text>
+                        </Pressable>
+                      )}
+                      {!season.is_current && season.status !== "archived" && (
+                        <Pressable
+                          disabled={busy}
+                          onPress={() => void archiveSeason(season.id)}
+                          className="rounded-xl border border-[#683344] bg-[#3b2430] px-3 py-2"
+                          style={{ opacity: busy ? 0.6 : 1 }}
+                        >
+                          <Text className="text-xs font-black text-[#ffd7de]">Archive</Text>
+                        </Pressable>
+                      )}
+                    </View>
+                  </View>
+                );
+              })
+            )}
+          </View>
+        ) : null}
         {owner ? (
           <>
             <View className="mb-5 rounded-3xl border border-[#1e3a52] bg-[#10263a] p-5">
@@ -420,8 +628,16 @@ export default function SettingsScreen() {
               secureTextEntry={!showPassword}
               className="flex-1 px-4 py-3.5 text-base text-white"
             />
-            <Pressable onPress={() => setShowPassword((current) => !current)} className="px-4 py-3" accessibilityLabel={showPassword ? "Hide password" : "Show password"}>
-              <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={21} color="#aab7c7" />
+            <Pressable
+              onPress={() => setShowPassword((current) => !current)}
+              className="px-4 py-3"
+              accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+            >
+              <Ionicons
+                name={showPassword ? "eye-off-outline" : "eye-outline"}
+                size={21}
+                color="#aab7c7"
+              />
             </Pressable>
           </View>
           <View className="mb-3 flex-row items-center rounded-2xl border border-[#2b4862] bg-[#0b1c2d]">
@@ -433,8 +649,18 @@ export default function SettingsScreen() {
               secureTextEntry={!showConfirm}
               className="flex-1 px-4 py-3.5 text-base text-white"
             />
-            <Pressable onPress={() => setShowConfirm((current) => !current)} className="px-4 py-3" accessibilityLabel={showConfirm ? "Hide confirmed password" : "Show confirmed password"}>
-              <Ionicons name={showConfirm ? "eye-off-outline" : "eye-outline"} size={21} color="#aab7c7" />
+            <Pressable
+              onPress={() => setShowConfirm((current) => !current)}
+              className="px-4 py-3"
+              accessibilityLabel={
+                showConfirm ? "Hide confirmed password" : "Show confirmed password"
+              }
+            >
+              <Ionicons
+                name={showConfirm ? "eye-off-outline" : "eye-outline"}
+                size={21}
+                color="#aab7c7"
+              />
             </Pressable>
           </View>
           <Pressable

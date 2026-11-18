@@ -19,6 +19,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
 import {
   createMobileEvaluation,
+  fetchMobileCurrentSeason,
   fetchMobileEvaluations,
   fetchMobilePlayers,
   type MobileEvaluation,
@@ -121,7 +122,10 @@ function AssessmentField({
 
 export default function EvaluationsScreen() {
   const { context } = useTouchlineAuth();
-  const { playerId: requestedPlayerId, updateId } = useLocalSearchParams<{ playerId?: string; updateId?: string }>();
+  const { playerId: requestedPlayerId, updateId } = useLocalSearchParams<{
+    playerId?: string;
+    updateId?: string;
+  }>();
   const client = useQueryClient();
   const openedRequestedEvaluation = useRef(false);
   const [open, setOpen] = useState(false);
@@ -133,6 +137,11 @@ export default function EvaluationsScreen() {
   const [assessment, setAssessment] = useState<MobileAssessment>(blankAssessment);
   const [message, setMessage] = useState<string | null>(null);
 
+  const currentSeasonQuery = useQuery({
+    queryKey: ["mobile-current-season", context?.academy?.id],
+    queryFn: () => fetchMobileCurrentSeason(context!.academy!.id),
+    enabled: Boolean(context?.academy),
+  });
   const evaluationsQuery = useQuery({
     queryKey: ["mobile-evaluations", context?.academy?.id, context?.role],
     queryFn: () => fetchMobileEvaluations(context!.academy!.id),
@@ -145,12 +154,9 @@ export default function EvaluationsScreen() {
   });
   const scores = useMemo(() => mobileScoresFromSkills(skills), [skills]);
   const selectedPlayer = playersQuery.data?.find((player) => player.id === playerId);
-  const activePeriodSeason = selectedPlayer?.season?.trim() || "UNSPECIFIED";
+  const activeSeasonId = currentSeasonQuery.data?.id;
   const activePeriodEvaluation = evaluationsQuery.data?.find(
-    (evaluation) =>
-      evaluation.player_id === playerId &&
-      evaluation.season === activePeriodSeason &&
-      evaluation.season_year === new Date().getFullYear(),
+    (evaluation) => evaluation.player_id === playerId && evaluation.season_id === activeSeasonId,
   );
   const hasOtherCurrentEvaluation =
     Boolean(activePeriodEvaluation) && activePeriodEvaluation?.coach_id !== context?.profile.id;
@@ -198,7 +204,9 @@ export default function EvaluationsScreen() {
   };
   useEffect(() => {
     if (openedRequestedEvaluation.current || !updateId || !evaluationsQuery.data?.length) return;
-    const requestedEvaluation = evaluationsQuery.data.find((evaluation) => evaluation.id === updateId);
+    const requestedEvaluation = evaluationsQuery.data.find(
+      (evaluation) => evaluation.id === updateId,
+    );
     if (requestedEvaluation) {
       openedRequestedEvaluation.current = true;
       const timer = setTimeout(() => openEdit(requestedEvaluation), 0);
@@ -206,7 +214,8 @@ export default function EvaluationsScreen() {
     }
   }, [evaluationsQuery.data, updateId]);
   useEffect(() => {
-    if (openedRequestedEvaluation.current || !requestedPlayerId || updateId || !playersQuery.data) return;
+    if (openedRequestedEvaluation.current || !requestedPlayerId || updateId || !playersQuery.data)
+      return;
     if (playersQuery.data.some((player) => player.id === requestedPlayerId)) {
       openedRequestedEvaluation.current = true;
       const timer = setTimeout(() => {
@@ -248,14 +257,11 @@ export default function EvaluationsScreen() {
   };
   const choosePlayer = (nextPlayerId: string) => {
     setPlayerId(nextPlayerId);
-    const nextPlayer = playersQuery.data?.find((player) => player.id === nextPlayerId);
-    const season = nextPlayer?.season?.trim() || "UNSPECIFIED";
     const existing = evaluationsQuery.data?.find(
       (evaluation) =>
         evaluation.player_id === nextPlayerId &&
         evaluation.coach_id === context.profile.id &&
-        evaluation.season === season &&
-        evaluation.season_year === new Date().getFullYear(),
+        evaluation.season_id === currentSeasonQuery.data?.id,
     );
     if (existing) {
       setEditing(existing);
@@ -504,7 +510,7 @@ export default function EvaluationsScreen() {
                 </Text>
                 <Text className="mt-1 text-sm text-[#aab7c7]">
                   {selectedPlayer
-                    ? `${selectedPlayer.first_name} ${selectedPlayer.last_name} · ${activePeriodSeason} · ${new Date().getFullYear()}`
+                    ? `${selectedPlayer.first_name} ${selectedPlayer.last_name} · ${currentSeasonQuery.data?.name ?? "Current season"}`
                     : "Rate the player's current season."}
                 </Text>
               </View>

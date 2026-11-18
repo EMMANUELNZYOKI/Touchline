@@ -7,6 +7,94 @@ import { SKILL_CATEGORIES, averageScore, type SkillState } from "./skills";
 // Storage bucket configuration
 const BUCKET_NAME = process.env["NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET"] || "players";
 
+export type AcademySeason = {
+  id: string;
+  academy_id: string;
+  name: string;
+  starts_on: string;
+  ends_on: string;
+  status: "active" | "completed" | "archived";
+  is_current: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+// The generated client types predate the shared academy_seasons table.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const seasonsTable = () => (supabase as any).from("academy_seasons");
+
+export async function fetchAcademySeasons(academyId?: string) {
+  const id = academyId ?? (await fetchMyActiveAcademyAdminId());
+  const { data, error } = await seasonsTable()
+    .select("*")
+    .eq("academy_id", id)
+    .order("starts_on", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as AcademySeason[];
+}
+
+export async function fetchCurrentAcademySeason(academyId: string) {
+  const { data, error } = await seasonsTable()
+    .select("*")
+    .eq("academy_id", academyId)
+    .eq("is_current", true)
+    .maybeSingle();
+  if (error) throw error;
+  const current = (data as AcademySeason | null) ?? null;
+  const today = new Date().toISOString().slice(0, 10);
+  if (current && current.ends_on >= today && current.status !== "archived") return current;
+  const { data: dated, error: datedError } = await seasonsTable()
+    .select("*")
+    .eq("academy_id", academyId)
+    .neq("status", "archived")
+    .lte("starts_on", today)
+    .gte("ends_on", today)
+    .order("starts_on", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (datedError) throw datedError;
+  return (dated as AcademySeason | null) ?? null;
+}
+
+export async function createAcademySeason(input: {
+  academyId: string;
+  name: string;
+  startsOn: string;
+  endsOn: string;
+}) {
+  const name = input.name.trim();
+  if (!name || !input.startsOn || !input.endsOn || input.endsOn < input.startsOn)
+    throw new Error("Enter a season name and a valid date range.");
+  const { data, error } = await seasonsTable()
+    .insert({
+      academy_id: input.academyId,
+      name,
+      starts_on: input.startsOn,
+      ends_on: input.endsOn,
+      status: "active",
+      is_current: false,
+    })
+    .select("*")
+    .single();
+  if (error) throw error;
+  return data as AcademySeason;
+}
+
+export async function setCurrentAcademySeason(seasonId: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any).rpc("set_current_academy_season", {
+    p_season_id: seasonId,
+  });
+  if (error) throw error;
+}
+
+export async function archiveAcademySeason(seasonId: string) {
+  const { error } = await seasonsTable()
+    .update({ status: "archived", is_current: false, updated_at: new Date().toISOString() })
+    .eq("id", seasonId);
+  if (error) throw error;
+}
+
 export async function fetchMyRole(userId: string) {
   const { data, error } = await supabase
     .from("academy_memberships")
@@ -336,17 +424,20 @@ export async function fetchPlayers(options?: { coachId?: string }) {
   let query = supabase.from("players").select("*").order("created_at", { ascending: false });
   if (options?.coachId) query = query.eq("coach_id", options.coachId);
 
-  const [playersRes, evalsRes, profilesRes, evaluatedIdsRes] = await Promise.all([
+  const [playersRes, evalsRes, profilesRes, evaluatedIdsRes, seasons] = await Promise.all([
     query,
     supabase.from("player_evaluations").select("*").order("created_at", { ascending: false }),
     supabase.from("profiles").select("id, full_name"),
     supabase.rpc("get_evaluated_player_ids"),
+    fetchMyAcademyProfile().then((academy) => fetchCurrentAcademySeason(academy.id)),
   ]);
 
   if (playersRes.error) throw playersRes.error;
   if (evaluatedIdsRes.error) throw evaluatedIdsRes.error;
 
-  const evals = (evalsRes.data ?? []) as unknown as Evaluation[];
+  const evals = ((evalsRes.data ?? []) as unknown as Evaluation[]).filter(
+    (evaluation) => !seasons || evaluation.season_id === seasons.id,
+  );
   const profiles = profilesRes.data ?? [];
   const evaluatedPlayerIds = new Set((evaluatedIdsRes.data ?? []).map((row) => row.player_id));
 
@@ -356,12 +447,7 @@ export async function fetchPlayers(options?: { coachId?: string }) {
     // current player period when it exists, otherwise keep the latest snapshot
     // attached to the player so the roster still reports "Evaluated".
     evaluation:
-      evals.find(
-        (e) =>
-          e.player_id === player.id &&
-          e.season === (player.season ?? "UNSPECIFIED") &&
-          e.season_year === new Date().getFullYear(),
-      ) ??
+      evals.find((e) => e.player_id === player.id && e.season_id === seasons?.id) ??
       evals.find((e) => e.player_id === player.id) ??
       null,
     hasEvaluation:
@@ -391,11 +477,8 @@ export async function fetchPlayer(playerId: string) {
   const player = playerRes.data as unknown as Player;
   const academyId = (playerRes.data as { academy_id?: string }).academy_id;
   const evaluations = (evalRes.data ?? []) as unknown as Evaluation[];
-  const activeEvaluation =
-    evaluations.find(
-      (e) =>
-        e.season === (player.season ?? "UNSPECIFIED") && e.season_year === new Date().getFullYear(),
-    ) ?? null;
+  const currentSeason = academyId ? await fetchCurrentAcademySeason(academyId) : null;
+  const activeEvaluation = evaluations.find((e) => e.season_id === currentSeason?.id) ?? null;
   const latestEvaluation = evaluations[0] ?? null;
   const retainedEvaluation = activeEvaluation ?? latestEvaluation;
   const evaluationCoachId = retainedEvaluation?.coach_id ?? player.coach_id;
@@ -567,12 +650,18 @@ export async function createPlayerWithEvaluation(input: {
 
   if (error) throw error;
 
+  const currentSeason = await fetchCurrentAcademySeason(
+    (player as { academy_id: string }).academy_id,
+  );
+  if (!currentSeason)
+    throw new Error("Create and activate an academy season before recording evaluations.");
   const scores = scoresFromSkills(input.skills);
   const evalPayload = {
     player_id: player.id,
     coach_id: input.coachId,
     season: input.player.season || "UNSPECIFIED",
     season_year: new Date().getFullYear(),
+    season_id: currentSeason.id,
     ...scores,
     technical_skills: input.skills.technical,
     tactical_skills: input.skills.tactical,
@@ -680,15 +769,19 @@ export async function saveEvaluation(input: {
 
   const { data: player, error: playerError } = await supabase
     .from("players")
-    .select("season")
+    .select("season, academy_id")
     .eq("id", input.playerId)
     .single();
   if (playerError) throw playerError;
 
+  const currentSeason = await fetchCurrentAcademySeason(player.academy_id);
+  if (!currentSeason)
+    throw new Error("Create and activate an academy season before recording evaluations.");
   const { error } = await supabase.from("player_evaluations").insert({
     ...payload,
     season: player.season || "UNSPECIFIED",
     season_year: new Date().getFullYear(),
+    season_id: currentSeason.id,
   });
   if (error?.code === "23505") {
     throw new Error("This player has already been evaluated for this season.");

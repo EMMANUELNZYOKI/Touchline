@@ -48,6 +48,7 @@ export interface Evaluation {
   player_id: string;
   coach_id: string;
   season: string;
+  season_id: string;
   season_year: number;
   technical_score: number | null;
   tactical_score: number | null;

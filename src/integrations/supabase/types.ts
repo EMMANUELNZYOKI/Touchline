@@ -24,6 +24,7 @@ export type Database = {
           physical_skills: Json;
           player_id: string;
           season: string;
+          season_id: string;
           season_year: number;
           strengths: string | null;
           tactical_score: number | null;
@@ -48,6 +49,7 @@ export type Database = {
           physical_skills?: Json;
           player_id: string;
           season?: string;
+          season_id: string;
           season_year?: number;
           strengths?: string | null;
           tactical_score?: number | null;
@@ -72,6 +74,7 @@ export type Database = {
           physical_skills?: Json;
           player_id?: string;
           season?: string;
+          season_id?: string;
           season_year?: number;
           strengths?: string | null;
           tactical_score?: number | null;
