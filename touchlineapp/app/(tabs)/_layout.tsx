@@ -13,7 +13,10 @@ export default function TabLayout() {
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
   const tabBarHeight = 56 + bottomPadding;
 
-  if (loading || !context) {
+  if (loading) {
+    return <EntryScreen redirectAuthenticated={false} showSplash />;
+  }
+  if (!context) {
     return <EntryScreen redirectAuthenticated={false} showSplash={false} />;
   }
 
