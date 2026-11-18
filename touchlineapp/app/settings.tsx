@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useQuery } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
@@ -6,6 +7,7 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -29,6 +31,20 @@ import { supabase } from "@/lib/touchline/supabase";
 
 const input =
   "mb-3 rounded-2xl border border-[#2b4862] bg-[#0b1c2d] px-4 py-3.5 text-base text-white";
+
+function dateFromInput(value: string) {
+  if (!value) return new Date();
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date();
+  date.setHours(12, 0, 0, 0);
+  if (year && month && day) date.setFullYear(year, month - 1, day);
+  return date;
+}
+
+function formatDateInput(date: Date) {
+  const pad = (value: number) => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
 
 type AcademyProfile = {
   id: string;
@@ -81,6 +97,7 @@ export default function SettingsScreen() {
   const [seasonName, setSeasonName] = useState("");
   const [seasonStart, setSeasonStart] = useState("");
   const [seasonEnd, setSeasonEnd] = useState("");
+  const [datePicker, setDatePicker] = useState<"start" | "end" | null>(null);
   const [seasonSaving, setSeasonSaving] = useState(false);
   const [seasonWorkingId, setSeasonWorkingId] = useState<string | null>(null);
   const [loadedId, setLoadedId] = useState<string | null>(null);
@@ -406,20 +423,47 @@ export default function SettingsScreen() {
               placeholderTextColor="#71839a"
               className={input}
             />
-            <TextInput
-              value={seasonStart}
-              onChangeText={setSeasonStart}
-              placeholder="Start date (YYYY-MM-DD)"
-              placeholderTextColor="#71839a"
-              className={input}
-            />
-            <TextInput
-              value={seasonEnd}
-              onChangeText={setSeasonEnd}
-              placeholder="End date (YYYY-MM-DD)"
-              placeholderTextColor="#71839a"
-              className={input}
-            />
+            <Pressable
+              onPress={() => setDatePicker("start")}
+              className={`${input} flex-row items-center justify-between`}
+            >
+              <Text className={seasonStart ? "text-base text-white" : "text-base text-[#71839a]"}>
+                {seasonStart || "Start date (YYYY-MM-DD)"}
+              </Text>
+              <Ionicons name="calendar-outline" size={20} color="#78d4aa" />
+            </Pressable>
+            {datePicker === "start" && (
+              <DateTimePicker
+                value={dateFromInput(seasonStart)}
+                mode="date"
+                display={Platform.OS === "android" ? "calendar" : "spinner"}
+                onChange={(_event, selectedDate) => {
+                  setDatePicker(null);
+                  if (selectedDate) setSeasonStart(formatDateInput(selectedDate));
+                }}
+              />
+            )}
+            <Pressable
+              onPress={() => setDatePicker("end")}
+              className={`${input} flex-row items-center justify-between`}
+            >
+              <Text className={seasonEnd ? "text-base text-white" : "text-base text-[#71839a]"}>
+                {seasonEnd || "End date (YYYY-MM-DD)"}
+              </Text>
+              <Ionicons name="calendar-outline" size={20} color="#78d4aa" />
+            </Pressable>
+            {datePicker === "end" && (
+              <DateTimePicker
+                value={dateFromInput(seasonEnd)}
+                mode="date"
+                display={Platform.OS === "android" ? "calendar" : "spinner"}
+                minimumDate={seasonStart ? dateFromInput(seasonStart) : undefined}
+                onChange={(_event, selectedDate) => {
+                  setDatePicker(null);
+                  if (selectedDate) setSeasonEnd(formatDateInput(selectedDate));
+                }}
+              />
+            )}
             <Pressable
               disabled={seasonSaving || !context.academy}
               onPress={() => void createSeason()}

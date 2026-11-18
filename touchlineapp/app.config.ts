@@ -32,7 +32,8 @@ const env = {
   appSlug: "touchlineapp",
   // S3 URL of the app logo - set this to the URL returned by generate_image when creating custom logo
   // Leave empty to use the default icon from assets/images/icon.png
-  logoUrl: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663470849219/lWjUkEwpvGdCQbrv.png",
+  logoUrl:
+    "https://files.manuscdn.com/user_upload_by_module/session_file/310519663470849219/lWjUkEwpvGdCQbrv.png",
   scheme: schemeFromBundleId,
   iosBundleId: bundleId,
   androidPackage: bundleId,
@@ -52,18 +53,12 @@ const publicRuntime = {
     process.env.EXPO_PUBLIC_OAUTH_SERVER_URL ??
     "",
   appId:
-    process.env.MANUS_PROJECT_ID ??
-    process.env.VITE_APP_ID ??
-    process.env.EXPO_PUBLIC_APP_ID ??
-    "",
+    process.env.MANUS_PROJECT_ID ?? process.env.VITE_APP_ID ?? process.env.EXPO_PUBLIC_APP_ID ?? "",
   apiBaseUrl: process.env.EXPO_PUBLIC_API_BASE_URL ?? "",
-  supabaseUrl:
-    process.env.EXPO_PUBLIC_SUPABASE_URL ?? "https://icmocslfyhnizdgbldhj.supabase.co",
+  supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL ?? "https://icmocslfyhnizdgbldhj.supabase.co",
   supabaseAnonKey:
-    process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ??
-    "sb_publishable_nQEFrlX7HyiuX6iKpQCm8Q_2WpxW1D-",
-  touchlineWebUrl:
-    process.env.EXPO_PUBLIC_TOUCHLINE_WEB_URL ?? "https://touchlineelite.vercel.app",
+    process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? "sb_publishable_nQEFrlX7HyiuX6iKpQCm8Q_2WpxW1D-",
+  touchlineWebUrl: process.env.EXPO_PUBLIC_TOUCHLINE_WEB_URL ?? "https://touchlineelite.vercel.app",
 };
 
 const config: ExpoConfig = {
@@ -78,9 +73,9 @@ const config: ExpoConfig = {
   ios: {
     supportsTablet: true,
     bundleIdentifier: env.iosBundleId,
-    "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
+    },
   },
   android: {
     adaptiveIcon: {
@@ -113,6 +108,7 @@ const config: ExpoConfig = {
   },
   plugins: [
     "expo-asset",
+    "@react-native-community/datetimepicker",
     [
       "expo-image-picker",
       {
