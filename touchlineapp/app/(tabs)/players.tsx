@@ -126,35 +126,129 @@ function ChoiceField({
   options: readonly string[];
   onChange: (value: string | null) => void;
 }) {
+  const [open, setOpen] = useState(false);
   return (
     <View style={{ marginBottom: 14 }}>
       <Text className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#aab7c7]">
         {label}
       </Text>
-      <View className="flex-row flex-wrap gap-2">
-        {options.map((option) => {
-          const selected = value === option;
-          return (
-            <Pressable
-              key={option}
-              accessibilityRole="button"
-              accessibilityState={{ selected }}
-              onPress={() => onChange(selected ? null : option)}
-              style={{
-                minHeight: 44,
-                justifyContent: "center",
-                borderWidth: 1,
-                borderColor: selected ? COLORS.green : COLORS.border,
-                borderRadius: 13,
-                backgroundColor: selected ? "#173f4a" : COLORS.field,
-                paddingHorizontal: 13,
-                paddingVertical: 9,
-              }}
-            >
-              <Text className="text-sm font-semibold text-white">{option}</Text>
-            </Pressable>
-          );
-        })}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Select ${label}`}
+        accessibilityState={{ expanded: open }}
+        onPress={() => setOpen(true)}
+        style={{
+          minHeight: 50,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderWidth: 1,
+          borderColor: open ? COLORS.green : COLORS.border,
+          borderRadius: 16,
+          backgroundColor: COLORS.field,
+          paddingHorizontal: 15,
+        }}
+      >
+        <Text className={`text-[15px] ${value ? "font-semibold text-white" : "text-[#71839a]"}`}>
+          {value ?? `Select ${label.toLowerCase()}`}
+        </Text>
+        <Ionicons name={open ? "chevron-up" : "chevron-down"} size={18} color={COLORS.muted} />
+      </Pressable>
+      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+        <View className="flex-1 items-center justify-center bg-black/70 px-6">
+          <View className="max-h-[78%] w-full max-w-[380px] rounded-3xl border border-[#2b5268] bg-[#10263a] p-5">
+            <View className="mb-3 flex-row items-center justify-between">
+              <Text className="text-lg font-black text-white">Select {label}</Text>
+              <Pressable onPress={() => setOpen(false)} hitSlop={8}>
+                <Ionicons name="close" size={22} color={COLORS.muted} />
+              </Pressable>
+            </View>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {value && (
+                <Pressable
+                  onPress={() => {
+                    onChange(null);
+                    setOpen(false);
+                  }}
+                  className="mb-2 rounded-2xl border border-[#2b4862] bg-[#0b1c2d] px-4 py-3"
+                >
+                  <Text className="font-semibold text-[#aab7c7]">Clear selection</Text>
+                </Pressable>
+              )}
+              {options.map((option) => (
+                <Pressable
+                  key={option}
+                  onPress={() => {
+                    onChange(option);
+                    setOpen(false);
+                  }}
+                  className="mb-2 flex-row items-center justify-between rounded-2xl border px-4 py-3"
+                  style={{
+                    borderColor: value === option ? COLORS.green : COLORS.border,
+                    backgroundColor: value === option ? "#173f4a" : COLORS.field,
+                  }}
+                >
+                  <Text className="text-sm font-semibold text-white">{option}</Text>
+                  {value === option && <Ionicons name="checkmark-circle" size={19} color={COLORS.green} />}
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+function NumberField({
+  label,
+  value,
+  min,
+  max,
+  onChange,
+}: {
+  label: string;
+  value: number | null;
+  min: number;
+  max: number;
+  onChange: (value: number | null) => void;
+}) {
+  const change = (amount: number) => {
+    const next = (value ?? min) + amount;
+    onChange(Math.min(max, Math.max(min, next)));
+  };
+  return (
+    <View style={{ marginBottom: 12 }}>
+      <Text className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#aab7c7]">{label}</Text>
+      <View className="flex-row items-center overflow-hidden rounded-2xl border border-[#2b4862] bg-[#0b1c2d]">
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Decrease ${label}`}
+          onPress={() => change(-1)}
+          className="h-[50px] w-[50px] items-center justify-center bg-[#173f4a]"
+        >
+          <Ionicons name="remove" size={21} color={COLORS.green} />
+        </Pressable>
+        <TextInput
+          value={value == null ? "" : String(value)}
+          onChangeText={(text) => {
+            if (!text.trim()) return onChange(null);
+            const parsed = Number(text.replace(/[^0-9.]/g, ""));
+            if (Number.isFinite(parsed)) onChange(Math.min(max, Math.max(min, parsed)));
+          }}
+          placeholder="0"
+          placeholderTextColor="#71839a"
+          keyboardType="numeric"
+          style={{ flex: 1, minHeight: 50, color: COLORS.white, paddingHorizontal: 14, textAlign: "center", fontSize: 15 }}
+        />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Increase ${label}`}
+          onPress={() => change(1)}
+          className="h-[50px] w-[50px] items-center justify-center bg-[#173f4a]"
+        >
+          <Ionicons name="add" size={21} color={COLORS.green} />
+        </Pressable>
       </View>
     </View>
   );
@@ -610,23 +704,26 @@ export default function PlayersScreen() {
                 maxLength={80}
                 placeholder="e.g. Under 11"
               />
-              <Field
+              <NumberField
                 label="Jersey number"
-                value={player.jersey_number == null ? "" : String(player.jersey_number)}
-                onChangeText={(value) => setText("jersey_number", value)}
-                keyboardType="numeric"
+                value={player.jersey_number}
+                min={0}
+                max={99}
+                onChange={(value) => setPlayer((current) => ({ ...current, jersey_number: value }))}
               />
-              <Field
+              <NumberField
                 label="Height (cm)"
-                value={player.height == null ? "" : String(player.height)}
-                onChangeText={(value) => setText("height", value)}
-                keyboardType="numeric"
+                value={player.height}
+                min={50}
+                max={250}
+                onChange={(value) => setPlayer((current) => ({ ...current, height: value }))}
               />
-              <Field
+              <NumberField
                 label="Weight (kg)"
-                value={player.weight == null ? "" : String(player.weight)}
-                onChangeText={(value) => setText("weight", value)}
-                keyboardType="numeric"
+                value={player.weight}
+                min={1}
+                max={250}
+                onChange={(value) => setPlayer((current) => ({ ...current, weight: value }))}
               />
               <Field
                 label="Medical notes"
