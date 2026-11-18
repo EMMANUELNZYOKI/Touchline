@@ -56,6 +56,8 @@ export type MobileEvaluation = {
   coach_notes: string | null;
   created_at: string;
   playerName: string;
+  position: string | null;
+  teamCategory: string | null;
   coachName: string;
 };
 
@@ -278,24 +280,26 @@ export async function fetchMobileEvaluations(
   if (options?.coachId) evaluationQuery = evaluationQuery.eq("coach_id", options.coachId);
   const [evaluationsResult, playersResult, profilesResult] = await Promise.all([
     evaluationQuery,
-    supabase.from("players").select("id, first_name, last_name").eq("academy_id", academyId),
+    supabase
+      .from("players")
+      .select("id, first_name, last_name, position, team_category")
+      .eq("academy_id", academyId),
     supabase.from("profiles").select("id, full_name"),
   ]);
   if (evaluationsResult.error) throw evaluationsResult.error;
   if (playersResult.error) throw playersResult.error;
   if (profilesResult.error) throw profilesResult.error;
-  const players = new Map(
-    (playersResult.data ?? []).map((player) => [
-      player.id,
-      `${player.first_name} ${player.last_name}`,
-    ]),
-  );
+  const players = new Map((playersResult.data ?? []).map((player) => [player.id, player]));
   const profiles = new Map(
     (profilesResult.data ?? []).map((profile) => [profile.id, profile.full_name]),
   );
   return (evaluationsResult.data ?? []).map((evaluation) => ({
     ...evaluation,
-    playerName: players.get(evaluation.player_id) ?? "Unknown player",
+    playerName: players.get(evaluation.player_id)
+      ? `${players.get(evaluation.player_id)?.first_name} ${players.get(evaluation.player_id)?.last_name}`
+      : "Unknown player",
+    position: players.get(evaluation.player_id)?.position ?? null,
+    teamCategory: players.get(evaluation.player_id)?.team_category ?? null,
     coachName: profiles.get(evaluation.coach_id) ?? "Unknown coach",
   })) as MobileEvaluation[];
 }
