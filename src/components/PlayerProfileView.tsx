@@ -70,11 +70,12 @@ export function PlayerProfileView({
               {player.secondary_position ? ` (${player.secondary_position})` : ""} ·{" "}
               {age != null ? `${age} yrs` : "Age unknown"} · {player.preferred_foot ?? "—"} foot
             </p>
-            <p className="text-muted-foreground mt-2 text-xs">
-              {coachName === "Not assigned" ? "Awaiting coach assignment" : "Evaluated by"}{" "}
-              <span className="text-primary font-semibold">{coachName}</span>
-              {coachEmail ? ` (${coachEmail})` : ""}
-            </p>
+            {evaluation && (
+              <p className="text-muted-foreground mt-2 text-xs">
+                Evaluated by <span className="text-primary font-semibold">{coachName}</span>
+                {coachEmail ? ` (${coachEmail})` : ""}
+              </p>
+            )}
           </div>
           <div className="text-center">
             <p className="text-muted-foreground text-xs tracking-widest uppercase">Overall</p>

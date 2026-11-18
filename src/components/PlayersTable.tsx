@@ -85,8 +85,7 @@ export function PlayersTable({ players, area, showCoach, emptyAction }: Props) {
 
   const rows = useMemo(() => {
     const filtered = players.filter((p) => {
-      const haystack =
-        `${p.first_name} ${p.last_name} ${p.position ?? ""} ${p.coachName}`.toLowerCase();
+      const haystack = `${p.first_name} ${p.last_name} ${p.position ?? ""}`.toLowerCase();
       const matchSearch = haystack.includes(search.toLowerCase());
       const matchPosition = position === "all" || p.position === position;
       return matchSearch && matchPosition;

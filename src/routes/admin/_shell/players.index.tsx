@@ -35,7 +35,7 @@ function AdminPlayersPage() {
       {isLoading ? (
         <LoadingBlock label="Loading players…" />
       ) : (
-        <PlayersTable players={data ?? []} area="admin" showCoach />
+        <PlayersTable players={data ?? []} area="admin" />
       )}
     </div>
   );

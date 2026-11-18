@@ -233,7 +233,6 @@ export default function PlayerDetailScreen() {
               <Row label="Player phone" value={player.phone} />
               <Row label="Parent / guardian" value={player.parent_name} />
               <Row label="Emergency contact" value={player.emergency_contact} />
-              <Row label="Assigned coach" value={player.coachName} />
             </View>
             {player.medical_notes && (
               <View className="mb-5 rounded-3xl border border-[#683344] bg-[#3b2430] p-5">

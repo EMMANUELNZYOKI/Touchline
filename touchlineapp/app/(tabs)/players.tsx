@@ -189,7 +189,9 @@ function ChoiceField({
                   }}
                 >
                   <Text className="text-sm font-semibold text-white">{option}</Text>
-                  {value === option && <Ionicons name="checkmark-circle" size={19} color={COLORS.green} />}
+                  {value === option && (
+                    <Ionicons name="checkmark-circle" size={19} color={COLORS.green} />
+                  )}
                 </Pressable>
               ))}
             </ScrollView>
@@ -219,7 +221,9 @@ function NumberField({
   };
   return (
     <View style={{ marginBottom: 12 }}>
-      <Text className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#aab7c7]">{label}</Text>
+      <Text className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#aab7c7]">
+        {label}
+      </Text>
       <View className="flex-row items-center overflow-hidden rounded-2xl border border-[#2b4862] bg-[#0b1c2d]">
         <Pressable
           accessibilityRole="button"
@@ -239,7 +243,14 @@ function NumberField({
           placeholder="0"
           placeholderTextColor="#71839a"
           keyboardType="numeric"
-          style={{ flex: 1, minHeight: 50, color: COLORS.white, paddingHorizontal: 14, textAlign: "center", fontSize: 15 }}
+          style={{
+            flex: 1,
+            minHeight: 50,
+            color: COLORS.white,
+            paddingHorizontal: 14,
+            textAlign: "center",
+            fontSize: 15,
+          }}
         />
         <Pressable
           accessibilityRole="button"
@@ -537,10 +548,6 @@ export default function PlayersScreen() {
                 />
                 <Text className="mt-1 text-[10px] text-[#78d4aa]">Tap to view</Text>
               </View>
-            </View>
-            <View className="mt-3 flex-row items-center border-t border-[#1e3a52] pt-3">
-              <Ionicons name="person-outline" size={14} color="#71839a" />
-              <Text className="ml-2 text-xs text-[#aab7c7]">Coach: {item.coachName}</Text>
             </View>
           </Pressable>
         ))}

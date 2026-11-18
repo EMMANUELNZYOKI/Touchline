@@ -84,7 +84,7 @@ function AdminActivityPage() {
       id: `player-${p.id}`,
       kind: "player",
       title: `${p.first_name} ${p.last_name} was registered`,
-      detail: `${p.position ?? "No position"} · by ${p.coachName}`,
+      detail: `${p.position ?? "No position"}`,
       at: p.created_at,
       playerId: p.id,
     })),

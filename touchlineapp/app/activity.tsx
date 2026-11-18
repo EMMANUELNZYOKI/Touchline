@@ -53,7 +53,7 @@ export default function ActivityScreen() {
     ...(players.data ?? []).map((player) => ({
       id: `player-${player.id}`,
       title: `${player.first_name} ${player.last_name} registered`,
-      detail: `${player.position || "No position"} · ${player.coachName}`,
+      detail: `${player.position || "No position"}`,
       at: player.created_at,
     })),
     ...(evaluations.data ?? []).map((evaluation) => ({
