@@ -144,6 +144,7 @@ function CoachesPage() {
                   <TableRow>
                     <TableHead>Coach Name</TableHead>
                     <TableHead>Email</TableHead>
+                    <TableHead className="text-center">Evaluations</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
@@ -153,6 +154,7 @@ function CoachesPage() {
                     <TableRow key={coach.id}>
                       <TableCell className="font-medium">{coach.full_name || "—"}</TableCell>
                       <TableCell className="text-muted-foreground">{coach.email}</TableCell>
+                      <TableCell className="text-center">{coach.evaluationCount}</TableCell>
                       <TableCell>
                         <Badge
                           className={
@@ -187,7 +189,7 @@ function CoachesPage() {
                   ))}
                   {filtered.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-muted-foreground py-10 text-center">
+                      <TableCell colSpan={5} className="text-muted-foreground py-10 text-center">
                         No coaches match “{search}”.
                       </TableCell>
                     </TableRow>

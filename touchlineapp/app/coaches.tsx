@@ -88,7 +88,7 @@ export default function CoachesScreen() {
           <View className="flex-1 pr-4">
             <Text className="text-2xl font-black text-white">Coaches</Text>
             <Text className="mt-2 text-sm leading-5 text-[#aab7c7]">
-              Coach accounts, assigned players, and evaluation activity from the shared academy.
+              Coach accounts and evaluation activity from the shared academy.
             </Text>
           </View>
           {canCreate && (
@@ -151,6 +151,12 @@ export default function CoachesScreen() {
                 {coach.status}
               </Text>
             </Pressable>
+            <View className="mt-3 border-t border-[#1e3a52] pt-3">
+              <Text className="text-xs text-[#aab7c7]">
+                Evaluations completed:{" "}
+                <Text className="font-bold text-white">{coach.evaluationCount}</Text>
+              </Text>
+            </View>
             <Pressable
               onPress={() => setPendingCoach(coach)}
               className="mt-4 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"
