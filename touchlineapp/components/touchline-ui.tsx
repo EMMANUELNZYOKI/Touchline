@@ -243,7 +243,10 @@ export function MetricCard({
   return (
     <View className="min-h-[108px] flex-1 rounded-2xl border border-[#1e3a52] bg-[#10263a] p-4">
       <View className="mb-3 flex-row items-center justify-between">
-        <Text className="text-xs font-semibold uppercase tracking-wider text-[#aab7c7]">
+        <Text
+          className="flex-1 text-xs font-semibold uppercase tracking-wider text-[#aab7c7]"
+          style={{ flexShrink: 1, marginRight: 8 }}
+        >
           {label}
         </Text>
         <Ionicons name={icon} size={18} color={accent} />
