@@ -151,11 +151,8 @@ export default function CoachesScreen() {
                 {coach.status}
               </Text>
             </Pressable>
-            <View className="mt-3 flex-row border-t border-[#1e3a52] pt-3">
-              <Text className="flex-1 text-xs text-[#aab7c7]">
-                Players assigned: <Text className="font-bold text-white">{coach.playerCount}</Text>
-              </Text>
-              <Text className="flex-1 text-right text-xs text-[#aab7c7]">
+            <View className="mt-3 border-t border-[#1e3a52] pt-3">
+              <Text className="text-xs text-[#aab7c7]">
                 Evaluations: <Text className="font-bold text-white">{coach.evaluationCount}</Text>
               </Text>
             </View>

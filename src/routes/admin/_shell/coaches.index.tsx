@@ -145,7 +145,6 @@ function CoachesPage() {
                     <TableHead>Coach Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Phone</TableHead>
-                    <TableHead className="text-center">Players assigned</TableHead>
                     <TableHead className="text-center">Players evaluated</TableHead>
                     <TableHead className="text-center">Evaluations</TableHead>
                     <TableHead>Status</TableHead>
@@ -159,7 +158,6 @@ function CoachesPage() {
                       <TableCell className="font-medium">{coach.full_name || "—"}</TableCell>
                       <TableCell className="text-muted-foreground">{coach.email}</TableCell>
                       <TableCell className="text-muted-foreground">{coach.phone || "—"}</TableCell>
-                      <TableCell className="text-center">{coach.playerCount}</TableCell>
                       <TableCell className="text-center">{coach.evaluatedPlayerCount}</TableCell>
                       <TableCell className="text-center">{coach.evaluationCount}</TableCell>
                       <TableCell>
