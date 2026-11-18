@@ -61,7 +61,12 @@ export function ScreenContainer({
         className={cn("flex-1", safeAreaClassName)}
         style={style}
       >
-        <View className={cn("flex-1", className)}>{children}</View>
+        <View
+          className={cn("flex-1", className)}
+          style={{ width: "100%", maxWidth: 1120, alignSelf: "center" }}
+        >
+          {children}
+        </View>
       </SafeAreaView>
     </View>
   );
