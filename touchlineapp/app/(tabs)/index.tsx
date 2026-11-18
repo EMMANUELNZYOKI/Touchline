@@ -971,12 +971,12 @@ export default function DashboardScreen() {
           <View className="mb-6">
             <View className="mb-3 flex-row gap-3">
               <MetricCard
-                label="Total coaches"
+                label="Total Coaches"
                 value={metricsQuery.isLoading ? "—" : String(metricsQuery.data?.coaches ?? 0)}
                 icon="people-outline"
               />
               <MetricCard
-                label="Active coaches"
+                label="Active Coaches"
                 value={metricsQuery.isLoading ? "—" : String(metricsQuery.data?.activeCoaches ?? 0)}
                 icon="person-outline"
                 accent="#78d4aa"
@@ -984,13 +984,13 @@ export default function DashboardScreen() {
             </View>
             <View className="mb-3 flex-row gap-3">
               <MetricCard
-                label="Total players registered"
+                label="Total Players Registered"
                 value={metricsQuery.isLoading ? "—" : String(metricsQuery.data?.players ?? 0)}
                 icon="people-outline"
                 accent="#8bb8ff"
               />
               <MetricCard
-                label="Total players evaluated"
+                label="Total Players Evaluated"
                 value={
                   metricsQuery.isLoading ? "—" : String(metricsQuery.data?.evaluatedPlayers ?? 0)
                 }
@@ -1000,7 +1000,7 @@ export default function DashboardScreen() {
             </View>
             <View className="mb-3 flex-row gap-3">
               <MetricCard
-                label="Total players not evaluated"
+                label="Total Players Not Evaluated"
                 value={
                   metricsQuery.isLoading ? "—" : String(metricsQuery.data?.notEvaluatedPlayers ?? 0)
                 }
@@ -1008,7 +1008,7 @@ export default function DashboardScreen() {
                 accent="#f2c36b"
               />
               <MetricCard
-                label="Players this month"
+                label="Players This Month"
                 value={
                   metricsQuery.isLoading ? "—" : String(metricsQuery.data?.playersThisMonth ?? 0)
                 }
@@ -1017,7 +1017,7 @@ export default function DashboardScreen() {
             </View>
             <View className="flex-row gap-3">
               <MetricCard
-                label="Evaluations this month"
+                label="Evaluations This Month"
                 value={
                   metricsQuery.isLoading
                     ? "—"
