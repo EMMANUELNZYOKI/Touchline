@@ -5,6 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   KeyboardAvoidingView,
   Modal,
@@ -21,6 +22,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
 import {
   createMobilePlayer,
+  deleteMobilePlayer,
   fetchMobilePlayers,
   uploadMobilePlayerPhoto,
   updateMobilePlayer,
@@ -318,7 +320,24 @@ export default function PlayersScreen() {
   });
 
   const isOwner = context?.role === "academy_admin";
+  const canManagePlayers = context?.role === "academy_admin" || context?.role === "academy_manager";
   const isSaving = createMutation.isPending || updateMutation.isPending;
+  const deleteMutation = useMutation({
+    mutationFn: (playerId: string) =>
+      deleteMobilePlayer({ academyId: context!.academy!.id, playerId }),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["mobile-players"] }),
+        queryClient.invalidateQueries({ queryKey: ["dashboard-metrics"] }),
+        queryClient.invalidateQueries({ queryKey: ["mobile-activity"] }),
+      ]);
+    },
+    onError: (error) =>
+      Alert.alert(
+        "Delete failed",
+        error instanceof Error ? error.message : "Player could not be deleted.",
+      ),
+  });
   const canWrite = context?.entitlements?.canWrite ?? false;
 
   const openCreate = () => {
@@ -339,10 +358,10 @@ export default function PlayersScreen() {
   useEffect(() => {
     if (!editId || !playersQuery.data) return;
     const selected = playersQuery.data.find((item) => item.id === editId);
-    if (!selected || !isOwner) return;
+    if (!selected || !canManagePlayers) return;
     const timer = setTimeout(() => openEdit(selected), 0);
     return () => clearTimeout(timer);
-  }, [editId, playersQuery.data, isOwner]);
+  }, [editId, playersQuery.data, canManagePlayers]);
   const setText = (key: keyof MobilePlayerInput, value: string) => {
     const numericKeys: (keyof MobilePlayerInput)[] = ["jersey_number", "height", "weight"];
     setPlayer((previous) => ({
@@ -426,7 +445,7 @@ export default function PlayersScreen() {
           )}
         </View>
 
-        {!isOwner && context.role === "academy_manager" && (
+        {canManagePlayers && !canWrite && (
           <View
             style={{
               marginBottom: 14,
@@ -438,8 +457,8 @@ export default function PlayersScreen() {
             }}
           >
             <Text className="text-sm leading-5 text-[#aab7c7]">
-              Player write actions are owner-only under the current academy database policy. You can
-              review player records here.
+              Player write actions are unavailable while this academy is suspended or its
+              subscription is not active.
             </Text>
           </View>
         )}
@@ -503,11 +522,8 @@ export default function PlayersScreen() {
           </View>
         )}
         {playersQuery.data?.map((item) => (
-          <Pressable
+          <View
             key={item.id}
-            accessibilityRole="button"
-            accessibilityLabel={`View ${item.first_name} ${item.last_name}`}
-            onPress={() => router.push({ pathname: "/player/[id]", params: { id: item.id } })}
             style={{
               marginBottom: 12,
               borderRadius: 17,
@@ -518,7 +534,12 @@ export default function PlayersScreen() {
               minHeight: 82,
             }}
           >
-            <View className="flex-row items-center">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`View ${item.first_name} ${item.last_name}`}
+              onPress={() => router.push({ pathname: "/player/[id]", params: { id: item.id } })}
+              className="flex-row items-center"
+            >
               <View className="mr-3 h-11 w-11 items-center justify-center rounded-full bg-[#173f4a]">
                 <Text className="text-base font-black text-[#78d4aa]">
                   {(item.first_name[0] ?? "?").toUpperCase()}
@@ -548,8 +569,43 @@ export default function PlayersScreen() {
                 />
                 <Text className="mt-1 text-[10px] text-[#78d4aa]">Tap to view</Text>
               </View>
-            </View>
-          </Pressable>
+            </Pressable>
+            {canManagePlayers && (
+              <View className="mt-3 flex-row gap-2 border-t border-[#1e3a52] pt-3">
+                <Pressable
+                  onPress={() => openEdit(item)}
+                  disabled={!canWrite || deleteMutation.isPending}
+                  className="flex-1 rounded-xl border border-[#2b5268] bg-[#173f4a] px-3 py-2.5"
+                  style={{ opacity: !canWrite || deleteMutation.isPending ? 0.5 : 1 }}
+                >
+                  <Text className="text-center text-xs font-bold text-[#d5f5e5]">Edit</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() =>
+                    Alert.alert(
+                      "Delete player?",
+                      `${item.first_name} ${item.last_name} and all of their evaluations will be permanently removed.`,
+                      [
+                        { text: "Cancel", style: "cancel" },
+                        {
+                          text: "Delete",
+                          style: "destructive",
+                          onPress: () => deleteMutation.mutate(item.id),
+                        },
+                      ],
+                    )
+                  }
+                  disabled={!canWrite || deleteMutation.isPending}
+                  className="flex-1 rounded-xl border border-[#7d3b49] bg-[#4b2530] px-3 py-2.5"
+                  style={{ opacity: !canWrite || deleteMutation.isPending ? 0.5 : 1 }}
+                >
+                  <Text className="text-center text-xs font-bold text-[#ffd7de]">
+                    {deleteMutation.isPending ? "Deleting…" : "Delete"}
+                  </Text>
+                </Pressable>
+              </View>
+            )}
+          </View>
         ))}
       </ScrollView>
 

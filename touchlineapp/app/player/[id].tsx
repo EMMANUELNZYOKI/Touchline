@@ -172,7 +172,7 @@ export default function PlayerDetailScreen() {
                 </Pressable>
               )}
             </View>
-            {context.role === "academy_admin" && (
+            {(context.role === "academy_admin" || context.role === "academy_manager") && (
               <Pressable
                 onPress={() =>
                   router.push({ pathname: "/(tabs)/players", params: { editId: player.id } })

@@ -442,6 +442,15 @@ export async function updateMobilePlayer(input: {
   return data as MobilePlayer;
 }
 
+export async function deleteMobilePlayer(input: { academyId: string; playerId: string }) {
+  const { error } = await supabase
+    .from("players")
+    .delete()
+    .eq("id", input.playerId)
+    .eq("academy_id", input.academyId);
+  if (error) throw error;
+}
+
 export async function createMobileEvaluation(input: {
   academy_id: string;
   player_id: string;
