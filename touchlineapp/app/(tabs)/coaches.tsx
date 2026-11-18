@@ -17,6 +17,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
 import {
   createMobileCoach,
+  deleteMobileCoach,
   fetchMobileCoaches,
   setMobileCoachActive,
   type MobileCoach,
@@ -35,6 +36,7 @@ export default function CoachesScreen() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [pendingCoach, setPendingCoach] = useState<MobileCoach | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<MobileCoach | null>(null);
   const query = useQuery({
     queryKey: ["mobile-coaches", context?.academy?.id],
     queryFn: () => fetchMobileCoaches(context!.academy!.id),
@@ -70,6 +72,15 @@ export default function CoachesScreen() {
     onError: (error) =>
       setMessage(error instanceof Error ? error.message : "Coach access could not be updated."),
   });
+  const remove = useMutation({
+    mutationFn: (coach: MobileCoach) => deleteMobileCoach(coach.id),
+    onSuccess: () => {
+      setPendingDelete(null);
+      void client.invalidateQueries({ queryKey: ["mobile-coaches"] });
+    },
+    onError: (error) =>
+      setMessage(error instanceof Error ? error.message : "Coach could not be deleted."),
+  });
   if (!context || (context.role !== "academy_admin" && context.role !== "academy_manager"))
     return null;
   const canCreate =
@@ -88,7 +99,7 @@ export default function CoachesScreen() {
           <View className="flex-1 pr-4">
             <Text className="text-2xl font-black text-white">Coaches</Text>
             <Text className="mt-2 text-sm leading-5 text-[#aab7c7]">
-              Coach accounts, assigned players, and evaluation activity from the shared academy.
+              Coach accounts and evaluation activity from the shared academy.
             </Text>
           </View>
           {canCreate && (
@@ -151,34 +162,31 @@ export default function CoachesScreen() {
                 {coach.status}
               </Text>
             </Pressable>
-            <View className="mt-3 flex-row border-t border-[#1e3a52] pt-3">
-              <Text className="flex-1 text-xs text-[#aab7c7]">
-                Players assigned: <Text className="font-bold text-white">{coach.playerCount}</Text>
-              </Text>
-              <Text className="flex-1 text-right text-xs text-[#aab7c7]">
+            <View className="mt-3 border-t border-[#1e3a52] pt-3">
+              <Text className="text-xs text-[#aab7c7]">
                 Evaluations: <Text className="font-bold text-white">{coach.evaluationCount}</Text>
               </Text>
             </View>
-            <Pressable
-              onPress={() => setPendingCoach(coach)}
-              className="mt-4 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"
-              style={{
-                minHeight: 48,
-                marginTop: 12,
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: 1,
-                borderColor: "#2b5268",
-                borderRadius: 12,
-                backgroundColor: "#173f4a",
-                paddingHorizontal: 16,
-                paddingVertical: 10,
-              }}
-            >
-              <Text className="text-center text-xs font-bold text-[#d5f5e5]">
-                {coach.status === "active" ? "Deactivate access" : "Activate access"}
-              </Text>
-            </Pressable>
+            <View className="mt-3 flex-row gap-2">
+              <Pressable
+                onPress={() => setPendingCoach(coach)}
+                className="flex-1 rounded-xl border border-[#2b5268] bg-[#173f4a] px-3 py-3"
+              >
+                <Text className="text-center text-xs font-bold text-[#d5f5e5]">
+                  {coach.status === "active" ? "Deactivate" : "Activate"}
+                </Text>
+              </Pressable>
+              {context.role === "academy_admin" && (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Delete ${coach.full_name}`}
+                  onPress={() => setPendingDelete(coach)}
+                  className="w-12 items-center justify-center rounded-xl border border-[#7d3b49] bg-[#4b2530]"
+                >
+                  <Ionicons name="trash-outline" size={18} color="#ffd7de" />
+                </Pressable>
+              )}
+            </View>
           </View>
         ))}
         {!query.isLoading && !query.data?.length && (
@@ -196,6 +204,17 @@ export default function CoachesScreen() {
         onCancel={() => setPendingCoach(null)}
         onConfirm={() => {
           if (pendingCoach) toggle.mutate(pendingCoach);
+        }}
+      />
+      <ConfirmModal
+        visible={Boolean(pendingDelete)}
+        title={`Delete ${pendingDelete?.full_name ?? "this coach"}?`}
+        message="The coach account will be permanently removed. Player records will remain in the academy without an assigned coach."
+        confirmLabel={remove.isPending ? "Deleting…" : "Delete"}
+        danger
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={() => {
+          if (pendingDelete) remove.mutate(pendingDelete);
         }}
       />
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>

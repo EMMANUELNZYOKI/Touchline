@@ -31,6 +31,13 @@ export function updateAcademyCoach({
   );
 }
 
+export function deleteAcademyCoach({ data }: { data: { coachId: string } }) {
+  return callTouchlineApi<{ ok: true }>(
+    `/api/admin/coaches/${encodeURIComponent(data.coachId)}`,
+    "DELETE",
+  );
+}
+
 export interface CreateManagerInput {
   full_name: string;
   email: string;

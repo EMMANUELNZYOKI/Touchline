@@ -497,6 +497,33 @@ async function dispatch(request: Request, userId: string, body: unknown) {
     return { ok: true };
   }
 
+  if (segments[1] === "admin" && segments[2] === "coaches" && segments[3] && method === "DELETE") {
+    const coachId = segments[3];
+    const academyId = await requireAcademyOwner(userId);
+    await requireAcademyCoach(academyId, coachId);
+
+    // Keep the player records in the academy; deleting a coach must not delete the roster.
+    const { error: unassignError } = await supabaseAdmin
+      .from("players")
+      .update({ coach_id: null })
+      .eq("academy_id", academyId)
+      .eq("coach_id", coachId);
+    if (unassignError) throw new ApiError("Could not preserve this coach's player records.", 500);
+
+    // Activity logs reference the actor profile with RESTRICT, so remove only logs created by
+    // this account before deleting the auth/profile record.
+    const { error: activityError } = await supabaseAdmin
+      .from("admin_activity_logs")
+      .delete()
+      .eq("actor_id", coachId)
+      .eq("academy_id", academyId);
+    if (activityError) throw new ApiError("Could not prepare the coach account for deletion.", 500);
+
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(coachId);
+    if (error) throw new ApiError("Could not delete the coach account.", 500);
+    return { ok: true };
+  }
+
   if (segments.join("/") === "api/billing" && method === "GET") {
     const academyId = await requireAcademyOwner(userId, { allowReadOnly: true });
     const [

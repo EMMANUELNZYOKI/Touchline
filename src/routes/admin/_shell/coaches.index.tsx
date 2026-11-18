@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@/lib/next-server-fn";
 import { toast } from "sonner";
-import { Users, Search, Loader2 } from "lucide-react";
+import { Users, Search, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -33,7 +33,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EmptyState, LoadingBlock } from "@/components/DataCards";
 import { fetchCoaches, fetchMyAcademyEntitlements } from "@/lib/api";
-import { setCoachActive, updateAcademyCoach } from "@/lib/admin.functions";
+import { deleteAcademyCoach, setCoachActive, updateAcademyCoach } from "@/lib/admin.functions";
 import { UpgradeDialog } from "@/components/UpgradeDialog";
 import { useAuth } from "@/lib/auth";
 import { isPackageLimitError } from "@/lib/package-limits";
@@ -47,6 +47,7 @@ export const Route = createFileRoute("/admin/_shell/coaches/")({
 function CoachesPage() {
   const queryClient = useQueryClient();
   const toggleActive = useServerFn(setCoachActive);
+  const deleteCoach = useServerFn(deleteAcademyCoach);
   const { profile, role } = useAuth();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Coach | null>(null);
@@ -81,6 +82,15 @@ function CoachesPage() {
         toast.error(error instanceof Error ? error.message : "Action failed");
       }
     },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (coach: Coach) => deleteCoach({ data: { coachId: coach.id } }),
+    onSuccess: (_, coach) => {
+      toast.success(`${coach.full_name} deleted`);
+      queryClient.invalidateQueries({ queryKey: ["coaches"] });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Delete failed"),
   });
 
   if (isLoading) return <LoadingBlock label="Loading coaches…" />;
@@ -183,6 +193,25 @@ function CoachesPage() {
                           >
                             {coach.is_active ? "Deactivate" : "Activate"}
                           </Button>
+                          {role === "academy_admin" && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              aria-label={`Delete ${coach.full_name}`}
+                              disabled={deleteMutation.isPending}
+                              onClick={() => {
+                                if (
+                                  window.confirm(
+                                    `Delete ${coach.full_name}? The coach account will be permanently removed, while player records remain in the academy.`,
+                                  )
+                                ) {
+                                  deleteMutation.mutate(coach);
+                                }
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>

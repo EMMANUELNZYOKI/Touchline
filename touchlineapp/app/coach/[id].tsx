@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -16,7 +17,7 @@ import {
 import { AcademyIdentity, MetricCard } from "@/components/touchline-ui";
 import { ScreenContainer } from "@/components/screen-container";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
-import { fetchMobileCoaches, updateMobileCoach } from "@/lib/touchline/admin";
+import { deleteMobileCoach, fetchMobileCoaches, updateMobileCoach } from "@/lib/touchline/admin";
 import { fetchMobileEvaluations, fetchMobilePlayers } from "@/lib/touchline/data";
 
 const input =
@@ -77,6 +78,15 @@ export default function CoachDetailScreen() {
     onError: (error) =>
       setMessage(error instanceof Error ? error.message : "Coach details could not be updated."),
   });
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteMobileCoach(id),
+    onSuccess: async () => {
+      await client.invalidateQueries({ queryKey: ["mobile-coaches"] });
+      router.back();
+    },
+    onError: (error) =>
+      setMessage(error instanceof Error ? error.message : "Coach could not be deleted."),
+  });
   if (!context) return null;
   const coachEvaluations = (evaluations.data ?? []).filter((item) => item.coach_id === id);
   const evaluatedIds = new Set(coachEvaluations.map((item) => item.player_id));
@@ -125,15 +135,41 @@ export default function CoachDetailScreen() {
               </Text>
             </View>
             {canEdit && (
-              <Pressable
-                onPress={() => {
-                  setMessage(null);
-                  setEditOpen(true);
-                }}
-                className="mb-5 rounded-2xl bg-[#78d4aa] p-4"
-              >
-                <Text className="text-center font-black text-[#071521]">Edit coach details</Text>
-              </Pressable>
+              <View className="mb-5 flex-row gap-3">
+                <Pressable
+                  onPress={() => {
+                    setMessage(null);
+                    setEditOpen(true);
+                  }}
+                  className="flex-1 rounded-2xl bg-[#78d4aa] p-4"
+                >
+                  <Text className="text-center font-black text-[#071521]">Edit coach details</Text>
+                </Pressable>
+                {context.role === "academy_admin" && (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Delete coach"
+                    onPress={() =>
+                      Alert.alert(
+                        `Delete ${coach.full_name}?`,
+                        "The coach account will be permanently removed. Player records will remain in the academy without an assigned coach.",
+                        [
+                          { text: "Cancel", style: "cancel" },
+                          {
+                            text: "Delete",
+                            style: "destructive",
+                            onPress: () => deleteMutation.mutate(),
+                          },
+                        ],
+                      )
+                    }
+                    disabled={deleteMutation.isPending}
+                    className="w-14 items-center justify-center rounded-2xl border border-[#7d3b49] bg-[#4b2530]"
+                  >
+                    <Ionicons name="trash-outline" size={20} color="#ffd7de" />
+                  </Pressable>
+                )}
+              </View>
             )}
             <View className="mb-5 flex-row gap-3">
               <MetricCard
