@@ -176,7 +176,7 @@ export default function CoachesScreen() {
                   {coach.status === "active" ? "Deactivate" : "Activate"}
                 </Text>
               </Pressable>
-              {context.role === "academy_admin" && (
+              {(context.role === "academy_admin" || context.role === "academy_manager") && (
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={`Delete ${coach.full_name}`}

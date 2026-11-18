@@ -499,7 +499,7 @@ async function dispatch(request: Request, userId: string, body: unknown) {
 
   if (segments[1] === "admin" && segments[2] === "coaches" && segments[3] && method === "DELETE") {
     const coachId = segments[3];
-    const academyId = await requireAcademyOwner(userId);
+    const academyId = await requireAcademyAdmin(userId);
     await requireAcademyCoach(academyId, coachId);
 
     // Keep the player records in the academy; deleting a coach must not delete the roster.

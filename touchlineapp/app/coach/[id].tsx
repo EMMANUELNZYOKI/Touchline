@@ -145,7 +145,7 @@ export default function CoachDetailScreen() {
                 >
                   <Text className="text-center font-black text-[#071521]">Edit coach details</Text>
                 </Pressable>
-                {context.role === "academy_admin" && (
+                {(context.role === "academy_admin" || context.role === "academy_manager") && (
                   <Pressable
                     accessibilityRole="button"
                     accessibilityLabel="Delete coach"

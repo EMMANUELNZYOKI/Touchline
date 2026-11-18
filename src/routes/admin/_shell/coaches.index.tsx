@@ -193,7 +193,7 @@ function CoachesPage() {
                           >
                             {coach.is_active ? "Deactivate" : "Activate"}
                           </Button>
-                          {role === "academy_admin" && (
+                          {(role === "academy_admin" || role === "academy_manager") && (
                             <Button
                               size="sm"
                               variant="ghost"
