@@ -23,7 +23,9 @@ export default function ProfileScreen() {
     // Clear auth state and leave the tab tree in the same synchronous action.
     // Supabase cleanup runs in the background and must not block navigation.
     void signOut();
-    router.replace("/");
+    // Let React commit the cleared context first; otherwise the entry route can
+    // briefly see the old session and redirect straight back to the tabs.
+    setTimeout(() => router.replace("/"), 0);
   };
 
   return (
