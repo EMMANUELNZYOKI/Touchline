@@ -29,7 +29,7 @@ export default function MoreScreen() {
             title="Managers"
             body="Create, activate, and delegate daily academy operations."
             icon="shield-checkmark-outline"
-            onPress={() => router.push("/managers")}
+            onPress={() => router.push("/(tabs)/managers")}
           />
         )}
         {canManageCoaches && (

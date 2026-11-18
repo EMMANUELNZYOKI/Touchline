@@ -25,6 +25,10 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
   const { context, signOut } = useTouchlineAuth();
   const [confirmSignOut, setConfirmSignOut] = useState(false);
   if (!context) return null;
+  const subscriptionLabel =
+    context.subscription?.status === "trialing"
+      ? "14-day trial"
+      : (context.subscription?.status?.replace("_", " ") ?? "Not available");
   const signOutNow = () => setConfirmSignOut(true);
   const performSignOut = () => {
     setConfirmSignOut(false);
@@ -72,6 +76,31 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
             <Text className="mt-1 text-sm leading-5 text-[#aab7c7]">
               Your mobile and web workspace use the same account and data.
             </Text>
+          </View>
+          <View className="mt-5 rounded-2xl border border-[#1e3a52] bg-[#0b1c2d] p-4">
+            <Text className="text-xs font-semibold uppercase tracking-wider text-[#78d4aa]">
+              Account details
+            </Text>
+            <View className="mt-3 flex-row items-center justify-between py-2">
+              <Text className="text-sm text-[#aab7c7]">Role</Text>
+              <Text className="max-w-[58%] text-right font-semibold text-white">
+                {ROLE_LABELS[context.role]}
+              </Text>
+            </View>
+            <View className="flex-row items-center justify-between py-2">
+              <Text className="text-sm text-[#aab7c7]">Academy</Text>
+              <Text className="max-w-[58%] text-right font-semibold text-white">
+                {context.academy?.name ?? "Platform"}
+              </Text>
+            </View>
+            {context.role === "academy_admin" && (
+              <View className="flex-row items-center justify-between py-2">
+                <Text className="text-sm text-[#aab7c7]">Subscription</Text>
+                <Text className="max-w-[58%] text-right font-semibold capitalize text-[#78d4aa]">
+                  {subscriptionLabel}
+                </Text>
+              </View>
+            )}
           </View>
           <TouchableOpacity
             onPress={signOutNow}
