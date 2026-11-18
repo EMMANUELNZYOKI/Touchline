@@ -37,7 +37,7 @@ export default function MoreScreen() {
             title="Coaches"
             body="Manage coach accounts, assigned players, and evaluation activity."
             icon="people-outline"
-            onPress={() => router.push("/coaches")}
+            onPress={() => router.push(context.role === "academy_manager" ? "/(tabs)/coaches" : "/coaches")}
           />
         )}
         {context.role === "coach" && (
