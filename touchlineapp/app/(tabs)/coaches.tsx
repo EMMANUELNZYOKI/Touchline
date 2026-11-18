@@ -3,17 +3,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Modal,
   Pressable,
-  Platform,
   ScrollView,
   Text,
   TextInput,
   View,
 } from "react-native";
 
-import { AcademyIdentity } from "@/components/touchline-ui";
+import { AcademyIdentity, ConfirmModal } from "@/components/touchline-ui";
 import { ScreenContainer } from "@/components/screen-container";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
 import {
@@ -35,6 +33,7 @@ export default function CoachesScreen() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [pendingCoach, setPendingCoach] = useState<MobileCoach | null>(null);
   const query = useQuery({
     queryKey: ["mobile-coaches", context?.academy?.id],
     queryFn: () => fetchMobileCoaches(context!.academy!.id),
@@ -63,7 +62,10 @@ export default function CoachesScreen() {
   });
   const toggle = useMutation({
     mutationFn: (coach: MobileCoach) => setMobileCoachActive(coach.id, coach.status !== "active"),
-    onSuccess: () => void client.invalidateQueries({ queryKey: ["mobile-coaches"] }),
+    onSuccess: () => {
+      setPendingCoach(null);
+      void client.invalidateQueries({ queryKey: ["mobile-coaches"] });
+    },
     onError: (error) =>
       setMessage(error instanceof Error ? error.message : "Coach access could not be updated."),
   });
@@ -149,17 +151,7 @@ export default function CoachesScreen() {
               </Text>
             </View>
             <Pressable
-              onPress={() => {
-                const title = `${coach.status === "active" ? "Deactivate" : "Activate"} coach?`;
-                if (Platform.OS === "web") {
-                  if (window.confirm(`${title}\n\n${coach.full_name}`)) toggle.mutate(coach);
-                  return;
-                }
-                Alert.alert(title, coach.full_name, [
-                  { text: "Cancel", style: "cancel" },
-                  { text: "Confirm", onPress: () => toggle.mutate(coach) },
-                ]);
-              }}
+              onPress={() => setPendingCoach(coach)}
               className="mt-4 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"
               style={{
                 minHeight: 48,
@@ -186,6 +178,17 @@ export default function CoachesScreen() {
           </Text>
         )}
       </ScrollView>
+      <ConfirmModal
+        visible={Boolean(pendingCoach)}
+        title={`${pendingCoach?.status === "active" ? "Deactivate" : "Activate"} coach?`}
+        message={pendingCoach?.full_name ?? ""}
+        confirmLabel={pendingCoach?.status === "active" ? "Deactivate" : "Activate"}
+        danger={pendingCoach?.status === "active"}
+        onCancel={() => setPendingCoach(null)}
+        onConfirm={() => {
+          if (pendingCoach) toggle.mutate(pendingCoach);
+        }}
+      />
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
         <View className="flex-1 justify-end bg-black/70">
           <View className="rounded-t-3xl bg-[#071521] p-5 pb-8">

@@ -3,17 +3,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Modal,
   Pressable,
-  Platform,
   ScrollView,
   Text,
   TextInput,
   View,
 } from "react-native";
 
-import { AcademyIdentity } from "@/components/touchline-ui";
+import { AcademyIdentity, ConfirmModal } from "@/components/touchline-ui";
 import { ScreenContainer } from "@/components/screen-container";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
 import {
@@ -34,6 +32,11 @@ export default function ManagersScreen() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [pendingManager, setPendingManager] = useState<{
+    id: string;
+    full_name: string;
+    status: "active" | "suspended";
+  } | null>(null);
   const query = useQuery({
     queryKey: ["mobile-managers", context?.academy?.id],
     queryFn: fetchMobileManagers,
@@ -61,7 +64,10 @@ export default function ManagersScreen() {
   const toggle = useMutation({
     mutationFn: (manager: { id: string; status: "active" | "suspended" }) =>
       setMobileManagerActive(manager.id, manager.status !== "active"),
-    onSuccess: () => void client.invalidateQueries({ queryKey: ["mobile-managers"] }),
+    onSuccess: () => {
+      setPendingManager(null);
+      void client.invalidateQueries({ queryKey: ["mobile-managers"] });
+    },
     onError: (error) =>
       setMessage(error instanceof Error ? error.message : "Manager access could not be updated."),
   });
@@ -136,17 +142,7 @@ export default function ManagersScreen() {
               </Text>
             </View>
             <Pressable
-              onPress={() => {
-                const title = `${manager.status === "active" ? "Deactivate" : "Activate"} manager?`;
-                if (Platform.OS === "web") {
-                  if (window.confirm(`${title}\n\n${manager.full_name}`)) toggle.mutate(manager);
-                  return;
-                }
-                Alert.alert(title, manager.full_name, [
-                  { text: "Cancel", style: "cancel" },
-                  { text: "Confirm", onPress: () => toggle.mutate(manager) },
-                ]);
-              }}
+              onPress={() => setPendingManager(manager)}
               className="mt-4 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"
               style={{
                 minHeight: 48,
@@ -173,6 +169,17 @@ export default function ManagersScreen() {
           </Text>
         )}
       </ScrollView>
+      <ConfirmModal
+        visible={Boolean(pendingManager)}
+        title={`${pendingManager?.status === "active" ? "Deactivate" : "Activate"} manager?`}
+        message={pendingManager?.full_name ?? ""}
+        confirmLabel={pendingManager?.status === "active" ? "Deactivate" : "Activate"}
+        danger={pendingManager?.status === "active"}
+        onCancel={() => setPendingManager(null)}
+        onConfirm={() => {
+          if (pendingManager) toggle.mutate(pendingManager);
+        }}
+      />
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
         <View className="flex-1 justify-end bg-black/70">
           <View className="rounded-t-3xl bg-[#071521] p-5 pb-8">

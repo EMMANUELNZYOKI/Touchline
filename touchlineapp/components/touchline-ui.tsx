@@ -260,3 +260,50 @@ export function ActionCard({
     </Pressable>
   );
 }
+
+export function ConfirmModal({
+  visible,
+  title,
+  message,
+  confirmLabel = "Confirm",
+  danger = false,
+  onCancel,
+  onConfirm,
+}: {
+  visible: boolean;
+  title: string;
+  message: string;
+  confirmLabel?: string;
+  danger?: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
+      <View className="flex-1 items-center justify-center bg-black/70 px-6">
+        <View className="w-full max-w-[360px] rounded-3xl border border-[#2b5268] bg-[#10263a] p-5">
+          <Text className="text-xl font-black text-white">{title}</Text>
+          <Text className="mt-2 text-sm leading-5 text-[#aab7c7]">{message}</Text>
+          <View className="mt-5 flex-row gap-3">
+            <Pressable
+              onPress={onCancel}
+              className="flex-1 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"
+              style={{ flex: 1, minHeight: 50, alignItems: "center", justifyContent: "center" }}
+            >
+              <Text className="font-bold text-[#d5f5e5]">Cancel</Text>
+            </Pressable>
+            <Pressable
+              onPress={onConfirm}
+              className={`flex-1 rounded-xl px-4 py-3 ${danger ? "bg-[#c65b70]" : "bg-[#78d4aa]"}`}
+              style={{ flex: 1, minHeight: 50, alignItems: "center", justifyContent: "center" }}
+            >
+              <Text className={`font-black ${danger ? "text-white" : "text-[#071521]"}`}>
+                {confirmLabel}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
