@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import { useState } from "react";
 import { Modal, TouchableOpacity, ScrollView, Text, View } from "react-native";
 
@@ -20,11 +19,7 @@ export default function ProfileScreen() {
 
   const performSignOut = async () => {
     setConfirmSignOut(false);
-    try {
-      await signOut();
-    } finally {
-      router.replace("/");
-    }
+    await signOut();
   };
 
   return (

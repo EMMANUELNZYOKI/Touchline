@@ -122,20 +122,21 @@ export function TouchlineAuthProvider({ children }: { children: React.ReactNode 
   );
 
   const signOut = useCallback(async () => {
-    let signOutError: Error | null = null;
     try {
       // Clear the device session immediately; a failed network revocation
       // should never leave the user trapped inside the authenticated tabs.
       const { error: authError } = await supabase.auth.signOut({ scope: "local" });
-      if (authError) signOutError = authError;
+      void authError;
     } catch (cause) {
-      signOutError = cause instanceof Error ? cause : new Error("Sign out failed.");
+      void cause;
     } finally {
       setContext(null);
       setError(null);
       setLoading(false);
     }
-    if (signOutError) throw signOutError;
+    // Local logout has completed even if the remote revocation request failed.
+    // Do not rethrow here: the authenticated route guard will redirect to the
+    // welcome screen, and an unhandled rejection would obscure that success.
   }, []);
 
   const refresh = useCallback(async () => {
