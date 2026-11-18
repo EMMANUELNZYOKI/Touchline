@@ -266,8 +266,8 @@ export default function PlayersScreen() {
   const [photoUploading, setPhotoUploading] = useState(false);
 
   const playersQuery = useQuery({
-    queryKey: ["mobile-players", context?.academy?.id, context?.profile.id],
-    queryFn: () => fetchMobilePlayers(context!.academy!.id),
+    queryKey: ["mobile-players", context?.academy?.id, context?.profile.id, context?.role],
+    queryFn: () => fetchMobilePlayers(context!.academy!.id, context?.role === "coach" ? { coachId: context.profile.id } : undefined),
     enabled: Boolean(context?.academy),
   });
 

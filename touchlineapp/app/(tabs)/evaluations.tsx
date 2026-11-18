@@ -131,13 +131,18 @@ export default function EvaluationsScreen() {
   const [message, setMessage] = useState<string | null>(null);
 
   const evaluationsQuery = useQuery({
-    queryKey: ["mobile-evaluations", context?.academy?.id],
-    queryFn: () => fetchMobileEvaluations(context!.academy!.id),
+    queryKey: ["mobile-evaluations", context?.academy?.id, context?.profile.id, context?.role],
+    queryFn: async () => {
+      return fetchMobileEvaluations(
+        context!.academy!.id,
+        context?.role === "coach" ? { coachId: context.profile.id } : undefined,
+      );
+    },
     enabled: Boolean(context?.academy),
   });
   const playersQuery = useQuery({
     queryKey: ["mobile-evaluation-players", context?.academy?.id, context?.profile.id],
-    queryFn: () => fetchMobilePlayers(context!.academy!.id),
+    queryFn: () => fetchMobilePlayers(context!.academy!.id, context?.role === "coach" ? { coachId: context.profile.id } : undefined),
     enabled: Boolean(context?.academy),
   });
   const scores = useMemo(() => mobileScoresFromSkills(skills), [skills]);

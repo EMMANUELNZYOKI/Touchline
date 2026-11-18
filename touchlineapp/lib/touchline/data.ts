@@ -170,13 +170,15 @@ export async function fetchMobilePlayers(
   })) as MobilePlayer[];
 }
 
-export async function fetchMobileEvaluations(academyId: string): Promise<MobileEvaluation[]> {
+export async function fetchMobileEvaluations(academyId: string, options?: { coachId?: string }): Promise<MobileEvaluation[]> {
+  let evaluationQuery = supabase
+    .from("player_evaluations")
+    .select("*")
+    .eq("academy_id", academyId)
+    .order("created_at", { ascending: false });
+  if (options?.coachId) evaluationQuery = evaluationQuery.eq("coach_id", options.coachId);
   const [evaluationsResult, playersResult, profilesResult] = await Promise.all([
-    supabase
-      .from("player_evaluations")
-      .select("*")
-      .eq("academy_id", academyId)
-      .order("created_at", { ascending: false }),
+    evaluationQuery,
     supabase.from("players").select("id, first_name, last_name").eq("academy_id", academyId),
     supabase.from("profiles").select("id, full_name"),
   ]);
@@ -269,10 +271,10 @@ export async function fetchMobileSignedLogoUrl(path: string | null): Promise<str
   return data.signedUrl ?? null;
 }
 
-export async function fetchMobilePlayerDetail(academyId: string, playerId: string) {
+export async function fetchMobilePlayerDetail(academyId: string, playerId: string, options?: { coachId?: string }) {
   const [players, evaluations] = await Promise.all([
-    fetchMobilePlayers(academyId),
-    fetchMobileEvaluations(academyId),
+    fetchMobilePlayers(academyId, options),
+    fetchMobileEvaluations(academyId, options),
   ]);
   const player = players.find((item) => item.id === playerId);
   if (!player) throw new Error("This player could not be found in your academy.");

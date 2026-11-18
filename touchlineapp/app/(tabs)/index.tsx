@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import {
   Modal,
+  Pressable,
   TouchableOpacity,
   RefreshControl,
   ScrollView,
@@ -16,7 +17,7 @@ import { ActionCard, AcademyIdentity, MetricCard } from "@/components/touchline-
 import { ScreenContainer } from "@/components/screen-container";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
 import { ROLE_LABELS } from "@/lib/touchline/context";
-import { loadDashboardMetrics, type DashboardMetrics } from "@/lib/touchline/dashboard";
+import { loadCoachDashboardData, loadDashboardMetrics, type CoachDashboardData, type DashboardMetrics } from "@/lib/touchline/dashboard";
 import {
   changePlatformAcademyPackage,
   createPlatformAcademy,
@@ -740,13 +741,73 @@ function SuperAdminDashboard({
   );
 }
 
+function CoachDashboard({
+  academyName,
+  userName,
+  data,
+  loading,
+  refreshing,
+  onRefresh,
+}: {
+  academyName: string;
+  userName: string;
+  data?: CoachDashboardData;
+  loading: boolean;
+  refreshing: boolean;
+  onRefresh: () => Promise<void>;
+}) {
+  return (
+    <ScreenContainer containerClassName="bg-[#071521]" safeAreaClassName="bg-[#071521]" edges={["top", "left", "right"]}>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 32 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#78d4aa" colors={["#78d4aa"]} />}
+      >
+        <AcademyIdentity name={academyName} role="coach" userName={userName} />
+        <Text className="mb-1 text-2xl font-black text-white">Your coaching workspace</Text>
+        <Text className="mb-5 text-sm leading-5 text-[#aab7c7]">Track your registered players and their development evaluations.</Text>
+        <View className="mb-3 flex-row gap-3">
+          <MetricCard label="Registered players" value={loading ? "—" : String(data?.registeredPlayers ?? 0)} icon="people-outline" />
+          <MetricCard label="Awaiting evaluation" value={loading ? "—" : String(data?.awaitingEvaluation ?? 0)} icon="time-outline" accent="#f2c36b" />
+        </View>
+        <View className="mb-3 flex-row gap-3">
+          <MetricCard label="Players evaluated" value={loading ? "—" : String(data?.playersEvaluated ?? 0)} icon="checkmark-circle-outline" accent="#8bb8ff" />
+          <MetricCard label="Average rating" value={loading ? "—" : data?.averageRating ? `${data.averageRating.toFixed(1)}/10` : "—"} icon="star-outline" accent="#dca7ff" />
+        </View>
+        <View className="mb-6 flex-row gap-3">
+          <MetricCard label="Added this month" value={loading ? "—" : String(data?.addedThisMonth ?? 0)} icon="calendar-outline" />
+          <View className="flex-1" />
+        </View>
+        <Text className="mb-3 text-base font-bold text-white">Recently registered</Text>
+        {!loading && !data?.recentPlayers.length && <Text className="mb-5 rounded-2xl border border-dashed border-[#2b4862] p-5 text-sm text-[#aab7c7]">No players have been registered yet.</Text>}
+        {data?.recentPlayers.map((player) => (
+          <Pressable key={player.id} onPress={() => router.push({ pathname: "/player/[id]", params: { id: player.id } })} className="mb-3 flex-row items-center rounded-2xl border border-[#1e3a52] bg-[#10263a] p-4">
+            <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-[#173f4a]"><Text className="font-black text-[#78d4aa]">{player.name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase()}</Text></View>
+            <View className="flex-1"><Text className="font-bold text-white">{player.name}</Text><Text className="mt-1 text-xs text-[#aab7c7]">Added {new Date(player.created_at).toLocaleDateString()}</Text></View>
+            <View className="items-end"><Text className={`text-xs font-bold ${player.evaluated ? "text-[#78d4aa]" : "text-[#f2c36b]"}`}>{player.evaluated ? "Evaluated" : "Awaiting evaluation"}</Text>{player.rating != null && <Text className="mt-1 text-xs font-black text-white">{player.rating.toFixed(1)}/10</Text>}</View>
+          </Pressable>
+        ))}
+        <Text className="mb-3 mt-3 text-base font-bold text-white">Quick actions</Text>
+        <ActionCard title="Open player workspace" body="Review your assigned player records and development details." icon="people-outline" onPress={() => router.push("/(tabs)/players")} />
+        <ActionCard title="Review evaluations" body="Record and update tactical, physical, technical, and mindset assessments." icon="clipboard-outline" onPress={() => router.push("/(tabs)/evaluations")} />
+      </ScrollView>
+    </ScreenContainer>
+  );
+}
+
 export default function DashboardScreen() {
   const { context, refresh } = useTouchlineAuth();
   const [refreshing, setRefreshing] = useState(false);
   const metricsQuery = useQuery<DashboardMetrics>({
     queryKey: ["dashboard-metrics", context?.academy?.id],
     queryFn: () => loadDashboardMetrics(context!.academy!.id),
-    enabled: Boolean(context?.academy),
+    enabled: context?.role !== "coach" && Boolean(context?.academy),
+    retry: 1,
+  });
+  const coachQuery = useQuery<CoachDashboardData>({
+    queryKey: ["coach-dashboard", context?.academy?.id, context?.profile.id],
+    queryFn: () => loadCoachDashboardData(context!.academy!.id, context!.profile.id),
+    enabled: context?.role === "coach" && Boolean(context?.academy),
     retry: 1,
   });
   if (!context) return null;
@@ -768,6 +829,9 @@ export default function DashboardScreen() {
       : context.subscription?.status === "trialing" && context.subscription.trial_ends_at
         ? `Trial until ${displayDate(context.subscription.trial_ends_at)}`
         : (context.subscription?.status?.replace("_", " ") ?? "Workspace connected");
+  if (context.role === "coach") {
+    return <CoachDashboard academyName={academyName} userName={context.profile.full_name} data={coachQuery.data} loading={coachQuery.isLoading} refreshing={refreshing} onRefresh={async () => { setRefreshing(true); await Promise.all([refresh(), coachQuery.refetch()]); setRefreshing(false); }} />;
+  }
   return (
     <ScreenContainer
       containerClassName="bg-[#071521]"
@@ -801,7 +865,7 @@ export default function DashboardScreen() {
           </Text>
         </View>
         <Text className="mb-1 text-2xl font-black text-white">
-          {context.role === "coach" ? "Your coaching workspace" : "Your academy at a glance"}
+          Your academy at a glance
         </Text>
         <Text className="mb-5 text-sm leading-5 text-[#aab7c7]">
           {roleLabel} tools, live from the same Touchline workspace used on the web.
@@ -865,14 +929,6 @@ export default function DashboardScreen() {
             body="Manage day-to-day player, coach, and evaluation workflows."
             icon="construct-outline"
             onPress={() => router.push("/more")}
-          />
-        )}
-        {context.role === "coach" && (
-          <ActionCard
-            title="Continue player development"
-            body="Review your players and record the next development evaluation."
-            icon="football-outline"
-            onPress={() => router.push("/(tabs)/evaluations")}
           />
         )}
         <View className="mt-4 rounded-2xl border border-[#1e3a52] bg-[#0b1c2d] p-4">

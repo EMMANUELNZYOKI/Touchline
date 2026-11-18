@@ -35,8 +35,8 @@ export default function PlayerDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [downloading, setDownloading] = useState(false);
   const query = useQuery({
-    queryKey: ["mobile-player-detail", context?.academy?.id, id],
-    queryFn: () => fetchMobilePlayerDetail(context!.academy!.id, id),
+    queryKey: ["mobile-player-detail", context?.academy?.id, context?.profile.id, id],
+    queryFn: () => fetchMobilePlayerDetail(context!.academy!.id, id, context?.role === "coach" ? { coachId: context.profile.id } : undefined),
     enabled: Boolean(context?.academy && id),
   });
   const photoQuery = useQuery({
@@ -103,7 +103,7 @@ export default function PlayerDetailScreen() {
                 <Text className="text-2xl font-black text-white">{player.first_name} {player.last_name}</Text>
                 <Text className="mt-1 text-sm text-[#aab7c7]">{player.position || "Position not set"} · {player.team_category || "Team not set"}</Text>
               </View>
-              <Pressable
+              {context.role !== "coach" && <Pressable
                 disabled={downloading || evaluations.length === 0}
                 onPress={() => void downloadEvaluation()}
                 className="ml-2 items-center rounded-xl bg-[#f2c36b] px-3 py-2"
@@ -113,7 +113,7 @@ export default function PlayerDetailScreen() {
                 <Text className="mt-1 text-center text-[10px] font-black text-[#2b281e]">
                   {downloading ? "Preparing…" : "Download evaluation"}
                 </Text>
-              </Pressable>
+              </Pressable>}
             </View>
             {context.role === "academy_admin" && <Pressable onPress={() => router.push({ pathname: "/(tabs)/players", params: { editId: player.id } })} className="mb-5 rounded-2xl bg-[#78d4aa] p-4"><Text className="text-center font-black text-[#071521]">Edit player information</Text></Pressable>}
             <View className="mb-5 rounded-3xl border border-[#1e3a52] bg-[#10263a] p-5"><Text className="mb-2 text-base font-black text-white">Player profile</Text><Row label="Date of birth" value={player.date_of_birth} /><Row label="Gender" value={player.gender} /><Row label="Season" value={player.season} /><Row label="Secondary position" value={player.secondary_position} /><Row label="Preferred foot" value={player.preferred_foot} /><Row label="Jersey number" value={player.jersey_number} /><Row label="Height" value={player.height ? `${player.height} cm` : null} /><Row label="Weight" value={player.weight ? `${player.weight} kg` : null} /><Row label="Player phone" value={player.phone} /><Row label="Parent / guardian" value={player.parent_name} /><Row label="Emergency contact" value={player.emergency_contact} /><Row label="Assigned coach" value={player.coachName} /></View>

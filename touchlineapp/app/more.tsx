@@ -24,10 +24,10 @@ export default function MoreScreen() {
         </Text>
         {context.role === "coach" && (
           <ActionCard
-            title="My evaluation history"
-            body="Review your submitted evaluations and personal performance summary."
-            icon="clipboard-outline"
-            onPress={() => router.push("/history")}
+            title="Profile settings"
+            body="Update your name, phone number, email, and password."
+            icon="person-circle-outline"
+            onPress={() => router.push("/settings")}
           />
         )}
         {canUseAcademyReports && (
@@ -46,18 +46,18 @@ export default function MoreScreen() {
             />
           </>
         )}
-        <ActionCard
+        {context.role !== "coach" && <ActionCard
           title="Academy settings"
           body="View workspace identity, subscription, and operational settings."
           icon="settings-outline"
           onPress={() => router.push("/settings")}
-        />
-        <View className="mt-5 rounded-2xl border border-[#1e3a52] bg-[#0b1c2d] p-4">
+        />}
+        {context.role !== "coach" && <View className="mt-5 rounded-2xl border border-[#1e3a52] bg-[#0b1c2d] p-4">
           <Ionicons name="shield-checkmark-outline" size={22} color="#78d4aa" />
           <Text className="mt-2 text-sm leading-5 text-[#aab7c7]">
             Owner-only billing and platform controls remain protected by your Touchline role.
           </Text>
-        </View>
+        </View>}
       </ScrollView>
     </ScreenContainer>
   );

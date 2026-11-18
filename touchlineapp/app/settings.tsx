@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
@@ -52,10 +53,13 @@ export default function SettingsScreen() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [profileName, setProfileName] = useState("");
+  const [profileEmail, setProfileEmail] = useState("");
   const [profilePhone, setProfilePhone] = useState("");
   const [profileSaving, setProfileSaving] = useState(false);
   const [saving, setSaving] = useState(false);
   const [passwordSaving, setPasswordSaving] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [loadedId, setLoadedId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ tone: "success" | "error"; text: string } | null>(
     null,
@@ -71,6 +75,7 @@ export default function SettingsScreen() {
     if (!context) return;
     const timer = setTimeout(() => {
       setProfileName(context.profile.full_name);
+      setProfileEmail(context.profile.email);
       setProfilePhone(context.profile.phone ?? "");
     }, 0);
     return () => clearTimeout(timer);
@@ -190,6 +195,10 @@ export default function SettingsScreen() {
         full_name: profileName,
         phone: profilePhone,
       });
+      if (profileEmail.trim() && profileEmail.trim().toLowerCase() !== context.profile.email.toLowerCase()) {
+        const { error } = await supabase.auth.updateUser({ email: profileEmail.trim().toLowerCase() });
+        if (error) throw error;
+      }
       await refresh();
       setFeedback({ tone: "success", text: "Your profile details were updated." });
     } catch (error) {
@@ -209,9 +218,9 @@ export default function SettingsScreen() {
           role={context.role}
           userName={context.profile.full_name}
         />
-        <Text className="text-2xl font-black text-white">Settings</Text>
+        <Text className="text-2xl font-black text-white">{owner ? "Academy settings" : "Profile settings"}</Text>
         <Text className="mb-6 mt-2 text-sm leading-5 text-[#aab7c7]">
-          Manage the shared Touchline account and workspace settings.
+          {owner ? "Manage the shared Touchline account and workspace settings." : "Update your profile details and password."}
         </Text>
         {feedback && (
           <Text
@@ -240,11 +249,13 @@ export default function SettingsScreen() {
             className={input}
           />
           <TextInput
-            value={context.profile.email}
-            editable={false}
+            value={profileEmail}
+            onChangeText={setProfileEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
             placeholder="Email"
             placeholderTextColor="#71839a"
-            className={`${input} opacity-60`}
+            className={input}
           />
           <TextInput
             value={profilePhone}
@@ -397,33 +408,35 @@ export default function SettingsScreen() {
               </Text>
             </Pressable>
           </>
-        ) : (
-          <View className="mb-5 rounded-3xl border border-[#1e3a52] bg-[#10263a] p-5">
-            <Text className="text-base font-black text-white">Owner settings</Text>
-            <Text className="mt-2 text-sm leading-5 text-[#aab7c7]">
-              Academy branding, billing, and workspace controls are available only to the Academy
-              Owner.
-            </Text>
-          </View>
-        )}
+        ) : null}
         <View className="rounded-3xl border border-[#1e3a52] bg-[#10263a] p-5">
           <Text className="mb-3 text-base font-black text-white">Change password</Text>
-          <TextInput
-            value={password}
-            onChangeText={setPassword}
-            placeholder="New password (8+ characters)"
-            placeholderTextColor="#71839a"
-            secureTextEntry
-            className={input}
-          />
-          <TextInput
-            value={confirm}
-            onChangeText={setConfirm}
-            placeholder="Confirm new password"
-            placeholderTextColor="#71839a"
-            secureTextEntry
-            className={input}
-          />
+          <View className="mb-3 flex-row items-center rounded-2xl border border-[#2b4862] bg-[#0b1c2d]">
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+              placeholder="New password (8+ characters)"
+              placeholderTextColor="#71839a"
+              secureTextEntry={!showPassword}
+              className="flex-1 px-4 py-3.5 text-base text-white"
+            />
+            <Pressable onPress={() => setShowPassword((current) => !current)} className="px-4 py-3" accessibilityLabel={showPassword ? "Hide password" : "Show password"}>
+              <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={21} color="#aab7c7" />
+            </Pressable>
+          </View>
+          <View className="mb-3 flex-row items-center rounded-2xl border border-[#2b4862] bg-[#0b1c2d]">
+            <TextInput
+              value={confirm}
+              onChangeText={setConfirm}
+              placeholder="Confirm new password"
+              placeholderTextColor="#71839a"
+              secureTextEntry={!showConfirm}
+              className="flex-1 px-4 py-3.5 text-base text-white"
+            />
+            <Pressable onPress={() => setShowConfirm((current) => !current)} className="px-4 py-3" accessibilityLabel={showConfirm ? "Hide confirmed password" : "Show confirmed password"}>
+              <Ionicons name={showConfirm ? "eye-off-outline" : "eye-outline"} size={21} color="#aab7c7" />
+            </Pressable>
+          </View>
           <Pressable
             disabled={passwordSaving}
             onPress={() => {
