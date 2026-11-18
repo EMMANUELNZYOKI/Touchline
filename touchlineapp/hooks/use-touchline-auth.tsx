@@ -130,14 +130,10 @@ export function TouchlineAuthProvider({ children }: { children: React.ReactNode 
     setContext(null);
     setError(null);
     setLoading(false);
-    try {
-      // Clear the device session immediately; a failed network revocation
-      // should never leave the user trapped inside the authenticated tabs.
-      const { error: authError } = await supabase.auth.signOut({ scope: "local" });
-      void authError;
-    } catch (cause) {
-      void cause;
-    }
+    // Do not make navigation wait for the auth client's network/storage cleanup.
+    // The local React state is already cleared, so a slow or unavailable network
+    // must never leave the user staring at the authenticated loading screen.
+    void supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
     // Local logout has completed even if the remote revocation request failed.
     // Do not rethrow here: the authenticated route guard will redirect to the
     // welcome screen, and an unhandled rejection would obscure that success.
