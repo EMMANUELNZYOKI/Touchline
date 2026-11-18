@@ -1,6 +1,7 @@
-import { Redirect, Tabs } from "expo-router";
+import { Tabs, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useEffect, useRef } from "react";
 import { ActivityIndicator, Platform, View } from "react-native";
 
 import { HapticTab } from "@/components/haptic-tab";
@@ -9,15 +10,18 @@ import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
 export default function TabLayout() {
   const { loading, context } = useTouchlineAuth();
   const insets = useSafeAreaInsets();
+  const redirectingToEntry = useRef(false);
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
   const tabBarHeight = 56 + bottomPadding;
 
-  if (loading) {
-    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#17202f" }}><ActivityIndicator size="large" color="#d6b45a" /></View>;
-  }
+  useEffect(() => {
+    if (loading || context || redirectingToEntry.current) return;
+    redirectingToEntry.current = true;
+    void router.replace("/");
+  }, [loading, context]);
 
-  if (!context) {
-    return <Redirect href="/" />;
+  if (loading || !context) {
+    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#17202f" }}><ActivityIndicator size="large" color="#d6b45a" /></View>;
   }
 
   return (
