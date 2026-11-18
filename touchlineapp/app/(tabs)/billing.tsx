@@ -113,6 +113,7 @@ export default function BillingScreen() {
       standardCheckoutMutation.mutate(planKey);
     }
   };
+  const checkoutPending = checkoutMutation.isPending || standardCheckoutMutation.isPending;
 
   return (
     <ScreenContainer containerClassName="bg-[#071521]" safeAreaClassName="bg-[#071521]">
@@ -239,7 +240,7 @@ export default function BillingScreen() {
                 ))}
                 <Pressable
                   onPress={() => subscribe(plan.plan_key)}
-                  disabled={isSelected || checkoutMutation.isPending || standardCheckoutMutation.isPending}
+                  disabled={isSelected || checkoutPending}
                   className="mt-3 min-h-[50px] items-center justify-center rounded-2xl bg-[#78d4aa] active:opacity-80"
                   style={{
                     minHeight: 52,
@@ -248,14 +249,20 @@ export default function BillingScreen() {
                     justifyContent: "center",
                     borderRadius: 16,
                     backgroundColor: "#78d4aa",
-                    opacity: isSelected || checkoutMutation.isPending ? 0.6 : 1,
+                    opacity: isSelected || checkoutPending ? 0.6 : 1,
                   }}
                 >
                   {isSelected ? (
                     <ActivityIndicator color="#071521" />
                   ) : (
                     <Text className="font-black text-[#071521]">
-                      {isCurrent ? "Renew with M-Pesa" : `Choose ${plan.name}`}
+                      {isCurrent
+                        ? selectedMethod === "mpesa"
+                          ? "Renew with M-Pesa"
+                          : "Renew with Paystack"
+                        : selectedMethod === "mpesa"
+                          ? `Choose ${plan.name} with M-Pesa`
+                          : `Choose ${plan.name} with Paystack`}
                     </Text>
                   )}
                 </Pressable>

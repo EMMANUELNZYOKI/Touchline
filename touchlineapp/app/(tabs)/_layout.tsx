@@ -46,7 +46,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen name="players" options={{ href: context?.role === "super_admin" ? null : undefined, title: "Players", tabBarIcon: ({ color }) => <Ionicons size={24} name="people-outline" color={color == null ? undefined : String(color)} /> }} />
-      <Tabs.Screen name="evaluations" options={{ href: context?.role === "super_admin" ? null : undefined, title: "Reviews", tabBarIcon: ({ color }) => <Ionicons size={24} name="clipboard-outline" color={color == null ? undefined : String(color)} /> }} />
+      <Tabs.Screen name="evaluations" options={{ href: context?.role === "super_admin" ? null : undefined, title: "Evaluations", tabBarIcon: ({ color }) => <Ionicons size={24} name="clipboard-outline" color={color == null ? undefined : String(color)} /> }} />
       <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: ({ color }) => <Ionicons size={24} name="person-circle-outline" color={color == null ? undefined : String(color)} /> }} />
       <Tabs.Screen name="billing" options={{ href: context?.role === "academy_admin" ? undefined : null, title: "Billing", tabBarIcon: ({ color }) => <Ionicons size={24} name="card-outline" color={color == null ? undefined : String(color)} /> }} />
       <Tabs.Screen name="more" options={{ href: context?.role === "super_admin" ? null : undefined, title: "More", tabBarIcon: ({ color }) => <Ionicons size={24} name="ellipsis-horizontal-circle-outline" color={color == null ? undefined : String(color)} /> }} />
