@@ -16,10 +16,7 @@ import {
 import { AcademyIdentity, MetricCard } from "@/components/touchline-ui";
 import { ScreenContainer } from "@/components/screen-container";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
-import {
-  fetchMobileCoaches,
-  updateMobileCoach,
-} from "@/lib/touchline/admin";
+import { fetchMobileCoaches, updateMobileCoach } from "@/lib/touchline/admin";
 import { fetchMobileEvaluations, fetchMobilePlayers } from "@/lib/touchline/data";
 
 const input =
@@ -77,13 +74,14 @@ export default function CoachDetailScreen() {
       setEditOpen(false);
       setMessage(null);
     },
-    onError: (error) => setMessage(error instanceof Error ? error.message : "Coach details could not be updated."),
+    onError: (error) =>
+      setMessage(error instanceof Error ? error.message : "Coach details could not be updated."),
   });
   if (!context) return null;
   const coachEvaluations = (evaluations.data ?? []).filter((item) => item.coach_id === id);
   const evaluatedIds = new Set(coachEvaluations.map((item) => item.player_id));
   const evaluatedPlayers = (players.data ?? []).filter((player) => evaluatedIds.has(player.id));
-  const canEdit = context.role === "academy_admin";
+  const canEdit = context.role === "academy_admin" || context.role === "academy_manager";
   return (
     <ScreenContainer containerClassName="bg-[#071521]" safeAreaClassName="bg-[#071521]">
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
@@ -116,7 +114,13 @@ export default function CoachDetailScreen() {
                 <Text className="text-2xl font-black text-white">{coach.full_name}</Text>
                 <Text className="mt-1 text-sm text-[#aab7c7]">Coach profile</Text>
               </View>
-              <Text className={coach.status === "active" ? "font-bold text-[#78d4aa]" : "font-bold text-[#f2c36b]"}>
+              <Text
+                className={
+                  coach.status === "active"
+                    ? "font-bold text-[#78d4aa]"
+                    : "font-bold text-[#f2c36b]"
+                }
+              >
                 {coach.status}
               </Text>
             </View>
@@ -132,15 +136,27 @@ export default function CoachDetailScreen() {
               </Pressable>
             )}
             <View className="mb-5 flex-row gap-3">
-              <MetricCard label="Players evaluated" value={String(evaluatedPlayers.length)} icon="people-outline" />
-              <MetricCard label="Evaluations" value={String(coachEvaluations.length)} icon="clipboard-outline" accent="#8bb8ff" />
+              <MetricCard
+                label="Players evaluated"
+                value={String(evaluatedPlayers.length)}
+                icon="people-outline"
+              />
+              <MetricCard
+                label="Evaluations"
+                value={String(coachEvaluations.length)}
+                icon="clipboard-outline"
+                accent="#8bb8ff"
+              />
             </View>
             <View className="mb-5 rounded-3xl border border-[#1e3a52] bg-[#10263a] p-5">
               <Text className="mb-2 text-base font-black text-white">Account details</Text>
               <Row label="Coach name" value={coach.full_name} />
               <Row label="Email" value={coach.email} />
               <Row label="Phone" value={coach.phone ?? "Not provided"} />
-              <Row label="Account status" value={coach.status === "active" ? "Active" : "Inactive"} />
+              <Row
+                label="Account status"
+                value={coach.status === "active" ? "Active" : "Inactive"}
+              />
               <Row label="Date created" value={new Date(coach.created_at).toLocaleDateString()} />
             </View>
             <Text className="mb-3 text-lg font-black text-white">Players evaluated</Text>
@@ -156,30 +172,47 @@ export default function CoachDetailScreen() {
                 className="mb-2 flex-row items-center rounded-2xl border border-[#1e3a52] bg-[#10263a] p-4"
               >
                 <View className="flex-1">
-                  <Text className="font-bold text-white">{player.first_name} {player.last_name}</Text>
-                  <Text className="mt-1 text-xs text-[#aab7c7]">{player.position || "Position not set"}</Text>
+                  <Text className="font-bold text-white">
+                    {player.first_name} {player.last_name}
+                  </Text>
+                  <Text className="mt-1 text-xs text-[#aab7c7]">
+                    {player.position || "Position not set"}
+                  </Text>
                 </View>
                 <Text className="text-xs font-bold text-[#78d4aa]">View player</Text>
               </Pressable>
             ))}
-            <Text className="mb-3 mt-5 text-lg font-black text-white">Recent evaluation activity</Text>
+            <Text className="mb-3 mt-5 text-lg font-black text-white">
+              Recent evaluation activity
+            </Text>
             {coachEvaluations.slice(0, 10).map((evaluation) => (
-              <View key={evaluation.id} className="mb-2 rounded-2xl border border-[#1e3a52] bg-[#10263a] p-4">
+              <View
+                key={evaluation.id}
+                className="mb-2 rounded-2xl border border-[#1e3a52] bg-[#10263a] p-4"
+              >
                 <View className="flex-row justify-between">
                   <Text className="font-bold text-white">{evaluation.playerName}</Text>
                   <Text className="font-bold text-[#78d4aa]">
-                    {evaluation.overall_rating == null ? "No rating" : `Overall ${evaluation.overall_rating.toFixed(1)}`}
+                    {evaluation.overall_rating == null
+                      ? "No rating"
+                      : `Overall ${evaluation.overall_rating.toFixed(1)}`}
                   </Text>
                 </View>
                 <Text className="mt-1 text-xs text-[#aab7c7]">
-                  {evaluation.season} {evaluation.season_year} · {new Date(evaluation.created_at).toLocaleString()}
+                  {evaluation.season} {evaluation.season_year} ·{" "}
+                  {new Date(evaluation.created_at).toLocaleString()}
                 </Text>
               </View>
             ))}
           </>
         )}
       </ScrollView>
-      <Modal visible={editOpen} transparent animationType="slide" onRequestClose={() => setEditOpen(false)}>
+      <Modal
+        visible={editOpen}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setEditOpen(false)}
+      >
         <KeyboardAvoidingView
           style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.7)" }}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -191,10 +224,35 @@ export default function CoachDetailScreen() {
                 <Ionicons name="close" size={25} color="#aab7c7" />
               </Pressable>
             </View>
-            <TextInput value={fullName} onChangeText={setFullName} placeholder="Full name" placeholderTextColor="#71839a" maxLength={120} className={input} />
-            <TextInput value={phone} onChangeText={setPhone} placeholder="Phone" placeholderTextColor="#71839a" keyboardType="phone-pad" maxLength={40} className={input} />
-            <TextInput value={coach?.email ?? ""} editable={false} placeholder="Email (cannot be changed)" placeholderTextColor="#71839a" className={`${input} opacity-60`} />
-            {message && <Text className="mb-3 rounded-2xl bg-[#4b2530] px-4 py-3 text-sm leading-5 text-[#ffd7de]">{message}</Text>}
+            <TextInput
+              value={fullName}
+              onChangeText={setFullName}
+              placeholder="Full name"
+              placeholderTextColor="#71839a"
+              maxLength={120}
+              className={input}
+            />
+            <TextInput
+              value={phone}
+              onChangeText={setPhone}
+              placeholder="Phone"
+              placeholderTextColor="#71839a"
+              keyboardType="phone-pad"
+              maxLength={40}
+              className={input}
+            />
+            <TextInput
+              value={coach?.email ?? ""}
+              editable={false}
+              placeholder="Email (cannot be changed)"
+              placeholderTextColor="#71839a"
+              className={`${input} opacity-60`}
+            />
+            {message && (
+              <Text className="mb-3 rounded-2xl bg-[#4b2530] px-4 py-3 text-sm leading-5 text-[#ffd7de]">
+                {message}
+              </Text>
+            )}
             <Pressable
               disabled={editMutation.isPending}
               onPress={() => {
@@ -207,7 +265,9 @@ export default function CoachDetailScreen() {
               className="rounded-2xl bg-[#78d4aa] px-4 py-4"
               style={{ opacity: editMutation.isPending ? 0.6 : 1 }}
             >
-              <Text className="text-center font-black text-[#071521]">{editMutation.isPending ? "Saving…" : "Save changes"}</Text>
+              <Text className="text-center font-black text-[#071521]">
+                {editMutation.isPending ? "Saving…" : "Save changes"}
+              </Text>
             </Pressable>
           </View>
         </KeyboardAvoidingView>

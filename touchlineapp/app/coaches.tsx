@@ -151,11 +151,6 @@ export default function CoachesScreen() {
                 {coach.status}
               </Text>
             </Pressable>
-            <View className="mt-3 border-t border-[#1e3a52] pt-3">
-              <Text className="text-xs text-[#aab7c7]">
-                Evaluations: <Text className="font-bold text-white">{coach.evaluationCount}</Text>
-              </Text>
-            </View>
             <Pressable
               onPress={() => setPendingCoach(coach)}
               className="mt-4 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"

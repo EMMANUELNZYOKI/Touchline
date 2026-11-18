@@ -144,11 +144,7 @@ function CoachesPage() {
                   <TableRow>
                     <TableHead>Coach Name</TableHead>
                     <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead className="text-center">Players evaluated</TableHead>
-                    <TableHead className="text-center">Evaluations</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Date Created</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -157,9 +153,6 @@ function CoachesPage() {
                     <TableRow key={coach.id}>
                       <TableCell className="font-medium">{coach.full_name || "—"}</TableCell>
                       <TableCell className="text-muted-foreground">{coach.email}</TableCell>
-                      <TableCell className="text-muted-foreground">{coach.phone || "—"}</TableCell>
-                      <TableCell className="text-center">{coach.evaluatedPlayerCount}</TableCell>
-                      <TableCell className="text-center">{coach.evaluationCount}</TableCell>
                       <TableCell>
                         <Badge
                           className={
@@ -170,9 +163,6 @@ function CoachesPage() {
                         >
                           {coach.is_active ? "Active" : "Inactive"}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {new Date(coach.created_at).toLocaleDateString()}
                       </TableCell>
                       <TableCell>
                         <div className="flex justify-end gap-2">
@@ -197,7 +187,7 @@ function CoachesPage() {
                   ))}
                   {filtered.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-muted-foreground py-10 text-center">
+                      <TableCell colSpan={4} className="text-muted-foreground py-10 text-center">
                         No coaches match “{search}”.
                       </TableCell>
                     </TableRow>
