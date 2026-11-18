@@ -18,9 +18,11 @@ export default function ProfileScreen() {
       ? "14-day trial"
       : (context.subscription?.status?.replace("_", " ") ?? "Not available");
 
-  const performSignOut = async () => {
+  const performSignOut = () => {
     setConfirmSignOut(false);
-    await signOut();
+    // Clear auth state and leave the tab tree in the same synchronous action.
+    // Supabase cleanup runs in the background and must not block navigation.
+    void signOut();
     router.replace("/");
   };
 
