@@ -174,7 +174,7 @@ function PlatformAcademyCard({
       {expanded && (
         <View className="flex-row flex-wrap border-t border-[#1e3a52] pt-1">
           <ControlButton
-            label={academy.academy_status === "active" ? "Suspend" : "Reactivate"}
+            label={academy.academy_status === "active" ? "Deactivate" : "Activate"}
             icon={
               academy.academy_status === "active" ? "pause-circle-outline" : "play-circle-outline"
             }
@@ -344,10 +344,11 @@ function SuperAdminDashboard({
   };
   const toggleAcademy = (academy: PlatformAcademy) => {
     const nextStatus = academy.academy_status === "active" ? "suspended" : "active";
+    const action = nextStatus === "suspended" ? "Deactivate" : "Activate";
     setConfirmAction({
-      title: `${nextStatus === "suspended" ? "Suspend" : "Reactivate"} academy?`,
+      title: `${action} academy?`,
       message: `${academy.academy_name} will be ${nextStatus === "suspended" ? "unavailable to academy users" : "available again"}.`,
-      confirmLabel: nextStatus === "suspended" ? "Suspend" : "Reactivate",
+      confirmLabel: action,
       onConfirm: () => {
         setConfirmAction(null);
         void runAction(academy.academy_id, () =>

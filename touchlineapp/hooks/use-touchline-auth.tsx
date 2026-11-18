@@ -43,8 +43,10 @@ export function TouchlineAuthProvider({ children }: { children: React.ReactNode 
   const [context, setContext] = useState<TouchlineContext | null>(null);
   const [error, setError] = useState<string | null>(null);
   const requestVersion = useRef(0);
+  const signingOut = useRef(false);
 
   const loadSession = useCallback(async (session: Session | null) => {
+    if (signingOut.current) return;
     const version = requestVersion.current + 1;
     requestVersion.current = version;
     setLoading(true);
@@ -91,6 +93,7 @@ export function TouchlineAuthProvider({ children }: { children: React.ReactNode 
 
   const signIn = useCallback(
     async (email: string, password: string, expectedRole: RoleExpectation) => {
+      signingOut.current = false;
       setLoading(true);
       setError(null);
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
@@ -122,6 +125,11 @@ export function TouchlineAuthProvider({ children }: { children: React.ReactNode 
   );
 
   const signOut = useCallback(async () => {
+    signingOut.current = true;
+    requestVersion.current += 1;
+    setContext(null);
+    setError(null);
+    setLoading(false);
     try {
       // Clear the device session immediately; a failed network revocation
       // should never leave the user trapped inside the authenticated tabs.
@@ -129,10 +137,6 @@ export function TouchlineAuthProvider({ children }: { children: React.ReactNode 
       void authError;
     } catch (cause) {
       void cause;
-    } finally {
-      setContext(null);
-      setError(null);
-      setLoading(false);
     }
     // Local logout has completed even if the remote revocation request failed.
     // Do not rethrow here: the authenticated route guard will redirect to the
