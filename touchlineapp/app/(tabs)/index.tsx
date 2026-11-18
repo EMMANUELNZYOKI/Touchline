@@ -2,7 +2,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Modal, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
+import {
+  Modal,
+  TouchableOpacity,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 import { ActionCard, AcademyIdentity, MetricCard } from "@/components/touchline-ui";
 import { ScreenContainer } from "@/components/screen-container";
@@ -47,7 +55,7 @@ function ControlButton({
   danger?: boolean;
 }) {
   return (
-    <Pressable
+    <TouchableOpacity
       disabled={disabled}
       onPress={onPress}
       className={`mr-2 mt-2 flex-row items-center rounded-xl border px-3 py-2 ${danger ? "border-[#7d3b49] bg-[#4b2530]" : "border-[#2b5268] bg-[#173f4a]"} ${disabled ? "opacity-50" : "active:opacity-70"}`}
@@ -64,7 +72,7 @@ function ControlButton({
       <Text className={`ml-1 text-xs font-bold ${danger ? "text-[#ffd7de]" : "text-[#d5f5e5]"}`}>
         {label}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
@@ -144,7 +152,7 @@ function PlatformAcademyCard({
         </View>
       </View>
       <View className="mt-4 flex-row items-center border-t border-[#1e3a52] pt-2">
-        <Pressable
+        <TouchableOpacity
           onPress={onManage}
           className="flex-1 flex-row items-center py-2 active:opacity-70"
           style={{
@@ -160,7 +168,7 @@ function PlatformAcademyCard({
           <Text className="ml-2 text-sm font-bold text-[#d5f5e5]">
             {expanded ? "Close manage" : "Manage academy"}
           </Text>
-        </Pressable>
+        </TouchableOpacity>
         {busy && <Text className="text-xs text-[#aab7c7]">Saving…</Text>}
       </View>
       {expanded && (
@@ -240,14 +248,14 @@ function PlatformModal({
         <View className="max-h-[92%] rounded-t-3xl border-t border-[#2b5268] bg-[#10263a] px-5 pb-8 pt-5">
           <View className="mb-5 flex-row items-center justify-between">
             <Text className="text-xl font-black text-white">{title}</Text>
-            <Pressable
+            <TouchableOpacity
               onPress={onClose}
               className="h-9 w-9 items-center justify-center rounded-full bg-[#173f4a]"
               style={{ width: 36, height: 36, alignItems: "center", justifyContent: "center" }}
               hitSlop={8}
             >
               <Ionicons name="close" size={20} color="#d5f5e5" />
-            </Pressable>
+            </TouchableOpacity>
           </View>
           <ScrollView keyboardShouldPersistTaps="handled">{children}</ScrollView>
         </View>
@@ -460,7 +468,7 @@ function SuperAdminDashboard({
             dashboard.
           </Text>
         </View>
-        <Pressable
+        <TouchableOpacity
           onPress={() => {
             setActionError(null);
             setCreateOpen(true);
@@ -477,7 +485,7 @@ function SuperAdminDashboard({
         >
           <Ionicons name="add-circle-outline" size={20} color="#071521" />
           <Text className="ml-2 text-sm font-black text-[#071521]">Add academy</Text>
-        </Pressable>
+        </TouchableOpacity>
         {actionError && (
           <View className="mb-4 rounded-2xl border border-[#7d3b49] bg-[#4b2530] px-4 py-3">
             <Text className="text-sm leading-5 text-[#ffd7de]">{actionError}</Text>
@@ -579,14 +587,14 @@ function SuperAdminDashboard({
             <Text className="text-xl font-black text-white">{confirmAction?.title}</Text>
             <Text className="mt-2 text-sm leading-5 text-[#aab7c7]">{confirmAction?.message}</Text>
             <View className="mt-5 flex-row gap-3">
-              <Pressable
+              <TouchableOpacity
                 onPress={() => setConfirmAction(null)}
                 className="flex-1 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"
                 style={{ flex: 1, minHeight: 50, alignItems: "center", justifyContent: "center" }}
               >
                 <Text className="font-bold text-[#d5f5e5]">Cancel</Text>
-              </Pressable>
-              <Pressable
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress={() => confirmAction?.onConfirm()}
                 className={`flex-1 rounded-xl px-4 py-3 ${confirmAction?.danger ? "bg-[#c65b70]" : "bg-[#78d4aa]"}`}
                 style={{ flex: 1, minHeight: 50, alignItems: "center", justifyContent: "center" }}
@@ -596,7 +604,7 @@ function SuperAdminDashboard({
                 >
                   {confirmAction?.confirmLabel}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -611,7 +619,7 @@ function SuperAdminDashboard({
         </Text>
         <View className="mb-3 flex-row gap-2">
           {(["starter", "standard", "pro"] as const).map((key) => (
-            <Pressable
+            <TouchableOpacity
               key={key}
               onPress={() => setPackageKey(key)}
               className={`flex-1 rounded-xl border px-2 py-3 ${packageKey === key ? "border-[#78d4aa] bg-[#173f4a]" : "border-[#2b5268] bg-[#0b1c2d]"}`}
@@ -625,7 +633,7 @@ function SuperAdminDashboard({
               }}
             >
               <Text className="text-center text-xs font-bold uppercase text-white">{key}</Text>
-            </Pressable>
+            </TouchableOpacity>
           ))}
         </View>
         <Field
@@ -639,7 +647,7 @@ function SuperAdminDashboard({
             {actionError}
           </Text>
         )}
-        <Pressable
+        <TouchableOpacity
           onPress={() => {
             void submitPackage();
           }}
@@ -653,7 +661,7 @@ function SuperAdminDashboard({
           }}
         >
           <Text className="text-center text-sm font-black text-[#071521]">Save package change</Text>
-        </Pressable>
+        </TouchableOpacity>
       </PlatformModal>
       <PlatformModal visible={createOpen} title="Add academy" onClose={() => setCreateOpen(false)}>
         <Text className="mb-3 text-sm leading-5 text-[#aab7c7]">
@@ -707,7 +715,7 @@ function SuperAdminDashboard({
             {actionError}
           </Text>
         )}
-        <Pressable
+        <TouchableOpacity
           disabled={creating}
           onPress={() => {
             void submitCreate();
@@ -725,7 +733,7 @@ function SuperAdminDashboard({
           <Text className="text-center text-sm font-black text-[#071521]">
             {creating ? "Creating…" : "Create academy"}
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       </PlatformModal>
     </ScreenContainer>
   );

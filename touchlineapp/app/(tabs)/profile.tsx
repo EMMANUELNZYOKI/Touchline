@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Modal, Pressable, ScrollView, Text, View } from "react-native";
+import { Modal, TouchableOpacity, ScrollView, Text, View } from "react-native";
 
 import { AcademyIdentity } from "@/components/touchline-ui";
 import { ScreenContainer } from "@/components/screen-container";
@@ -62,14 +62,14 @@ export default function ProfileScreen() {
             </View>
           )}
         </View>
-        <Pressable
+        <TouchableOpacity
           onPress={() => setConfirmSignOut(true)}
           className="mt-5 flex-row items-center justify-center rounded-2xl border border-[#683344] bg-[#3b2430] px-4 py-4 active:opacity-80"
           style={{ minHeight: 56, alignItems: "center", justifyContent: "center" }}
         >
           <Ionicons name="log-out-outline" size={19} color="#ffd7de" />
           <Text className="ml-2 font-bold text-[#ffd7de]">Sign out</Text>
-        </Pressable>
+        </TouchableOpacity>
         <Text className="mt-8 text-center text-xs text-[#71839a]">
           Powered by Touchline • Shared securely with your web workspace
         </Text>
@@ -87,20 +87,20 @@ export default function ProfileScreen() {
               You can sign in again with any Touchline role from the welcome screen.
             </Text>
             <View className="mt-5 flex-row gap-3">
-              <Pressable
+              <TouchableOpacity
                 onPress={() => setConfirmSignOut(false)}
                 className="flex-1 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"
                 style={{ flex: 1, minHeight: 48, alignItems: "center", justifyContent: "center" }}
               >
                 <Text className="font-bold text-[#d5f5e5]">Cancel</Text>
-              </Pressable>
-              <Pressable
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress={performSignOut}
                 className="flex-1 rounded-xl bg-[#c65b70] px-4 py-3"
                 style={{ flex: 1, minHeight: 48, alignItems: "center", justifyContent: "center" }}
               >
                 <Text className="font-black text-white">Sign out</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
         </View>

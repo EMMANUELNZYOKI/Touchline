@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Image, Modal, Pressable, Text, View } from "react-native";
+import { Image, Modal, TouchableOpacity, Text, View } from "react-native";
 import { useState } from "react";
 
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
@@ -38,20 +38,20 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View className="flex-1 flex-row justify-end bg-black/60">
-        <Pressable className="flex-1" onPress={onClose} style={{ flex: 1 }} />
+        <TouchableOpacity className="flex-1" onPress={onClose} style={{ flex: 1 }} />
         <View className="h-full w-[86%] max-w-[380px] border-l border-[#2b5268] bg-[#071521] px-5 pb-8 pt-14">
           <View className="mb-8 flex-row items-center justify-between">
             <Text className="text-xs font-black uppercase tracking-[3px] text-[#78d4aa]">
               Account panel
             </Text>
-            <Pressable
+            <TouchableOpacity
               onPress={onClose}
               className="h-10 w-10 items-center justify-center rounded-full bg-[#10263a]"
               style={{ width: 40, height: 40, alignItems: "center", justifyContent: "center" }}
               hitSlop={8}
             >
               <Ionicons name="close" size={21} color="#d5f5e5" />
-            </Pressable>
+            </TouchableOpacity>
           </View>
           <View className="items-center rounded-3xl border border-[#1e3a52] bg-[#10263a] p-5">
             <TouchlineMark size={76} />
@@ -76,7 +76,7 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
               Your mobile and web workspace use the same account and data.
             </Text>
           </View>
-          <Pressable
+          <TouchableOpacity
             onPress={signOutNow}
             className="mt-6 flex-row items-center justify-center rounded-2xl border border-[#683344] bg-[#3b2430] px-4 py-4 active:opacity-80"
             style={{
@@ -93,7 +93,7 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
           >
             <Ionicons name="log-out-outline" size={20} color="#ffd7de" />
             <Text className="ml-2 font-black text-[#ffd7de]">Log out</Text>
-          </Pressable>
+          </TouchableOpacity>
           <Text className="mt-6 text-center text-xs leading-5 text-[#71839a]">
             To sign in as another Touchline user, log out first, then choose the correct role.
           </Text>
@@ -114,7 +114,7 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
                 You can sign in again with any Touchline role from the welcome screen.
               </Text>
               <View className="mt-5 flex-row gap-3">
-                <Pressable
+                <TouchableOpacity
                   onPress={() => setConfirmSignOut(false)}
                   className="flex-1 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"
                   style={{
@@ -130,8 +130,8 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
                   }}
                 >
                   <Text className="font-bold text-[#d5f5e5]">Cancel</Text>
-                </Pressable>
-                <Pressable
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={performSignOut}
                   className="flex-1 rounded-xl bg-[#c65b70] px-4 py-3"
                   style={{
@@ -145,7 +145,7 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
                   }}
                 >
                   <Text className="font-black text-white">Sign out</Text>
-                </Pressable>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -180,7 +180,7 @@ export function AcademyIdentity({
             Welcome, {userName}
           </Text>
         </View>
-        <Pressable
+        <TouchableOpacity
           onPress={() => setPanelOpen(true)}
           className="h-12 w-12 items-center justify-center rounded-2xl border border-[#2b5268] bg-[#17304a] active:opacity-70"
           style={{
@@ -196,7 +196,7 @@ export function AcademyIdentity({
           hitSlop={4}
         >
           <Ionicons name="person-outline" size={21} color="#d5f5e5" />
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <AccountPanel visible={panelOpen} onClose={() => setPanelOpen(false)} />
     </>
@@ -239,7 +239,7 @@ export function ActionCard({
   onPress?: () => void;
 }) {
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={onPress}
       className="mb-3 flex-row items-center rounded-2xl border border-[#1e3a52] bg-[#10263a] p-4 active:opacity-80"
       style={{
@@ -262,7 +262,7 @@ export function ActionCard({
         <Text className="mt-1 text-sm leading-5 text-[#aab7c7]">{body}</Text>
       </View>
       <Ionicons name="chevron-forward" size={18} color="#78d4aa" />
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
@@ -290,14 +290,14 @@ export function ConfirmModal({
           <Text className="text-xl font-black text-white">{title}</Text>
           <Text className="mt-2 text-sm leading-5 text-[#aab7c7]">{message}</Text>
           <View className="mt-5 flex-row gap-3">
-            <Pressable
+            <TouchableOpacity
               onPress={onCancel}
               className="flex-1 rounded-xl border border-[#2b5268] bg-[#173f4a] px-4 py-3"
               style={{ flex: 1, minHeight: 50, alignItems: "center", justifyContent: "center" }}
             >
               <Text className="font-bold text-[#d5f5e5]">Cancel</Text>
-            </Pressable>
-            <Pressable
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={onConfirm}
               className={`flex-1 rounded-xl px-4 py-3 ${danger ? "bg-[#c65b70]" : "bg-[#78d4aa]"}`}
               style={{ flex: 1, minHeight: 50, alignItems: "center", justifyContent: "center" }}
@@ -305,7 +305,7 @@ export function ConfirmModal({
               <Text className={`font-black ${danger ? "text-white" : "text-[#071521]"}`}>
                 {confirmLabel}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
