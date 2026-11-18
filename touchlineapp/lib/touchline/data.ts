@@ -458,6 +458,7 @@ export async function createMobileEvaluation(input: {
 
   const scores = mobileScoresFromSkills(input.skills);
   const payload = {
+    academy_id: input.academy_id,
     player_id: input.player_id,
     coach_id: userResult.user.id,
     ...scores,

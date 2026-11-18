@@ -657,6 +657,7 @@ export async function createPlayerWithEvaluation(input: {
     throw new Error("Create and activate an academy season before recording evaluations.");
   const scores = scoresFromSkills(input.skills);
   const evalPayload = {
+    academy_id: (player as { academy_id: string }).academy_id,
     player_id: player.id,
     coach_id: input.coachId,
     season: input.player.season || "UNSPECIFIED",

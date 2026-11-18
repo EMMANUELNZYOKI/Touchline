@@ -244,7 +244,13 @@ export default function EvaluationsScreen() {
       closeForm();
     },
     onError: (error) =>
-      setMessage(error instanceof Error ? error.message : "Evaluation could not be saved."),
+      setMessage(
+        error instanceof Error && error.message
+          ? error.message
+          : ((error as { message?: string; details?: string })?.message ??
+              (error as { details?: string })?.details ??
+              "Evaluation could not be saved."),
+      ),
   });
 
   if (!context) return null;
