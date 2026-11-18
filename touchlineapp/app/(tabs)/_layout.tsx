@@ -1,10 +1,11 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ActivityIndicator, Platform, View } from "react-native";
+import { Platform } from "react-native";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
+import EntryScreen from "../index";
 
 export default function TabLayout() {
   const { loading, context } = useTouchlineAuth();
@@ -13,7 +14,7 @@ export default function TabLayout() {
   const tabBarHeight = 56 + bottomPadding;
 
   if (loading || !context) {
-    return <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#17202f" }}><ActivityIndicator size="large" color="#d6b45a" /></View>;
+    return <EntryScreen redirectAuthenticated={false} showSplash={false} />;
   }
 
   return (

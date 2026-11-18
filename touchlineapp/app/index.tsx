@@ -72,7 +72,13 @@ function TouchlineSplash() {
   );
 }
 
-export default function EntryScreen() {
+export default function EntryScreen({
+  redirectAuthenticated = true,
+  showSplash = true,
+}: {
+  redirectAuthenticated?: boolean;
+  showSplash?: boolean;
+} = {}) {
   const { loading, context, error, signIn } = useTouchlineAuth();
   const [splashReady, setSplashReady] = useState(false);
   const [splashTimedOut, setSplashTimedOut] = useState(false);
@@ -91,8 +97,8 @@ export default function EntryScreen() {
       clearTimeout(maximumTimer);
     };
   }, []);
-  if (context) return <Redirect href="/(tabs)" />;
-  if ((!splashReady || loading) && !splashTimedOut) return <TouchlineSplash />;
+  if (context && redirectAuthenticated) return <Redirect href="/(tabs)" />;
+  if (showSplash && ((!splashReady || loading) && !splashTimedOut)) return <TouchlineSplash />;
   const openLogin = (role: MobileRole) => {
     setSelectedRole(role);
     setMessage(null);
