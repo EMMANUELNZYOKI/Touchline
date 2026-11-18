@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMemo, useEffect, useRef, useState } from "react";
+import { useLocalSearchParams } from "expo-router";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -120,7 +121,9 @@ function AssessmentField({
 
 export default function EvaluationsScreen() {
   const { context } = useTouchlineAuth();
+  const { playerId: requestedPlayerId, updateId } = useLocalSearchParams<{ playerId?: string; updateId?: string }>();
   const client = useQueryClient();
+  const openedRequestedEvaluation = useRef(false);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<MobileEvaluation | null>(null);
   const [playerId, setPlayerId] = useState("");
@@ -193,6 +196,26 @@ export default function EvaluationsScreen() {
     setMessage(null);
     setOpen(true);
   };
+  useEffect(() => {
+    if (openedRequestedEvaluation.current || !updateId || !evaluationsQuery.data?.length) return;
+    const requestedEvaluation = evaluationsQuery.data.find((evaluation) => evaluation.id === updateId);
+    if (requestedEvaluation) {
+      openedRequestedEvaluation.current = true;
+      const timer = setTimeout(() => openEdit(requestedEvaluation), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [evaluationsQuery.data, updateId]);
+  useEffect(() => {
+    if (openedRequestedEvaluation.current || !requestedPlayerId || updateId || !playersQuery.data) return;
+    if (playersQuery.data.some((player) => player.id === requestedPlayerId)) {
+      openedRequestedEvaluation.current = true;
+      const timer = setTimeout(() => {
+        setPlayerId(requestedPlayerId);
+        setOpen(true);
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [playersQuery.data, requestedPlayerId, updateId]);
   const save = useMutation({
     mutationFn: () =>
       createMobileEvaluation({
@@ -260,9 +283,9 @@ export default function EvaluationsScreen() {
       setMessage("Choose a coach verdict before saving.");
       return;
     }
-    if (hasOtherCurrentEvaluation && !editing) {
+    if (hasOtherCurrentEvaluation) {
       setMessage(
-        "Another coach has already evaluated this player for the current season and year.",
+        "Already evaluated. Another coach has completed this player's evaluation. No additional evaluation is needed.",
       );
       return;
     }

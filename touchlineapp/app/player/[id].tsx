@@ -48,6 +48,7 @@ export default function PlayerDetailScreen() {
   if (!context) return null;
   const player = query.data?.player;
   const evaluations = query.data?.evaluations ?? [];
+  const latestEvaluation = query.data?.latestEvaluation;
 
   const downloadEvaluation = async () => {
     if (!player || evaluations.length === 0) {
@@ -116,6 +117,24 @@ export default function PlayerDetailScreen() {
               </Pressable>}
             </View>
             {context.role === "academy_admin" && <Pressable onPress={() => router.push({ pathname: "/(tabs)/players", params: { editId: player.id } })} className="mb-5 rounded-2xl bg-[#78d4aa] p-4"><Text className="text-center font-black text-[#071521]">Edit player information</Text></Pressable>}
+            {context.role === "coach" && (
+              latestEvaluation ? (
+                latestEvaluation.coach_id === context.profile.id ? (
+                  <Pressable onPress={() => router.push({ pathname: "/(tabs)/evaluations", params: { playerId: player.id, updateId: latestEvaluation.id } })} className="mb-5 rounded-2xl bg-[#78d4aa] p-4">
+                    <Text className="text-center font-black text-[#071521]">Update Evaluation</Text>
+                  </Pressable>
+                ) : (
+                  <View className="mb-5 rounded-2xl border border-[#7d3b49] bg-[#4b2530] p-4">
+                    <Text className="font-black text-[#ffd7de]">Already evaluated</Text>
+                    <Text className="mt-1 text-sm leading-5 text-[#ffd7de]">Another coach has completed this player&apos;s evaluation. No additional evaluation is needed.</Text>
+                  </View>
+                )
+              ) : (
+                <Pressable onPress={() => router.push({ pathname: "/(tabs)/evaluations", params: { playerId: player.id } })} className="mb-5 rounded-2xl bg-[#78d4aa] p-4">
+                  <Text className="text-center font-black text-[#071521]">Update Evaluation</Text>
+                </Pressable>
+              )
+            )}
             <View className="mb-5 rounded-3xl border border-[#1e3a52] bg-[#10263a] p-5"><Text className="mb-2 text-base font-black text-white">Player profile</Text><Row label="Date of birth" value={player.date_of_birth} /><Row label="Gender" value={player.gender} /><Row label="Season" value={player.season} /><Row label="Secondary position" value={player.secondary_position} /><Row label="Preferred foot" value={player.preferred_foot} /><Row label="Jersey number" value={player.jersey_number} /><Row label="Height" value={player.height ? `${player.height} cm` : null} /><Row label="Weight" value={player.weight ? `${player.weight} kg` : null} /><Row label="Player phone" value={player.phone} /><Row label="Parent / guardian" value={player.parent_name} /><Row label="Emergency contact" value={player.emergency_contact} /><Row label="Assigned coach" value={player.coachName} /></View>
             {player.medical_notes && <View className="mb-5 rounded-3xl border border-[#683344] bg-[#3b2430] p-5"><Text className="text-base font-black text-[#ffd7de]">Medical notes</Text><Text className="mt-2 text-sm leading-5 text-[#ffd7de]">{player.medical_notes}</Text></View>}
             <Text className="mb-3 text-lg font-black text-white">Evaluation history</Text>
