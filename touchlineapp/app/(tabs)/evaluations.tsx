@@ -137,10 +137,7 @@ export default function EvaluationsScreen() {
   });
   const playersQuery = useQuery({
     queryKey: ["mobile-evaluation-players", context?.academy?.id, context?.profile.id],
-    queryFn: () =>
-      fetchMobilePlayers(context!.academy!.id, {
-        coachId: context!.role === "coach" ? context!.profile.id : undefined,
-      }),
+    queryFn: () => fetchMobilePlayers(context!.academy!.id),
     enabled: Boolean(context?.academy),
   });
   const scores = useMemo(() => mobileScoresFromSkills(skills), [skills]);
@@ -219,7 +216,7 @@ export default function EvaluationsScreen() {
   });
 
   if (!context) return null;
-  const canCreate = context.role === "coach";
+  const canCreate = context.role === "coach" && (context.entitlements?.canWrite ?? false);
   const setSkill = (key: MobileSkillCategoryKey, skill: string, value: number) => {
     setSkills((current) => ({
       ...current,

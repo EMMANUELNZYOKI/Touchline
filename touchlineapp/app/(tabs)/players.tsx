@@ -1,9 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -20,6 +22,7 @@ import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
 import {
   createMobilePlayer,
   fetchMobilePlayers,
+  uploadMobilePlayerPhoto,
   updateMobilePlayer,
   type MobilePlayer,
   type MobilePlayerInput,
@@ -165,13 +168,12 @@ export default function PlayersScreen() {
   const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
   const [player, setPlayer] = useState<MobilePlayerInput>(emptyPlayer);
   const [formMessage, setFormMessage] = useState<string | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   const playersQuery = useQuery({
     queryKey: ["mobile-players", context?.academy?.id, context?.profile.id],
-    queryFn: () =>
-      fetchMobilePlayers(context!.academy!.id, {
-        coachId: context!.role === "coach" ? context!.profile.id : undefined,
-      }),
+    queryFn: () => fetchMobilePlayers(context!.academy!.id),
     enabled: Boolean(context?.academy),
   });
 
@@ -180,6 +182,7 @@ export default function PlayersScreen() {
     setEditingPlayerId(null);
     setPlayer(emptyPlayer());
     setFormMessage(null);
+    setPhotoPreview(null);
   };
 
   const onSaved = async () => {
@@ -211,20 +214,20 @@ export default function PlayersScreen() {
 
   const isOwner = context?.role === "academy_admin";
   const isSaving = createMutation.isPending || updateMutation.isPending;
-  const subscriptionWritable =
-    context?.subscription?.status === "active" || context?.subscription?.status === "trialing";
-  const canWrite = context?.academy?.status === "active" && subscriptionWritable;
+  const canWrite = context?.entitlements?.canWrite ?? false;
 
   const openCreate = () => {
     setEditingPlayerId(null);
     setPlayer(emptyPlayer());
     setFormMessage(null);
+    setPhotoPreview(null);
     setFormOpen(true);
   };
   const openEdit = (selected: MobilePlayer) => {
     setEditingPlayerId(selected.id);
     const { coachName: _coachName, hasEvaluation: _hasEvaluation, ...fields } = selected;
     setPlayer(fields);
+    setPhotoPreview(null);
     setFormMessage(null);
     setFormOpen(true);
   };
@@ -250,6 +253,33 @@ export default function PlayersScreen() {
     setFormMessage(null);
     if (editingPlayerId) updateMutation.mutate();
     else createMutation.mutate();
+  };
+  const choosePhoto = async () => {
+    if (!context?.academy || !canWrite) return;
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      setFormMessage("Allow photo-library access to choose a player photo.");
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.85,
+    });
+    if (result.canceled || !result.assets[0]) return;
+    setPhotoUploading(true);
+    setFormMessage(null);
+    try {
+      const asset = result.assets[0];
+      const path = await uploadMobilePlayerPhoto(context.academy.id, asset);
+      setPlayer((current) => ({ ...current, player_photo: path }));
+      setPhotoPreview(asset.uri);
+    } catch (error) {
+      setFormMessage(error instanceof Error ? error.message : "Could not upload the player photo.");
+    } finally {
+      setPhotoUploading(false);
+    }
   };
 
   if (!context) return null;
@@ -470,6 +500,31 @@ export default function PlayersScreen() {
               <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-[#78d4aa]">
                 Personal information
               </Text>
+              <View className="mb-4 flex-row items-center">
+                <View className="mr-4 h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-[#173f4a]">
+                  {photoPreview ? (
+                    <Image source={{ uri: photoPreview }} style={{ width: 80, height: 80 }} />
+                  ) : (
+                    <Ionicons name="person-outline" size={28} color="#78d4aa" />
+                  )}
+                </View>
+                <View className="flex-1">
+                  <Text className="font-bold text-white">Player photo</Text>
+                  <Text className="mt-1 text-xs leading-5 text-[#aab7c7]">
+                    Stored privately in the shared Supabase players bucket.
+                  </Text>
+                  <Pressable
+                    onPress={() => void choosePhoto()}
+                    disabled={photoUploading || !canWrite}
+                    className="mt-2 self-start rounded-xl border border-[#2b5268] bg-[#173f4a] px-3 py-2"
+                    style={{ opacity: photoUploading ? 0.6 : 1 }}
+                  >
+                    <Text className="text-xs font-bold text-[#d5f5e5]">
+                      {photoUploading ? "Uploading…" : "Choose photo"}
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
               <Field
                 label="First name *"
                 value={player.first_name}

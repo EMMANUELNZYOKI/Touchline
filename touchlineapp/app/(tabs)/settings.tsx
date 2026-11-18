@@ -1,12 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
+import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import { AcademyIdentity } from "@/components/touchline-ui";
 import { ScreenContainer } from "@/components/screen-container";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
-import { updateMobileProfile } from "@/lib/touchline/data";
+import {
+  fetchMobileSignedLogoUrl,
+  updateMobileProfile,
+  uploadMobileAcademyLogo,
+} from "@/lib/touchline/data";
 import { supabase } from "@/lib/touchline/supabase";
 
 const input =
@@ -56,6 +61,12 @@ export default function SettingsScreen() {
     null,
   );
   const academy = profileQuery.data;
+  const logoQuery = useQuery({
+    queryKey: ["mobile-academy-logo", context?.academy?.logo_path],
+    queryFn: () => fetchMobileSignedLogoUrl(context!.academy!.logo_path),
+    enabled: owner && Boolean(context?.academy?.logo_path),
+  });
+  const [logoUploading, setLogoUploading] = useState(false);
   useEffect(() => {
     if (!context) return;
     const timer = setTimeout(() => {
@@ -109,6 +120,32 @@ export default function SettingsScreen() {
       });
     } finally {
       setSaving(false);
+    }
+  };
+  const chooseLogo = async () => {
+    if (!context.academy || !context.entitlements?.canWrite) return;
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      setFeedback({ tone: "error", text: "Allow photo-library access to choose an academy logo." });
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.85,
+    });
+    if (result.canceled || !result.assets[0]) return;
+    setLogoUploading(true);
+    setFeedback(null);
+    try {
+      await uploadMobileAcademyLogo(context.academy.id, result.assets[0]);
+      await Promise.all([refresh(), profileQuery.refetch(), logoQuery.refetch()]);
+      setFeedback({ tone: "success", text: "Academy logo uploaded and shared with the web workspace." });
+    } catch (error) {
+      setFeedback({ tone: "error", text: error instanceof Error ? error.message : "Could not upload the academy logo." });
+    } finally {
+      setLogoUploading(false);
     }
   };
   const changePassword = async () => {
@@ -252,6 +289,31 @@ export default function SettingsScreen() {
                 <ActivityIndicator color="#78d4aa" />
               ) : (
                 <>
+                  <View className="mb-4 flex-row items-center">
+                    <View className="mr-4 h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-[#173f4a]">
+                      {logoQuery.data ? (
+                        <Image source={{ uri: logoQuery.data }} style={{ width: 80, height: 80 }} />
+                      ) : (
+                        <Text className="text-xs font-bold text-[#78d4aa]">NO LOGO</Text>
+                      )}
+                    </View>
+                    <View className="flex-1">
+                      <Text className="font-bold text-white">Academy logo</Text>
+                      <Text className="mt-1 text-xs leading-5 text-[#aab7c7]">
+                        Used by evaluation reports on web and mobile.
+                      </Text>
+                      <Pressable
+                        onPress={() => void chooseLogo()}
+                        disabled={logoUploading || !(context.entitlements?.canWrite ?? false)}
+                        className="mt-2 self-start rounded-xl border border-[#2b5268] bg-[#173f4a] px-3 py-2"
+                        style={{ opacity: logoUploading ? 0.6 : 1 }}
+                      >
+                        <Text className="text-xs font-bold text-[#d5f5e5]">
+                          {logoUploading ? "Uploading…" : "Choose logo"}
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </View>
                   <TextInput
                     value={name}
                     onChangeText={setName}

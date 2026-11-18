@@ -72,7 +72,10 @@ export default function CoachesScreen() {
   });
   if (!context || (context.role !== "academy_admin" && context.role !== "academy_manager"))
     return null;
-  const canCreate = context.role === "academy_admin" || context.role === "academy_manager";
+  const canCreate =
+    (context.role === "academy_admin" || context.role === "academy_manager") &&
+    (context.entitlements?.canWrite ?? false) &&
+    (context.entitlements?.features.includes("coach_accounts") ?? false);
   return (
     <ScreenContainer containerClassName="bg-[#071521]" safeAreaClassName="bg-[#071521]">
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 32 }}>

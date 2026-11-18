@@ -73,6 +73,7 @@ export default function ManagersScreen() {
   });
   if (!context || context.role !== "academy_admin") return null;
   const managers = query.data?.managers ?? [];
+  const canCreate = context.entitlements?.canWrite ?? false;
   return (
     <ScreenContainer containerClassName="bg-[#071521]" safeAreaClassName="bg-[#071521]">
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 32 }}>
@@ -88,7 +89,7 @@ export default function ManagersScreen() {
               Delegate daily academy operations without sharing owner billing controls.
             </Text>
           </View>
-          <Pressable
+          {canCreate && <Pressable
             accessibilityRole="button"
             accessibilityLabel="Add manager"
             onPress={() => {
@@ -106,7 +107,7 @@ export default function ManagersScreen() {
             }}
           >
             <Ionicons name="add" size={26} color="#071521" />
-          </Pressable>
+          </Pressable>}
         </View>
         {message && (
           <Text className="mb-4 rounded-2xl bg-[#4b2530] px-4 py-3 text-sm text-[#ffd7de]">

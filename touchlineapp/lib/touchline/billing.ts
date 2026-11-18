@@ -66,3 +66,16 @@ export function startMpesaCheckout(planKey: string, phone: string) {
     body: JSON.stringify({ planKey, phone }),
   });
 }
+
+export function startBillingCheckout(planKey: string) {
+  return billingRequest<{
+    link: string;
+    txRef: string;
+    amount: number;
+    currency: string;
+    planKey: string;
+  }>("/api/billing/checkout", {
+    method: "POST",
+    body: JSON.stringify({ planKey }),
+  });
+}

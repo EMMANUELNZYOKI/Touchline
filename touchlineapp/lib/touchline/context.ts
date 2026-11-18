@@ -27,6 +27,12 @@ export type TouchlineContext = {
     trial_ends_at: string | null;
     current_period_end: string | null;
   } | null;
+  entitlements: {
+    playerLimit: number | null;
+    coachLimit: number | null;
+    features: string[];
+    canWrite: boolean;
+  } | null;
 };
 
 export const ROLE_LABELS: Record<MobileRole, string> = {
@@ -90,6 +96,7 @@ export async function loadTouchlineContext(session: Session): Promise<TouchlineC
       role,
       academy: null,
       subscription: null,
+      entitlements: null,
     };
   }
 
@@ -116,11 +123,40 @@ export async function loadTouchlineContext(session: Session): Promise<TouchlineC
     throw new Error(`The ${academy.name} workspace is currently suspended. Contact Touchline support or your platform administrator.`);
   }
 
+  const { data: plan, error: planError } = subscription
+    ? await supabase
+        .from("subscription_plans")
+        .select("player_limit, coach_limit, feature_flags")
+        .eq("plan_key", subscription.plan_key)
+        .maybeSingle()
+    : { data: null, error: null };
+  if (planError) throw planError;
+  const trialActive =
+    subscription?.status === "trialing" &&
+    Boolean(subscription.trial_ends_at) &&
+    Date.parse(subscription.trial_ends_at!) > Date.now();
+  const canWrite =
+    academy.status === "active" &&
+    (subscription?.status === "active" || trialActive);
+
   return {
     session,
     profile,
     role,
     academy,
     subscription,
+    entitlements: subscription
+      ? {
+          playerLimit: plan?.player_limit ?? null,
+          coachLimit: plan?.coach_limit ?? null,
+          features: canWrite ? (plan?.feature_flags ?? []) : [],
+          canWrite,
+        }
+      : {
+          playerLimit: null,
+          coachLimit: null,
+          features: [],
+          canWrite: false,
+        },
   };
 }

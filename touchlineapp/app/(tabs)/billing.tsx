@@ -15,7 +15,12 @@ import {
 import { AcademyIdentity } from "@/components/touchline-ui";
 import { ScreenContainer } from "@/components/screen-container";
 import { useTouchlineAuth } from "@/hooks/use-touchline-auth";
-import { fetchBilling, startMpesaCheckout, type BillingPlan } from "@/lib/touchline/billing";
+import {
+  fetchBilling,
+  startBillingCheckout,
+  startMpesaCheckout,
+  type BillingPlan,
+} from "@/lib/touchline/billing";
 
 function formatAmount(plan: BillingPlan) {
   return `${plan.currency} ${Number(plan.amount).toLocaleString("en-KE")}`;
@@ -31,10 +36,11 @@ function formatDate(value: string | null) {
 }
 
 export default function BillingScreen() {
-  const { context } = useTouchlineAuth();
+  const { context, refresh } = useTouchlineAuth();
   const queryClient = useQueryClient();
   const [phone, setPhone] = useState("");
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<"mpesa" | "checkout">("mpesa");
   const [message, setMessage] = useState<string | null>(null);
   const billingQuery = useQuery({
     queryKey: ["mobile-billing", context?.academy?.id],
@@ -46,10 +52,11 @@ export default function BillingScreen() {
     const subscription = AppState.addEventListener("change", (state) => {
       if (state === "active" && academyId) {
         void queryClient.invalidateQueries({ queryKey: ["mobile-billing", academyId] });
+        void refresh();
       }
     });
     return () => subscription.remove();
-  }, [academyId, queryClient]);
+  }, [academyId, queryClient, refresh]);
   const checkoutMutation = useMutation({
     mutationFn: ({ planKey, phoneNumber }: { planKey: string; phoneNumber: string }) =>
       startMpesaCheckout(planKey, phoneNumber),
@@ -75,17 +82,36 @@ export default function BillingScreen() {
       setMessage(error instanceof Error ? error.message : "Could not start M-Pesa checkout."),
     onSettled: () => setSelectedPlan(null),
   });
+  const standardCheckoutMutation = useMutation({
+    mutationFn: (planKey: string) => startBillingCheckout(planKey),
+    onSuccess: async (checkout) => {
+      setMessage(`Checkout prepared for ${checkout.planKey.toUpperCase()}.`);
+      try {
+        if (await Linking.canOpenURL(checkout.link)) await Linking.openURL(checkout.link);
+        else setMessage("Checkout is ready, but this device cannot open the payment link.");
+      } catch (error) {
+        setMessage(error instanceof Error ? error.message : "The payment link could not be opened.");
+      }
+    },
+    onError: (error) =>
+      setMessage(error instanceof Error ? error.message : "Could not start checkout."),
+    onSettled: () => setSelectedPlan(null),
+  });
 
   if (!context || context.role !== "academy_admin") return null;
   const subscription = billingQuery.data?.subscription ?? context.subscription;
   const subscribe = (planKey: string) => {
-    if (!phone.trim()) {
+    if (selectedMethod === "mpesa" && !phone.trim()) {
       setMessage("Enter the Safaricom number that should receive the M-Pesa prompt.");
       return;
     }
     setMessage(null);
     setSelectedPlan(planKey);
-    checkoutMutation.mutate({ planKey, phoneNumber: phone.trim() });
+    if (selectedMethod === "mpesa") {
+      checkoutMutation.mutate({ planKey, phoneNumber: phone.trim() });
+    } else {
+      standardCheckoutMutation.mutate(planKey);
+    }
   };
 
   return (
@@ -124,7 +150,25 @@ export default function BillingScreen() {
           </Text>
         </View>
 
-        <Text className="mb-3 mt-7 text-base font-bold text-white">Pay with M-Pesa</Text>
+        <Text className="mb-3 mt-7 text-base font-bold text-white">Choose payment method</Text>
+        <View className="mb-4 flex-row gap-3">
+          {(["mpesa", "checkout"] as const).map((method) => (
+            <Pressable
+              key={method}
+              onPress={() => setSelectedMethod(method)}
+              className="flex-1 rounded-2xl border px-4 py-3"
+              style={{
+                borderColor: selectedMethod === method ? "#78d4aa" : "#2b4862",
+                backgroundColor: selectedMethod === method ? "#173f4a" : "#0b1c2d",
+              }}
+            >
+              <Text className="text-center font-bold text-white">
+                {method === "mpesa" ? "M-Pesa" : "Paystack checkout"}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+        {selectedMethod === "mpesa" && <>
         <Text className="mb-3 text-sm text-[#aab7c7]">
           Enter the Safaricom number that should receive the payment prompt.
         </Text>
@@ -136,6 +180,7 @@ export default function BillingScreen() {
           keyboardType="phone-pad"
           className="rounded-2xl border border-[#2b4862] bg-[#0b1c2d] px-4 py-4 text-base text-white"
         />
+        </>}
         {message && (
           <Text className="mt-3 rounded-2xl bg-[#173f4a] px-4 py-3 text-sm leading-5 text-[#d5f5e5]">
             {message}
@@ -194,7 +239,7 @@ export default function BillingScreen() {
                 ))}
                 <Pressable
                   onPress={() => subscribe(plan.plan_key)}
-                  disabled={isSelected || checkoutMutation.isPending}
+                  disabled={isSelected || checkoutMutation.isPending || standardCheckoutMutation.isPending}
                   className="mt-3 min-h-[50px] items-center justify-center rounded-2xl bg-[#78d4aa] active:opacity-80"
                   style={{
                     minHeight: 52,
@@ -218,6 +263,24 @@ export default function BillingScreen() {
             );
           })}
         </View>
+        {(billingQuery.data?.payments?.length ?? 0) > 0 && (
+          <View className="mt-7 rounded-3xl border border-[#1e3a52] bg-[#10263a] p-5">
+            <Text className="text-base font-black text-white">Payment history</Text>
+            {billingQuery.data?.payments.slice(0, 10).map((payment) => (
+              <View key={payment.tx_ref} className="mt-4 border-t border-[#1e3a52] pt-3">
+                <View className="flex-row items-center justify-between">
+                  <Text className="font-bold capitalize text-white">{payment.plan_key}</Text>
+                  <Text className="font-bold text-[#78d4aa]">
+                    {payment.currency} {Number(payment.amount).toLocaleString("en-KE")}
+                  </Text>
+                </View>
+                <Text className="mt-1 text-xs text-[#aab7c7]">
+                  {payment.status} · {formatDate(payment.paid_at ?? payment.created_at)}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
         <Text className="mt-6 text-center text-xs leading-5 text-[#71839a]">
           Payments are verified by the existing Touchline Paystack webhook. A successful payment
           activates the selected plan for an exact 30-day period.

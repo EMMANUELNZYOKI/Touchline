@@ -13,17 +13,36 @@ import { fetchMobileEvaluations } from "@/lib/touchline/data";
 export default function ReportsScreen() {
   const { context } = useTouchlineAuth();
   const [message, setMessage] = useState<string | null>(null);
+  const reportsEnabled = context?.entitlements?.features.includes("reports") ?? false;
   const metrics = useQuery({
     queryKey: ["mobile-report-metrics", context?.academy?.id],
     queryFn: () => loadDashboardMetrics(context!.academy!.id),
-    enabled: Boolean(context?.academy),
+    enabled: Boolean(context?.academy && reportsEnabled),
   });
   const evaluations = useQuery({
     queryKey: ["mobile-report-evaluations", context?.academy?.id],
     queryFn: () => fetchMobileEvaluations(context!.academy!.id),
-    enabled: Boolean(context?.academy),
+    enabled: Boolean(context?.academy && reportsEnabled),
   });
   if (!context) return null;
+  if (!reportsEnabled) {
+    return (
+      <ScreenContainer containerClassName="bg-[#071521]" safeAreaClassName="bg-[#071521]">
+        <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 32 }}>
+          <AcademyIdentity
+            name={context.academy?.name ?? "Touchline Academy"}
+            role={context.role}
+            userName={context.profile.full_name}
+          />
+          <Text className="text-2xl font-black text-white">Reports unavailable</Text>
+          <Text className="mt-2 rounded-2xl border border-[#2b4862] bg-[#10263a] p-4 text-sm leading-5 text-[#aab7c7]">
+            Reports are not included in this academy package. The Academy Owner can review package
+            access and subscription options in Billing.
+          </Text>
+        </ScrollView>
+      </ScreenContainer>
+    );
+  }
   const list = evaluations.data ?? [];
   const average = list.length
     ? list.reduce((sum, item) => sum + (item.overall_rating ?? 0), 0) / list.length

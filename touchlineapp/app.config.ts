@@ -113,6 +113,12 @@ const config: ExpoConfig = {
   },
   plugins: [
     "expo-asset",
+    [
+      "expo-image-picker",
+      {
+        photosPermission: "Allow Touchline to choose player photos and academy logos.",
+      },
+    ],
     "expo-router",
     [
       "expo-audio",

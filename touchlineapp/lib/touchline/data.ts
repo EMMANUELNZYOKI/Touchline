@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { mobileScoresFromSkills, type MobileAssessment, type MobileSkillState } from "./skills";
+import type { ImagePickerAsset } from "expo-image-picker";
 
 export type MobilePlayerInput = {
   first_name: string;
@@ -55,6 +56,16 @@ export type MobileEvaluation = {
   created_at: string;
   playerName: string;
   coachName: string;
+};
+
+export type MobileAdminActivity = {
+  id: string;
+  action: "player_created" | "player_updated" | "player_deleted" | "coach_status_changed";
+  entity_type: "player" | "coach";
+  entity_id: string;
+  summary: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
 };
 
 function optionalText(value: string | null): string | null {
@@ -186,6 +197,76 @@ export async function fetchMobileEvaluations(academyId: string): Promise<MobileE
     playerName: players.get(evaluation.player_id) ?? "Unknown player",
     coachName: profiles.get(evaluation.coach_id) ?? "Unknown coach",
   })) as MobileEvaluation[];
+}
+
+export async function fetchMobileAdminActivity(academyId: string): Promise<MobileAdminActivity[]> {
+  const { data, error } = await supabase
+    .from("admin_activity_logs")
+    .select("id, action, entity_type, entity_id, summary, metadata, created_at")
+    .eq("academy_id", academyId)
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) throw error;
+  return (data ?? []) as MobileAdminActivity[];
+}
+
+export async function fetchMobileSignedPhotoUrl(path: string | null): Promise<string | null> {
+  if (!path) return null;
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  const { data, error } = await supabase.storage.from("players").createSignedUrl(path, 3600);
+  if (error) throw error;
+  return data.signedUrl ?? null;
+}
+
+function extensionForAsset(asset: ImagePickerAsset): string {
+  const fromName = asset.fileName?.split(".").pop()?.toLowerCase();
+  if (fromName && /^[a-z0-9]+$/.test(fromName)) return fromName;
+  const fromMime = asset.mimeType?.split("/").pop()?.toLowerCase();
+  return fromMime === "jpeg" ? "jpg" : fromMime || "jpg";
+}
+
+async function assetBytes(asset: ImagePickerAsset): Promise<ArrayBuffer> {
+  const response = await fetch(asset.uri);
+  if (!response.ok) throw new Error("The selected image could not be read.");
+  return response.arrayBuffer();
+}
+
+function uploadToken() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+export async function uploadMobilePlayerPhoto(academyId: string, asset: ImagePickerAsset) {
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData.user) throw new Error("Sign in again before uploading a player photo.");
+  const path = `${academyId}/${userData.user.id}/${uploadToken()}.${extensionForAsset(asset)}`;
+  const { error } = await supabase.storage.from("players").upload(path, await assetBytes(asset), {
+    upsert: false,
+    contentType: asset.mimeType ?? "image/jpeg",
+  });
+  if (error) throw error;
+  return path;
+}
+
+export async function uploadMobileAcademyLogo(academyId: string, asset: ImagePickerAsset) {
+  const path = `${academyId}/logo.${extensionForAsset(asset)}`;
+  const { error } = await supabase.storage.from("academy-assets").upload(path, await assetBytes(asset), {
+    upsert: true,
+    contentType: asset.mimeType ?? "image/png",
+  });
+  if (error) throw error;
+  const { error: updateError } = await supabase
+    .from("academies")
+    .update({ logo_path: path })
+    .eq("id", academyId);
+  if (updateError) throw updateError;
+  return path;
+}
+
+export async function fetchMobileSignedLogoUrl(path: string | null): Promise<string | null> {
+  if (!path) return null;
+  const { data, error } = await supabase.storage.from("academy-assets").createSignedUrl(path, 3600);
+  if (error) throw error;
+  return data.signedUrl ?? null;
 }
 
 export async function fetchMobilePlayerDetail(academyId: string, playerId: string) {
