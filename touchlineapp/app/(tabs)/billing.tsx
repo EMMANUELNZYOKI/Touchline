@@ -201,14 +201,19 @@ export default function BillingScreen() {
         )}
         <View className="mt-5 gap-3">
           {billingQuery.data?.plans.map((plan) => {
-            const isCurrent =
-              subscription?.plan_key === plan.plan_key && subscription?.status === "active";
+            const isCurrent = subscription?.plan_key === plan.plan_key;
             const isSelected = selectedPlan === plan.plan_key;
             return (
               <View
                 key={plan.plan_key}
                 className="rounded-3xl border border-[#1e3a52] bg-[#10263a] p-5"
-                style={plan.plan_key === "pro" ? { borderColor: "#78d4aa" } : undefined}
+                style={
+                  isCurrent
+                    ? { borderColor: "#f2c36b", borderWidth: 2, backgroundColor: "#2b281e" }
+                    : plan.plan_key === "pro"
+                      ? { borderColor: "#78d4aa" }
+                      : undefined
+                }
               >
                 <View className="flex-row items-start justify-between">
                   <View className="flex-1 pr-3">
@@ -223,13 +228,19 @@ export default function BillingScreen() {
                       {plan.description}
                     </Text>
                   </View>
-                  {plan.plan_key === "pro" && (
+                  {isCurrent ? (
+                    <View className="rounded-full bg-[#f2c36b] px-3 py-1">
+                      <Text className="text-[10px] font-black uppercase text-[#2b281e]">
+                        Current package
+                      </Text>
+                    </View>
+                  ) : plan.plan_key === "pro" ? (
                     <View className="rounded-full bg-[#78d4aa] px-3 py-1">
                       <Text className="text-[10px] font-black uppercase text-[#071521]">
                         Complete
                       </Text>
                     </View>
-                  )}
+                  ) : null}
                 </View>
                 <View className="my-4 h-px bg-[#1e3a52]" />
                 {plan.feature_summary.slice(0, 5).map((feature) => (
