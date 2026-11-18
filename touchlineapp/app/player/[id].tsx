@@ -35,8 +35,8 @@ export default function PlayerDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [downloading, setDownloading] = useState(false);
   const query = useQuery({
-    queryKey: ["mobile-player-detail", context?.academy?.id, context?.profile.id, id],
-    queryFn: () => fetchMobilePlayerDetail(context!.academy!.id, id, context?.role === "coach" ? { coachId: context.profile.id } : undefined),
+    queryKey: ["mobile-player-detail", context?.academy?.id, id],
+    queryFn: () => fetchMobilePlayerDetail(context!.academy!.id, id),
     enabled: Boolean(context?.academy && id),
   });
   const photoQuery = useQuery({

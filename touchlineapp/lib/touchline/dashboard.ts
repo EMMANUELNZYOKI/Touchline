@@ -24,7 +24,7 @@ export type CoachDashboardData = {
 
 export async function loadCoachDashboardData(
   academyId: string,
-  coachId: string,
+  _coachId: string,
 ): Promise<CoachDashboardData> {
   const [{ data: players, error: playersError }, { data: evaluations, error: evaluationsError }] =
     await Promise.all([
@@ -32,13 +32,11 @@ export async function loadCoachDashboardData(
         .from("players")
         .select("id, first_name, last_name, created_at")
         .eq("academy_id", academyId)
-        .eq("coach_id", coachId)
         .order("created_at", { ascending: false }),
       supabase
         .from("player_evaluations")
         .select("player_id, overall_rating, created_at")
         .eq("academy_id", academyId)
-        .eq("coach_id", coachId)
         .order("created_at", { ascending: false }),
     ]);
   if (playersError) throw playersError;
