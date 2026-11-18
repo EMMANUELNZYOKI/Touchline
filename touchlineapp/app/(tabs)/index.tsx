@@ -967,7 +967,7 @@ export default function DashboardScreen() {
         <Text className="mb-5 text-sm leading-5 text-[#aab7c7]">
           {roleLabel} tools, live from the same Touchline workspace used on the web.
         </Text>
-        {context.role === "academy_manager" ? (
+        {context.role === "academy_manager" || context.role === "academy_admin" ? (
           <View className="mb-6">
             <View className="mb-3 flex-row gap-3">
               <MetricCard
