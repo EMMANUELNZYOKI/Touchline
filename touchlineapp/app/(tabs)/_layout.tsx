@@ -53,11 +53,6 @@ export default function TabLayout() {
       <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: ({ color }) => <Ionicons size={24} name="person-circle-outline" color={color == null ? undefined : String(color)} /> }} />
       <Tabs.Screen name="billing" options={{ href: context?.role === "academy_admin" ? undefined : null, title: "Billing", tabBarIcon: ({ color }) => <Ionicons size={24} name="card-outline" color={color == null ? undefined : String(color)} /> }} />
       <Tabs.Screen name="more" options={{ href: context?.role === "super_admin" ? null : undefined, title: "More", tabBarIcon: ({ color }) => <Ionicons size={24} name="ellipsis-horizontal-circle-outline" color={color == null ? undefined : String(color)} /> }} />
-      <Tabs.Screen name="managers" options={{ href: null, title: "Managers" }} />
-      <Tabs.Screen name="coaches" options={{ href: null, title: "Coaches" }} />
-      <Tabs.Screen name="reports" options={{ href: null, title: "Reports" }} />
-      <Tabs.Screen name="activity" options={{ href: null, title: "Activity" }} />
-      <Tabs.Screen name="settings" options={{ href: null, title: "Settings" }} />
     </Tabs>
   );
 }
