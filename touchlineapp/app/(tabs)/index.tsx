@@ -984,13 +984,13 @@ export default function DashboardScreen() {
             </View>
             <View className="mb-3 flex-row gap-3">
               <MetricCard
-                label="Players registered"
+                label="Total players registered"
                 value={metricsQuery.isLoading ? "—" : String(metricsQuery.data?.players ?? 0)}
                 icon="people-outline"
                 accent="#8bb8ff"
               />
               <MetricCard
-                label="Players evaluated"
+                label="Total players evaluated"
                 value={
                   metricsQuery.isLoading ? "—" : String(metricsQuery.data?.evaluatedPlayers ?? 0)
                 }
@@ -1000,7 +1000,7 @@ export default function DashboardScreen() {
             </View>
             <View className="mb-3 flex-row gap-3">
               <MetricCard
-                label="Not evaluated"
+                label="Total players not evaluated"
                 value={
                   metricsQuery.isLoading ? "—" : String(metricsQuery.data?.notEvaluatedPlayers ?? 0)
                 }
