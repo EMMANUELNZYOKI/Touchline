@@ -29,7 +29,7 @@ export default function MoreScreen() {
             title="Managers"
             body="Create, activate, and delegate daily academy operations."
             icon="shield-checkmark-outline"
-            onPress={() => router.push("/(tabs)/managers")}
+            onPress={() => router.push("/managers")}
           />
         )}
         {canManageCoaches && (
@@ -37,7 +37,7 @@ export default function MoreScreen() {
             title="Coaches"
             body="Manage coach accounts, assigned players, and evaluation activity."
             icon="people-outline"
-            onPress={() => router.push("/(tabs)/coaches")}
+            onPress={() => router.push("/coaches")}
           />
         )}
         {context.role === "coach" && (
@@ -54,13 +54,13 @@ export default function MoreScreen() {
               title="Reports"
               body="Review academy performance and development summaries."
               icon="bar-chart-outline"
-              onPress={() => router.push("/(tabs)/reports")}
+              onPress={() => router.push("/reports")}
             />
             <ActionCard
               title="Activity history"
               body="See recent player registrations and evaluations."
               icon="time-outline"
-              onPress={() => router.push("/(tabs)/activity")}
+              onPress={() => router.push("/activity")}
             />
           </>
         )}
@@ -68,7 +68,7 @@ export default function MoreScreen() {
           title="Academy settings"
           body="View workspace identity, subscription, and operational settings."
           icon="settings-outline"
-          onPress={() => router.push("/(tabs)/settings")}
+          onPress={() => router.push("/settings")}
         />
         <View className="mt-5 rounded-2xl border border-[#1e3a52] bg-[#0b1c2d] p-4">
           <Ionicons name="shield-checkmark-outline" size={22} color="#78d4aa" />

@@ -85,6 +85,12 @@ export default function RootLayout() {
           {/* in order for ios apps tab switching to work properly, use presentation: "fullScreenModal" for login page, whenever you decide to use presentation: "modal*/}
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="more" />
+            <Stack.Screen name="managers" />
+            <Stack.Screen name="coaches" />
+            <Stack.Screen name="reports" />
+            <Stack.Screen name="activity" />
+            <Stack.Screen name="settings" />
             <Stack.Screen name="oauth/callback" />
           </Stack>
             <StatusBar style="light" />

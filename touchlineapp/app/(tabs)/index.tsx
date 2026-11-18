@@ -856,7 +856,7 @@ export default function DashboardScreen() {
             title="Manage your academy"
             body="Review subscription, managers, branding, reports, and activity."
             icon="settings-outline"
-            onPress={() => router.push("/(tabs)/more")}
+            onPress={() => router.push("/more")}
           />
         )}
         {context.role === "academy_manager" && (
@@ -864,7 +864,7 @@ export default function DashboardScreen() {
             title="Run academy operations"
             body="Manage day-to-day player, coach, and evaluation workflows."
             icon="construct-outline"
-            onPress={() => router.push("/(tabs)/more")}
+            onPress={() => router.push("/more")}
           />
         )}
         {context.role === "coach" && (
