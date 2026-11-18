@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { Image, Modal, TouchableOpacity, Text, View } from "react-native";
 import { useState } from "react";
 
@@ -25,10 +26,11 @@ function AccountPanel({ visible, onClose }: { visible: boolean; onClose: () => v
   const [confirmSignOut, setConfirmSignOut] = useState(false);
   if (!context) return null;
   const signOutNow = () => setConfirmSignOut(true);
-  const performSignOut = async () => {
+  const performSignOut = () => {
     setConfirmSignOut(false);
     onClose();
-    await signOut();
+    void signOut();
+    setTimeout(() => router.replace("/"), 0);
   };
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>

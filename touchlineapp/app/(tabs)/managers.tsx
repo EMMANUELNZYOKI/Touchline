@@ -73,6 +73,7 @@ export default function ManagersScreen() {
   });
   if (!context || context.role !== "academy_admin") return null;
   const managers = query.data?.managers ?? [];
+  const activeManagers = managers.filter((manager) => manager.status === "active").length;
   const canCreate = context.entitlements?.canWrite ?? false;
   return (
     <ScreenContainer containerClassName="bg-[#071521]" safeAreaClassName="bg-[#071521]">
@@ -109,6 +110,12 @@ export default function ManagersScreen() {
             <Ionicons name="add" size={26} color="#071521" />
           </Pressable>}
         </View>
+        {!query.isLoading && !query.error && (
+          <Text className="mb-4 text-xs font-bold uppercase tracking-wider text-[#78d4aa]">
+            {activeManagers} active manager{activeManagers === 1 ? "" : "s"}
+            {query.data?.managerLimit != null ? ` · ${query.data.managerLimit} allowed on your package` : ""}
+          </Text>
+        )}
         {message && (
           <Text className="mb-4 rounded-2xl bg-[#4b2530] px-4 py-3 text-sm text-[#ffd7de]">
             {message}
